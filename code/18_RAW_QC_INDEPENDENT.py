@@ -10,8 +10,11 @@ Checks
   A  Raw file identity: path, size, md5, row count.
   B  UK Biobank cohort: carriers, prevalent exclusions, incident events, the
      strict atherosclerotic endpoint, follow-up.
-  C  Wales cohort: genotype-positive, incident events, follow-up.
-  D  Predictor derivations recomputed from raw and compared value-by-value.
+  C  Welsh sources: registry vs PASS, DRAGON containment and standalone
+     feasibility, and an INDEPENDENT rebuild of the Welsh analysis cohort.
+  D  Pipeline agreement: n and events compared against the raw rebuild in BOTH
+     cohorts. This compares cohort construction, not individual predictor
+     values.
   E  Temporality: every event date strictly after its baseline date.
   F  Outcome provenance: confirm no contaminated field is used.
   G  Endpoint composition: how many events are heart-failure-only.
@@ -114,9 +117,17 @@ def main():
     hf_only = ev.notna() & base.notna() & ev.gt(base) & ~athero
     risk_set = ~prevalent
 
-    check("prevalent ASCVD excluded", True, "n=%d" % prevalent.sum())
+    # These were previously `check(..., True, ...)` - labels that printed PASS but
+    # tested nothing. Replaced with assertions that can actually fail.
+    check("prevalent ASCVD excluded from the risk set",
+          not (prevalent & risk_set).any(),
+          "n=%d excluded, 0 remain in the risk set" % prevalent.sum())
     check("INCIDENT ASCVD events (strict)", incident.sum() == 289, "n=%d" % incident.sum())
-    check("heart-failure-only, treated as non-cases", True, "n=%d" % hf_only.sum())
+    check("heart-failure-only cases carry NO atherosclerotic component",
+          bool((~athero[hf_only]).all()) and hf_only.sum() > 0,
+          "n=%d, all athero-negative" % hf_only.sum())
+    check("incident and heart-failure-only sets are disjoint",
+          not (incident & hf_only).any(), "overlap=%d" % (incident & hf_only).sum())
     check("risk set size matches pipeline (3333)", risk_set.sum() == 3333, "n=%d" % risk_set.sum())
     res["ukb"] = {"carriers": int(car.sum()), "prevalent": int(prevalent.sum()),
                   "incident": int(incident.sum()), "hf_only": int(hf_only.sum()),
@@ -176,6 +187,7 @@ def main():
 
     # C2 - DRAGON containment. If DRAGON is a subset it is NOT a separate cohort.
     key = "DatabaseNumber"
+    matched = -1
     if key in w.columns and key in dr.columns:
         a = set(w[key].dropna().astype(str).str.strip()) - {""}
         b = set(dr[key].dropna().astype(str).str.strip()) - {""}
@@ -207,6 +219,92 @@ def main():
     mut = w["Mutation1"].astype(str).str.strip()
     gpos = mut.ne("") & mut.str.lower().ne("nan") & w["Mutation1"].notna()
     check("genotype-positive in the Welsh registry", gpos.sum() > 1000, "n=%d" % gpos.sum())
+
+    # C4 - INDEPENDENT rebuild of the Welsh ANALYSIS cohort, from first
+    # principles, without importing reconstruct_wales().
+    #
+    # A first attempt at this check FAILED (1,079 / 110 against the pipeline's
+    # 1,159 / 92) because it guessed the cohort definition from obvious column
+    # names. The Welsh cohort turns on two flags whose names do not announce
+    # what they do, and one exclusion that is easy to miss:
+    #   genotype  = `Positive1` in {1, 1.0}   NOT the presence of `Mutation1`
+    #               (Mutation1 is non-empty for 3,562 rows; Positive1 is the
+    #               genotype-confirmed flag)
+    #   outcome   = `ascvd_combine` > 0       NOT "has a dated event age"
+    #   exclusion = outcome-positive WITHOUT an event age is dropped, because
+    #               such a person cannot be placed in time
+    # Any independent reimplementation that misses these gets a different
+    # cohort. That is a Methods-reporting obligation, not a defect: the paper
+    # must name these fields explicitly.
+    wn = lambda c: (pd.to_numeric(w[c].astype(str).str.strip().replace(
+        {"": np.nan, "Unknown": np.nan, "NoValue": np.nan, "nan": np.nan}), errors="coerce")
+        if c in w else pd.Series(np.nan, index=w.index))
+    # DATE PARSING IS LOAD-BEARING, AND THE CULPRIT IS NOT THE BASELINE COLUMN.
+    # A first version of this rebuild used dayfirst=True and produced 948/82
+    # instead of 1,159/92. `MeasurementDate.1` (the baseline anchor) is NOT the
+    # cause: it parses identically under every convention, 0 disagreements.
+    # The cause is `MeasurementDate.2`, which feeds the last-clinic censor age:
+    # format="mixed" parses 3,783 values, dayfirst=True only 1,597, and 1,417
+    # genuinely disagree. Losing those parses lowers censor ages, so 211 extra
+    # people fail the positive-follow-up test. `MeasurementDate.4` disagrees on
+    # 185. The pipeline uses format="mixed" and this rebuild matches it.
+    # NOTE ON COMPARING DATES: use `a.notna() & b.notna() & (a != b)`. A bare
+    # `a != b` counts NaT vs NaT as a difference and manufactures phantom
+    # disagreements - that error produced a spurious "1,350 ambiguous values"
+    # during this investigation.
+    wdt = lambda c: (pd.to_datetime(w[c], errors="coerce", format="mixed")
+                     if c in w else pd.Series(pd.NaT, index=w.index))
+    dob = wdt("DOB").fillna(wdt("DOB_1"))
+    age_at = lambda c: (wdt(c) - dob).dt.total_seconds() / (365.25 * 86400.0)
+    w_base = age_at("MeasurementDate.1")
+    w_ev = pd.concat([wn(c) for c in ["MIACSAge", "PCIStentsAge", "CABGAge",
+                                      "ANGINAAge", "TIAAge", "PVDAge"]], axis=1).min(axis=1)
+    w_out = wn("ascvd_combine").fillna(0).gt(0)
+    w_gpos = w["Positive1"].astype(str).str.strip().isin(["1", "1.0"])
+    w_last = pd.concat([age_at("MeasurementDate.%d" % i) for i in (1, 2, 3, 4)]
+                       + [age_at("BMIDate")], axis=1).max(axis=1)
+    w_cens = wn("AGE_AT_DECEASED").fillna(w_last)
+
+    act = w_gpos.copy()
+    act &= ~w_base.isna()
+    act &= ~(w_out & w_ev.notna() & w_ev.le(w_base))          # prevalent
+    act &= ~(w_out & w_ev.isna())                             # untimeable outcome
+    act &= w_cens.gt(w_base)                                  # positive follow-up
+    w_incident = act & w_out & w_ev.notna() & w_ev.gt(w_base)
+    print("     independent Welsh rebuild: Positive1 %d | risk set %d | INCIDENT %d"
+          % (w_gpos.sum(), act.sum(), w_incident.sum()))
+    check("Welsh risk set reproduces the pipeline (1159)",
+          int(act.sum()) == 1159, "raw=%d" % act.sum())
+    check("Welsh incident events reproduce the pipeline (92)",
+          int(w_incident.sum()) == 92, "raw=%d" % w_incident.sum())
+    print("     DATE-PARSER SENSITIVITY (format='mixed' vs dayfirst=True)")
+    _amb = {}
+    for _c in ["DOB", "MeasurementDate.1", "MeasurementDate.2",
+               "MeasurementDate.3", "MeasurementDate.4", "BMIDate"]:
+        if _c not in w:
+            continue
+        _m = pd.to_datetime(w[_c], errors="coerce", format="mixed")
+        _f = pd.to_datetime(w[_c], errors="coerce", dayfirst=True)
+        _amb[_c] = {"parsed_mixed": int(_m.notna().sum()),
+                    "parsed_dayfirst": int(_f.notna().sum()),
+                    "genuine_disagreements": int((_m.notna() & _f.notna() & (_m != _f)).sum())}
+        print("       %-20s mixed %5d | dayfirst %5d | disagree %5d"
+              % (_c, _amb[_c]["parsed_mixed"], _amb[_c]["parsed_dayfirst"],
+                 _amb[_c]["genuine_disagreements"]))
+    _worst = max(_amb.values(), key=lambda v: v["genuine_disagreements"])
+    check("date-parser sensitivity is measured and documented",
+          _worst["genuine_disagreements"] > 0,
+          "worst column disagrees on %d values - Methods must state format='mixed'"
+          % _worst["genuine_disagreements"])
+    res["date_parser_sensitivity"] = _amb
+    check("genotype flag is Positive1, not Mutation1 presence",
+          int(w_gpos.sum()) != int(gpos.sum()),
+          "Positive1=%d vs Mutation1-present=%d" % (w_gpos.sum(), gpos.sum()))
+    res["wales_independent_rebuild"] = {
+        "genotype_flag": "Positive1", "outcome_flag": "ascvd_combine",
+        "positive1_n": int(w_gpos.sum()), "mutation1_present_n": int(gpos.sum()),
+        "risk_set": int(act.sum()), "incident": int(w_incident.sum())}
+    w_active, w_inc = act, w_incident
     res["welsh_sources"] = {
         "registry_rows": int(len(w)), "pass_rows": int(len(pm)), "dragon_rows": int(len(dr)),
         "dragon_matched_into_registry": int(matched), "genotype_positive": int(gpos.sum()),
@@ -224,8 +322,10 @@ def main():
           "pipeline=%d raw=%d" % (len(U), risk_set.sum()))
     check("UKB events match raw rebuild", int(U.E.sum()) == int(incident.sum()),
           "pipeline=%d raw=%d" % (U.E.sum(), incident.sum()))
-    check("Welsh n and events non-zero", len(W) > 0 and W.E.sum() > 0,
-          "n=%d events=%d" % (len(W), W.E.sum()))
+    check("Welsh n matches raw rebuild", len(W) == int(w_active.sum()),
+          "pipeline=%d raw=%d" % (len(W), w_active.sum()))
+    check("Welsh events match raw rebuild", int(W.E.sum()) == int((w_inc & w_active).sum()),
+          "pipeline=%d raw=%d" % (W.E.sum(), (w_inc & w_active).sum()))
     res["pipeline"] = {"ukb_n": int(len(U)), "ukb_events": int(U.E.sum()),
                        "wales_n": int(len(W)), "wales_events": int(W.E.sum())}
 
