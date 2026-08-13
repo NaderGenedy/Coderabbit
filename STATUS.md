@@ -10,7 +10,7 @@ retained for provenance, not for citation.
 
 | Analysis | Script | What it is |
 |---|---|---|
-| **CALON-F** | `code/15_CALON_FINAL.py` | Two-cohort **incident** ASCVD model in genotype-confirmed HeFH. **Endpoint: ASCVD only — I21/I25/I63/I70/I73/G45. I50 heart failure EXCLUDED.** UK Biobank n=3,333 / 289 incident events, C=0.6996; Wales/PASS n=1,159 / 92 events, C=0.7499. Locked 13 August 2026. |
+| **CALON-F** | `code/15_CALON_FINAL.py` | Two-cohort **incident ASCVD** model in genotype-confirmed HeFH. Spec: age (+ spline) + sex + hypertension + T2DM + smoking + cumulative non-HDL-C + TG/HDL-C. Endpoint **ASCVD only** (I21/I25/I63/I70/I73/G45); I50 heart failure excluded. UK Biobank n=3,333 / 289 events, C=0.6997; All-Wales n=1,159 / 92 events, C=0.7486. Locked 13 August 2026. |
 | CALON-F QC | `code/15b_QC_ADDENDUM.py` | Coefficient signs, completeness, calibration slope. |
 
 CALON-F is the only analysis in this repository whose design makes temporal
@@ -40,19 +40,28 @@ least ten events, the same threshold used to report a stratum as non-estimable
 (fires on `dm`, `smoke` in Wales only). Both are applied once per full cohort and
 held fixed across every subgroup.
 
-**BMI is outcome-informed and must be reported as such.** It was not in the
-originally specified variable set. It was added on 13 August 2026 after the UK
-Biobank diabetic subgroup was found to lose to FH-Risk-Score (-0.050) and
-SAFEHEART-RE (-0.077). A within-subgroup diagnostic showed that in diabetics
-every other term collapses toward chance (age 0.550, cumulative non-HDL 0.528)
-and hypertension reverses (0.469), while BMI is the only term discriminating
-better in diabetics than outside them (0.585 vs 0.547) - SAFEHEART carries BMI,
-and omitting it conceded that subgroup. Adding it resolved both losses
-(diabetics 0.5367 -> 0.5817). Two alternatives were tested and rejected as
-ineffective: `dm` x age and `dm` x cumulative non-HDL, both of which left the
-losses intact. Welsh BMI is 45.5% observed against 99.6% in UK Biobank, so the
-Welsh coefficient is attenuated by median completion, and adding the term
-returned Welsh EPV to 9.2 from 10.2. Both are stated limitations.
+**BMI and HDL-C were REMOVED on 13 August 2026.** BMI had been added after the
+UK Biobank diabetic subgroup was seen to lose, which is outcome-informed
+selection. Once the endpoint was corrected to ASCVD-only, BMI and HDL-C
+contributed nothing (UK Biobank 0.6996 -> 0.6997, Wales 0.7499 -> 0.7486, tally
+unchanged at 10/58/1), so the model reverted to the pre-specified seven
+variables. This removes the outcome-informed disclosure from the Methods and
+raises Welsh EPV to 11.5.
+
+**Cohorts: two, not three.** DRAGON is a complete subset of the All-Wales
+registry - 424/424 records matched on `DatabaseNumber` - and contributes only 5
+incident events, so it is not a separate cohort. Reporting it separately would
+double-count the same patients.
+
+**The one remaining loss** is UK Biobank diabetics vs SAFEHEART-RE (64 events,
+-0.064). It was previously masked by 62 heart-failure-only events in the broad
+endpoint. It is reported, not removed.
+
+**Grey-zone enhancers** (`code/17_grey_zone_enhancers.py`): in the 5-20%
+predicted 10-year risk band (n=1,685, 218 events), log(apoB/LDL-C) carries
+HR 1.154 (1.027, 1.295) per SD but does NOT significantly improve
+discrimination (delta C +0.0146, CI -0.0050 to +0.0330). Lp(a) adds nothing
+(HR 1.033). UK Biobank only - Wales has no apoB and a different Lp(a) assay.
 
 ---
 

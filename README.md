@@ -26,10 +26,10 @@ impossible rather than merely checked for.
 
 | | UK Biobank | Wales / PASS |
 |---|---|---|
-| n / incident events | 3,333 / 289 | 1,159 / 92 |
+| n / incident ASCVD events | 3,333 / 289 | 1,159 / 92 |
 | Person-years | 45,451 | 6,841 |
-| Cross-validated C | 0.6996 | 0.7499 |
-| Head-to-head cells | 10 win / 28 tie / 1 loss | 0 win / 30 tie / **0 loss** |
+| Cross-validated C | 0.6997 | 0.7486 |
+| Head-to-head cells | 10 win / 28 tie / 1 loss | 0 win / 30 tie / 0 loss |
 
 Known limitations, stated up front: the two losses are both in UK Biobank
 participants with diabetes (79 events, C = 0.536), where the model performs at

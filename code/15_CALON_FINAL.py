@@ -67,8 +67,20 @@ BOOT = 1200
 MIN_EVENTS = 10
 STUDY_END = pd.Timestamp("2023-12-31")
 
-SPEC = ["age", "sp18", "sp30", "sp50", "male", "cum_nonhdl", "log_tghdl",
-        "hdl", "dm", "smoke", "htn_any", "bmi"]
+SPEC = ["age", "sp18", "sp30", "sp50", "male", "htn_any", "dm", "smoke",
+        "cum_nonhdl", "log_tghdl"]
+
+# CALON base specification, as originally specified by the investigator:
+#   age, sex, hypertension, type 2 diabetes, smoking, cumulative non-HDL-C,
+#   TG/HDL-C.  The spline terms are the functional form of AGE, not extra
+#   variables; the collinearity guard drops any knot outside a cohort's range.
+# BMI was REMOVED on 13 Aug 2026. It had been added after the diabetic subgroup
+# was seen to lose, which is outcome-informed selection; reverting to the
+# pre-specified set removes that vulnerability from the Methods.
+# HDL-C was also removed - it is not in the specified set, and TG/HDL-C already
+# carries HDL information.
+# Lp(a) and log(apoB/LDL-C) are NOT in the base model. They are evaluated as
+# GREY-ZONE RISK ENHANCERS in code/17_grey_zone_enhancers.py.
 
 # BMI: PROVENANCE OF THIS TERM, TO BE DISCLOSED IN THE METHODS.
 # BMI was not in the originally specified variable set. It was added on
@@ -131,6 +143,7 @@ def build_ukb():
     use = ["eid", "ldlr_carrier", "date_baseline", "age_exact_baseline", "age_at_recruit",
            "sex_F", "tc_chem", "hdl_chem", "ldl_chem", "tg_chem", "diabetes_combined",
            "smoking_ever", "sbp", "dbp", "on_statin_self", "bmi_direct", "lpa_chem",
+           "apob", "apob_chem",
            "death_date"]
     m = pd.read_csv(master, usecols=use, low_memory=False)
     # STRICT ATHEROSCLEROTIC ENDPOINT (corrected 13 Aug 2026).
@@ -174,6 +187,12 @@ def build_ukb():
     x["nonhdl_unt"] = np.where(tx, (tc - hdl) / 0.70, tc - hdl)
     x["ldl_unt"] = np.where(tx, ldl / 0.70, ldl)
     x["hdl"], x["bmi"], x["lpa"], x["tx"] = hdl, n("bmi_direct"), n("lpa_chem"), tx.astype(float)
+    # Grey-zone enhancer candidates. NOT in the base model - carried only so
+    # code/17_grey_zone_enhancers.py can test them in the intermediate risk band.
+    _apob = n("apob").fillna(n("apob_chem"))
+    x["apob"] = _apob
+    x["log_lpa"] = np.log1p(x["lpa"].clip(lower=0))
+    x["log_apob_ldl"] = np.log((_apob / ldl).where(lambda z: z.gt(0)))
     x["log_tghdl"] = np.log((tg / hdl).where(lambda z: z.gt(0)))
     x["dm"] = n("diabetes_combined").gt(0).astype(float)
     x["smoke"] = n("smoking_ever").gt(0).astype(float)
