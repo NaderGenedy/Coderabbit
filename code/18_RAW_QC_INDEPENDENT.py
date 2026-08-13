@@ -34,6 +34,7 @@ warnings.filterwarnings("ignore")
 ROOT = Path(os.environ.get("CALON_PROJECT_ROOT",
             "${CALON_PROJECT_ROOT}"))
 STUDY_END = pd.Timestamp("2023-12-31")
+MIN_EVENTS = 10   # same suppression threshold used throughout the programme
 FAIL = []
 
 
@@ -79,7 +80,9 @@ def main():
         "ukb_master": Path(os.environ["CALON_SHARED_MASTER"]) / "UKB" / "ukb_master.csv",
         "corrected_outcomes": root / "data_corrected" / "corrected_ascvd_outcomes.csv",
         "meds": root / "New folder" / "04a_meds_touch.csv",
-        "wales": Path(os.environ["CALON_WALES_DATA"]) / "WALES_FH_CLEANED.csv",
+        "wales_registry": Path(os.environ["CALON_WALES_DATA"]) / "WALES_FH_CLEANED.csv",
+        "pass_master": Path(os.environ["CALON_SHARED_MASTER"]) / "PASS" / "pass_master.csv",
+        "dragon": Path(os.environ["CALON_WALES_DATA"]) / "FH_Dragon3 (1).csv",
     }
     res["files"] = {}
     for k, p in files.items():
@@ -159,14 +162,57 @@ def main():
         v = pd.to_numeric(d.loc[incident, k], errors="coerce").fillna(0).gt(0)
         print("     %-34s %5.1f%%" % (lbl, 100 * v.mean()))
 
-    # ------------------------------------------------------------------ C Wales
-    print("\nC. WALES COHORT, REBUILT FROM RAW")
-    w = pd.read_csv(files["wales"], low_memory=False)
-    print("     raw Welsh rows %d" % len(w))
+    # ------------------------------------------------------- C Welsh sources
+    print("\nC. WELSH SOURCES, REBUILT FROM RAW  (registry / PASS / DRAGON)")
+    w = pd.read_csv(files["wales_registry"], low_memory=False)
+    pm = pd.read_csv(files["pass_master"], low_memory=False)
+    dr = pd.read_csv(files["dragon"], low_memory=False)
+    print("     WALES_FH_CLEANED %d x %d | pass_master %d x %d | FH_Dragon3 %d x %d"
+          % (w.shape + pm.shape + dr.shape))
+
+    # C1 - the registry file and PASS are the same cohort under different naming
+    check("registry and PASS hold the same n", len(w) == len(pm),
+          "%d vs %d" % (len(w), len(pm)))
+
+    # C2 - DRAGON containment. If DRAGON is a subset it is NOT a separate cohort.
+    key = "DatabaseNumber"
+    if key in w.columns and key in dr.columns:
+        a = set(w[key].dropna().astype(str).str.strip()) - {""}
+        b = set(dr[key].dropna().astype(str).str.strip()) - {""}
+        matched = len(a & b)
+        check("DRAGON is a complete subset of the Welsh registry",
+              matched == len(b), "%d/%d matched on %s" % (matched, len(b), key))
+    else:
+        check("DRAGON containment key present", False, "no %s" % key)
+
+    # C3 - can DRAGON support an incident arm on its own?
+    dn = lambda c: (pd.to_numeric(dr[c].astype(str).str.strip().replace(
+        {"": np.nan, "Unknown": np.nan, "NoValue": np.nan, "nan": np.nan}), errors="coerce")
+        if c in dr else pd.Series(np.nan, index=dr.index))
+    ddt = lambda c: pd.to_datetime(dr[c], errors="coerce", dayfirst=True)
+    d_anchor = (ddt("MeasurementDate_1") - ddt("BirthDate")).dt.total_seconds() / (365.25 * 86400)
+    d_ev, d_cens = dn("age_at_event"), dn("age_at_event_or_censoring")
+    d_use = d_anchor.between(0, 105) & d_cens.between(0, 110)
+    d_prev = d_use & d_ev.notna() & d_ev.le(d_anchor)
+    d_inc = d_use & d_ev.notna() & d_ev.gt(d_anchor) & d_ev.le(d_cens)
+    d_fu = (d_cens - d_anchor).where(d_use & ~d_prev)
+    print("     DRAGON standalone: usable anchor %d | prevalent %d | INCIDENT %d"
+          % (d_use.sum(), d_prev.sum(), d_inc.sum()))
+    print("       risk set %d | person-years %.0f | median follow-up %.2f y"
+          % ((d_use & ~d_prev).sum(), d_fu.sum(), d_fu.median()))
+    check("DRAGON correctly NOT analysed as a separate cohort",
+          d_inc.sum() < MIN_EVENTS,
+          "%d incident events (<%d threshold)" % (d_inc.sum(), MIN_EVENTS))
+
     mut = w["Mutation1"].astype(str).str.strip()
     gpos = mut.ne("") & mut.str.lower().ne("nan") & w["Mutation1"].notna()
-    check("genotype-positive in raw Welsh file", gpos.sum() > 1000, "n=%d" % gpos.sum())
-    res["wales_raw"] = {"rows": int(len(w)), "genotype_positive": int(gpos.sum())}
+    check("genotype-positive in the Welsh registry", gpos.sum() > 1000, "n=%d" % gpos.sum())
+    res["welsh_sources"] = {
+        "registry_rows": int(len(w)), "pass_rows": int(len(pm)), "dragon_rows": int(len(dr)),
+        "dragon_matched_into_registry": int(matched), "genotype_positive": int(gpos.sum()),
+        "dragon_standalone_incident_events": int(d_inc.sum()),
+        "dragon_standalone_risk_set": int((d_use & ~d_prev).sum()),
+        "dragon_treated_as_separate_cohort": False}
 
     # --------------------------------------------------- D pipeline agreement
     print("\nD. PIPELINE AGREEMENT (pipeline is imported ONLY here, after the raw rebuild)")
