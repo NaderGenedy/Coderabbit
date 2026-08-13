@@ -26,6 +26,8 @@ identifiers, variant coordinates or participant-level predictions are written.
 """
 from __future__ import annotations
 
+import os
+
 import importlib.util
 import json
 import sys
@@ -36,12 +38,11 @@ import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 
-ROOT = Path("${CALON_PROJECT_ROOT}")
+ROOT = Path(os.environ["CALON_PROJECT_ROOT"])
 BASE = ROOT / "code" / "01_calon_disc_analysis.py"
 OUT = ROOT / "outputs"
-UKB = Path("${HOME}/Library/CloudStorage/GoogleDrive-[redacted]/"
-           "My Drive/Projects/SHARED_MASTER_DATA/UKB/ukb_master.csv")
-WALES = Path("${CALON_WALES_DATA}/WALES_FH_CLEANED.csv")
+UKB = Path(os.environ["CALON_SHARED_MASTER"]) / "UKB/ukb_master.csv"
+WALES = Path(os.environ["CALON_WALES_DATA"]) / "WALES_FH_CLEANED.csv"
 SEED = 20260810
 BOOT = 2000
 

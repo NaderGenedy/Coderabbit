@@ -2,6 +2,8 @@
 """Finalize hashes and run non-destructive package integrity checks."""
 from __future__ import annotations
 
+import os
+
 import hashlib
 import importlib.util
 import json
@@ -12,8 +14,8 @@ import joblib
 import numpy as np
 import pandas as pd
 
-ROOT = Path("${CALON_PROJECT_ROOT}")
-SOURCE = Path("${CALON_HOME}/dragon_plp_full_rebuild_2026_08_08")
+ROOT = Path(os.environ["CALON_PROJECT_ROOT"])
+SOURCE = Path(os.environ["CALON_HOME"]) / "dragon_plp_full_rebuild_2026_08_08"
 def is_render_qa_part(part: str) -> bool:
     """Exclude disposable DOCX-render inspection directories from the lock."""
     return part.startswith("render_") or part.startswith("render2_") or part.startswith("rendered_")

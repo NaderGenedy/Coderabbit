@@ -2,11 +2,13 @@
 """Reconstruct the aggregate CALON-N 12-comparison tally from audited JSON."""
 from __future__ import annotations
 
+import os
+
 import json
 from pathlib import Path
 
 
-ROOT = Path("${CALON_PROJECT_ROOT}")
+ROOT = Path(os.environ["CALON_PROJECT_ROOT"])
 AUDIT = ROOT / "outputs" / "audit_2026_08_10"
 OUT = AUDIT / "delta3_comparison_tally_verification.json"
 

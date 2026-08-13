@@ -19,6 +19,8 @@ Governance: aggregate output only.
 """
 from __future__ import annotations
 
+import os
+
 import importlib.util
 import json
 import sys
@@ -30,7 +32,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import GroupKFold
 
-ROOT = Path("${CALON_PROJECT_ROOT}")
+ROOT = Path(os.environ["CALON_PROJECT_ROOT"])
 OUT = ROOT / "outputs"
 SEED = 20260810
 SPEC = ["age", "male", "hdl", "hypertension", "smoke_ever", "log_ratio", "log_apoa1"]

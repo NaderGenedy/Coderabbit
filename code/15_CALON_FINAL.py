@@ -48,7 +48,7 @@ from lifelines.utils import concordance_index
 
 warnings.filterwarnings("ignore")
 
-ROOT = Path("${CALON_PROJECT_ROOT}")
+ROOT = Path(os.environ["CALON_PROJECT_ROOT"])
 OUT = ROOT / "outputs"
 SEED = 20260813
 REPEATS = 6
@@ -69,10 +69,8 @@ _s.loader.exec_module(vw)
 # ----------------------------------------------------------------- cohorts
 def build_ukb():
     master = Path(os.environ["CALON_SHARED_MASTER"]) / "UKB" / "ukb_master.csv"
-    corrected = Path("${CALON_CORRECTED_DATA}/data_corrected/"
-                     "corrected_ascvd_outcomes.csv")
-    meds = Path("${CALON_CORRECTED_DATA}/New folder/"
-                "04a_meds_touch.csv")
+    corrected = Path(os.environ["CALON_CORRECTED_DATA"]) / "data_corrected/corrected_ascvd_outcomes.csv"
+    meds = Path(os.environ["CALON_CORRECTED_DATA"]) / "New folder/04a_meds_touch.csv"
     use = ["eid", "ldlr_carrier", "date_baseline", "age_exact_baseline", "age_at_recruit",
            "sex_F", "tc_chem", "hdl_chem", "ldl_chem", "tg_chem", "diabetes_combined",
            "smoking_ever", "sbp", "dbp", "on_statin_self", "bmi_direct", "lpa_chem",

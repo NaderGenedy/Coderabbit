@@ -3,6 +3,8 @@
 covariate missingness, and calibration. Aggregate output only."""
 from __future__ import annotations
 
+import os
+
 import importlib.util
 import json
 import warnings
@@ -13,7 +15,7 @@ import pandas as pd
 from lifelines import CoxPHFitter
 
 warnings.filterwarnings("ignore")
-ROOT = Path("${CALON_PROJECT_ROOT}")
+ROOT = Path(os.environ["CALON_PROJECT_ROOT"])
 
 _s = importlib.util.spec_from_file_location("cf", ROOT / "code" / "15_CALON_FINAL.py")
 cf = importlib.util.module_from_spec(_s)

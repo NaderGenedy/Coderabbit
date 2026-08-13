@@ -32,9 +32,9 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "outputs" / "audit_2026_08_10"
-DRAGON_RAW = Path("${CALON_WALES_DATA}/FH_Dragon3 (1).csv")
-CALLS_RAW = Path("${HOME}/Documents/calon_backup_data/ukb_fh_all_carriers.tsv")
-PROHIBITED_RAW = Path("${CALON_WALES_DATA}/wales_clean_treatment_response.csv")
+DRAGON_RAW = Path(os.environ["CALON_WALES_DATA"]) / "FH_Dragon3 (1).csv"
+CALLS_RAW = Path(os.environ["HOME"]) / "Documents/calon_backup_data/ukb_fh_all_carriers.tsv"
+PROHIBITED_RAW = Path(os.environ["CALON_WALES_DATA"]) / "wales_clean_treatment_response.csv"
 
 SEED = 20260810
 PENALTIES = [0.01, 0.03, 0.10, 0.30, 1.00, 3.00]

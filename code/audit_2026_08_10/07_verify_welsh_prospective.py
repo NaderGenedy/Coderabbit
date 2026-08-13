@@ -21,9 +21,9 @@ from sklearn.model_selection import GroupKFold
 
 
 SEED = 20260810
-ROOT = Path("${CALON_PROJECT_ROOT}")
+ROOT = Path(os.environ["CALON_PROJECT_ROOT"])
 OUT = ROOT / "outputs" / "audit_2026_08_10" / "welsh_prospective_verification.json"
-WALES = Path("${CALON_WALES_DATA}/WALES_FH_CLEANED.csv")
+WALES = Path(os.environ["CALON_WALES_DATA"]) / "WALES_FH_CLEANED.csv"
 MASTER = Path(os.environ["CALON_SHARED_MASTER"])
 PASS = MASTER / "PASS" / "pass_master.csv"
 FORBIDDEN_BASENAME = "wales_clean_treatment_response.csv"

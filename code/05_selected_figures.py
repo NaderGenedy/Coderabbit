@@ -2,6 +2,8 @@
 """Generate CALON-N-specific calibration figures without saving row predictions."""
 from __future__ import annotations
 
+import os
+
 import importlib.util
 import json
 import sys
@@ -11,7 +13,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-ROOT = Path("${CALON_PROJECT_ROOT}")
+ROOT = Path(os.environ["CALON_PROJECT_ROOT"])
 
 def load(name, path):
     spec = importlib.util.spec_from_file_location(name, path)

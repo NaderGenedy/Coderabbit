@@ -8,6 +8,8 @@ future ASCVD risk or guide treatment.
 """
 from __future__ import annotations
 
+import os
+
 import argparse
 from pathlib import Path
 
@@ -15,9 +17,7 @@ import joblib
 import numpy as np
 import pandas as pd
 
-DEFAULT_MODEL = Path(
-    "${CALON_PROJECT_ROOT}/model/calon_n_from_scratch.joblib"
-)
+DEFAULT_MODEL = Path(os.environ["CALON_PROJECT_ROOT"]) / "model/calon_n_from_scratch.joblib"
 REQUIRED = ["age", "male", "hdl", "hypertension", "smoke_ever", "ldl", "apob", "apoa1"]
 
 

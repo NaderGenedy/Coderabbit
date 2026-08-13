@@ -64,16 +64,13 @@ FINAL_IMPUTATIONS = 10
 BOOTSTRAPS = 2000
 FORBIDDEN_BASENAME = "wales_clean_treatment_response.csv"
 
-ROOT = Path("${CALON_PROJECT_ROOT}")
+ROOT = Path(os.environ["CALON_PROJECT_ROOT"])
 OUT = ROOT / "outputs" / "audit_2026_08_10"
-WALES = Path("${CALON_WALES_DATA}/WALES_FH_CLEANED.csv")
-MASTER = Path(os.environ.get(
-    "CALON_SHARED_MASTER",
-    "${CALON_SHARED_MASTER}",
-))
+WALES = Path(os.environ["CALON_WALES_DATA"]) / "WALES_FH_CLEANED.csv"
+MASTER = Path(os.environ["CALON_SHARED_MASTER"])
 PASS = MASTER / "PASS" / "pass_master.csv"
 UKB = MASTER / "UKB" / "ukb_master.csv"
-CALLS = Path("${HOME}/Documents/calon_backup_data/ukb_fh_all_carriers.tsv")
+CALLS = Path(os.environ["HOME"]) / "Documents/calon_backup_data/ukb_fh_all_carriers.tsv"
 CLINVAR = MASTER / "../AlphaFold_SSS/data/analysis/ukb_clinvar_full.csv"
 CLINVAR = CLINVAR.resolve()
 

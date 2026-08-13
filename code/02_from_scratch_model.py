@@ -6,6 +6,8 @@ but no published score is permitted as a model input. Aggregate outputs only.
 """
 from __future__ import annotations
 
+import os
+
 import importlib.util
 import json
 import sys
@@ -17,7 +19,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import roc_auc_score
 
-ROOT = Path("${CALON_PROJECT_ROOT}")
+ROOT = Path(os.environ["CALON_PROJECT_ROOT"])
 BASE = ROOT / "code" / "01_calon_disc_analysis.py"
 OUT = ROOT / "outputs"
 MODEL = ROOT / "model"

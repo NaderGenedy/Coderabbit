@@ -2,6 +2,8 @@
 """Build polished CALON-N manuscript and supplement DOCX files."""
 from __future__ import annotations
 
+import os
+
 import re
 from pathlib import Path
 
@@ -13,7 +15,7 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
 
-ROOT = Path("${CALON_PROJECT_ROOT}")
+ROOT = Path(os.environ["CALON_PROJECT_ROOT"])
 BLUE = "2E5E7E"
 DARK = "19384D"
 MUTED = "667784"

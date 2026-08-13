@@ -25,6 +25,8 @@ Governance: aggregate output only.
 """
 from __future__ import annotations
 
+import os
+
 import importlib.util
 import json
 import sys
@@ -40,7 +42,7 @@ from sklearn.impute import IterativeImputer
 
 warnings.filterwarnings("ignore")
 
-ROOT = Path("${CALON_PROJECT_ROOT}")
+ROOT = Path(os.environ["CALON_PROJECT_ROOT"])
 OUT = ROOT / "outputs"
 SEED = 20260810
 REPEATS = 5

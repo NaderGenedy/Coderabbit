@@ -7,6 +7,8 @@ not write participant identifiers, participant rows, or empirical predictions.
 """
 from __future__ import annotations
 
+import os
+
 import hashlib
 import importlib.util
 import json
@@ -20,7 +22,7 @@ import numpy as np
 import pandas as pd
 
 
-ROOT = Path("${CALON_PROJECT_ROOT}")
+ROOT = Path(os.environ["CALON_PROJECT_ROOT"])
 OUT = ROOT / "outputs" / "consolidated_qc_2026_08_09.json"
 
 

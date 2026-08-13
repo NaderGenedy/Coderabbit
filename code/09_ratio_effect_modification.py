@@ -33,6 +33,8 @@ as non-estimable rather than estimated.
 """
 from __future__ import annotations
 
+import os
+
 import importlib.util
 import json
 import sys
@@ -42,7 +44,7 @@ import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 
-ROOT = Path("${CALON_PROJECT_ROOT}")
+ROOT = Path(os.environ["CALON_PROJECT_ROOT"])
 OUT = ROOT / "outputs"
 SEED = 20260810
 MIN_EVENTS = 10

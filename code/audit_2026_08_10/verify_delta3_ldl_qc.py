@@ -2,14 +2,16 @@
 """Aggregate-only verification of the DRAGON pretreatment-LDL correction rule."""
 from __future__ import annotations
 
+import os
+
 import json
 from pathlib import Path
 
 import pandas as pd
 
 
-ROOT = Path("${CALON_PROJECT_ROOT}")
-SOURCE = Path("${CALON_WALES_DATA}/FH_Dragon3 (1).csv")
+ROOT = Path(os.environ["CALON_PROJECT_ROOT"])
+SOURCE = Path(os.environ["CALON_WALES_DATA"]) / "FH_Dragon3 (1).csv"
 OUT = ROOT / "outputs" / "audit_2026_08_10" / "delta3_ldl_qc_verification.json"
 
 

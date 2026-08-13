@@ -2,6 +2,8 @@
 """Prespecified/structural sensitivities for the selected CALON-N model."""
 from __future__ import annotations
 
+import os
+
 import importlib.util
 import json
 import sys
@@ -10,7 +12,7 @@ from pathlib import Path
 import numpy as np
 from sklearn.metrics import roc_auc_score
 
-ROOT = Path("${CALON_PROJECT_ROOT}")
+ROOT = Path(os.environ["CALON_PROJECT_ROOT"])
 
 def load(name: str, path: Path):
     spec = importlib.util.spec_from_file_location(name, path)

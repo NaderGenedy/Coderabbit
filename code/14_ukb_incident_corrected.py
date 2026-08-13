@@ -44,12 +44,11 @@ from lifelines.utils import concordance_index
 
 warnings.filterwarnings("ignore")
 
-ROOT = Path("${CALON_PROJECT_ROOT}")
+ROOT = Path(os.environ["CALON_PROJECT_ROOT"])
 OUT = ROOT / "outputs"
 MASTER = Path(os.environ["CALON_SHARED_MASTER"]) / "UKB" / "ukb_master.csv"
-CORRECTED = Path("${CALON_CORRECTED_DATA}/data_corrected/"
-                 "corrected_ascvd_outcomes.csv")
-MEDS = Path("${CALON_CORRECTED_DATA}/New folder/04a_meds_touch.csv")
+CORRECTED = Path(os.environ["CALON_CORRECTED_DATA"]) / "data_corrected/corrected_ascvd_outcomes.csv"
+MEDS = Path(os.environ["CALON_CORRECTED_DATA"]) / "New folder/04a_meds_touch.csv"
 SEED = 20260811
 REPEATS = 5
 BOOT = 1500

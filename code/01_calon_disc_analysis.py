@@ -30,6 +30,8 @@ labels, participant rows, and participant-level predictions are never written.
 """
 from __future__ import annotations
 
+import os
+
 import hashlib
 import importlib.util
 import json
@@ -47,8 +49,8 @@ from sklearn.metrics import brier_score_loss, roc_auc_score
 from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.preprocessing import StandardScaler
 
-ROOT = Path("${CALON_PROJECT_ROOT}")
-SOURCE = Path("${CALON_HOME}/dragon_plp_full_rebuild_2026_08_08")
+ROOT = Path(os.environ["CALON_PROJECT_ROOT"])
+SOURCE = Path(os.environ["CALON_HOME"]) / "dragon_plp_full_rebuild_2026_08_08"
 OUT = ROOT / "outputs"
 MODEL = ROOT / "model"
 FIG = ROOT / "figures"

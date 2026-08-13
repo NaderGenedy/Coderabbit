@@ -9,6 +9,8 @@ level correlations and cluster-robust regression summaries. Event counts below
 """
 from __future__ import annotations
 
+import os
+
 import importlib.util
 import json
 import sys
@@ -19,7 +21,7 @@ import pandas as pd
 import statsmodels.api as sm
 
 
-ROOT = Path("${CALON_PROJECT_ROOT}")
+ROOT = Path(os.environ["CALON_PROJECT_ROOT"])
 OUT = ROOT / "outputs" / "audit_2026_08_10" / "delta2_ratio_qc_verification.json"
 SEED = 20260810
 MIN_EVENTS = 10
