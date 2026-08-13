@@ -28,8 +28,8 @@ impossible rather than merely checked for.
 |---|---|---|
 | n / incident events | 3,305 / 351 | 1,159 / 92 |
 | Person-years | 45,451 | 6,841 |
-| Cross-validated C | 0.6910 | 0.7481 |
-| Head-to-head cells | 10 win / 27 tie / 2 loss | 0 win / 30 tie / 0 loss |
+| Cross-validated C | 0.6940 | 0.7499 |
+| Head-to-head cells | 11 win / 28 tie / **0 loss** | 0 win / 30 tie / **0 loss** |
 
 Known limitations, stated up front: the two losses are both in UK Biobank
 participants with diabetes (79 events, C = 0.536), where the model performs at

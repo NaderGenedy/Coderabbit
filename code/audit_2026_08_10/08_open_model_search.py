@@ -67,7 +67,10 @@ FORBIDDEN_BASENAME = "wales_clean_treatment_response.csv"
 ROOT = Path(os.environ["CALON_PROJECT_ROOT"])
 OUT = ROOT / "outputs" / "audit_2026_08_10"
 WALES = Path(os.environ["CALON_WALES_DATA"]) / "WALES_FH_CLEANED.csv"
-MASTER = Path(os.environ["CALON_SHARED_MASTER"])
+MASTER = Path(os.environ.get(
+    "CALON_SHARED_MASTER",
+    "${CALON_SHARED_MASTER}",
+))
 PASS = MASTER / "PASS" / "pass_master.csv"
 UKB = MASTER / "UKB" / "ukb_master.csv"
 CALLS = Path(os.environ["HOME"]) / "Documents/calon_backup_data/ukb_fh_all_carriers.tsv"

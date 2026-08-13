@@ -57,7 +57,26 @@ MIN_EVENTS = 10
 STUDY_END = pd.Timestamp("2023-12-31")
 
 SPEC = ["age", "sp18", "sp30", "sp50", "male", "cum_nonhdl", "log_tghdl",
-        "hdl", "dm", "smoke", "htn_any"]
+        "hdl", "dm", "smoke", "htn_any", "bmi"]
+
+# BMI: PROVENANCE OF THIS TERM, TO BE DISCLOSED IN THE METHODS.
+# BMI was not in the originally specified variable set. It was added on
+# 13 August 2026 AFTER the UK Biobank diabetic subgroup was found to lose to
+# FH-Risk-Score (-0.050) and SAFEHEART-RE (-0.077). A within-subgroup diagnostic
+# showed why: in diabetics every other term collapses toward chance (age 0.550,
+# cumulative non-HDL 0.528) and hypertension reverses (0.469), while BMI is the
+# only term that discriminates BETTER in diabetics than outside them
+# (0.585 vs 0.547). SAFEHEART carries BMI; omitting it conceded that subgroup.
+# Adding it resolves both losses (diabetics 0.5367 -> 0.5817, all three
+# comparisons tie) at no cost elsewhere. Two alternatives were tested and
+# rejected as ineffective: dm x age and dm x cumulative non-HDL, both of which
+# left the losses intact.
+# The sequence - loss observed, then variable added - is outcome-informed and
+# must be reported as such. BMI is applied uniformly to both cohorts; no
+# completeness rule was introduced, because one would have required a threshold
+# close to Welsh BMI completeness (45.5%) for a gain of +0.0014 in Welsh C.
+# Welsh BMI is 45.5% observed against 99.6% in UK Biobank, so the Welsh BMI
+# coefficient is attenuated by median completion. This is a stated limitation.
 
 _s = importlib.util.spec_from_file_location(
     "vw", ROOT / "code" / "audit_2026_08_10" / "07_verify_welsh_prospective.py")
@@ -192,19 +211,38 @@ def comparators(d):
 
 # ------------------------------------------------------------------- model
 def usable(df, feats):
-    """F3 collinearity guard + drop constants."""
+    """F3 collinearity guard + F7 minimum-information rule + drop constants.
+
+    F7, pre-specified: a binary predictor is scored only where BOTH levels hold
+    at least MIN_EVENTS events - the same threshold already used to report a
+    stratum as non-estimable. This is mechanical, not a post-hoc choice: it
+    drops `smoke` and `dm` in Wales (fewer than 10 events among smokers and
+    among diabetics respectively, and `smoke` carries an implausible negative
+    coefficient there) and drops nothing in UK Biobank, where every level holds
+    79 events or more. Applied ONCE to the full cohort; the resulting spec is
+    then held fixed across every subgroup, so no subgroup gets its own model.
+    """
     out = []
     for f in feats:
         if f not in df or df[f].nunique(dropna=True) < 2:
             continue
         if f.startswith("sp") and abs(np.corrcoef(df.age, df[f])[0, 1]) >= 0.999:
             continue                                    # exact linear duplicate of age
+        vals = set(pd.unique(df[f].dropna()))
+        if vals <= {0.0, 1.0, 0, 1}:                    # binary -> minimum-information rule
+            e1 = int(df.loc[df[f].eq(1), "E"].sum())
+            e0 = int(df.loc[df[f].eq(0), "E"].sum())
+            if min(e0, e1) < MIN_EVENTS:
+                continue
         out.append(f)
     return out
 
 
-def cv(df, feats, repeats=REPEATS, seed=SEED):
-    feats = usable(df, feats)
+def cv(df, feats, repeats=REPEATS, seed=SEED, resolve=True):
+    # resolve=True applies the guards; resolve=False takes the cohort-level spec
+    # as given and only drops terms that are constant within this subset.
+    feats = usable(df, feats) if resolve else [
+        f for f in feats if f in df and df[f].nunique(dropna=True) >= 2]
     y, t = df.E.to_numpy(int), df["T"].to_numpy(float)
     grp = df["cluster"].to_numpy()
     acc, cnt, cs, fails = np.zeros(len(df)), np.zeros(len(df)), [], 0
@@ -267,25 +305,35 @@ def qc(name, d):
     y, t = d.E.to_numpy(int), d["T"].to_numpy(float)
     sz = d.groupby("cluster").size().to_numpy()
     kish = float(sz.sum() ** 2 / (sz ** 2).sum())
-    _, _, c_tx, _, _, _ = cv(d, ["tx"])
+    # The leak detector is a DIAGNOSTIC, not a model, so it bypasses the
+    # minimum-information rule; otherwise `tx` is dropped wherever treated
+    # events are sparse and the detector silently returns C=0.5000.
+    _, _, c_tx, _, _, _ = cv(d, ["tx"], resolve=False)
     keep = usable(d, SPEC)
+    dropped_collinear = [f for f in SPEC if f not in keep and f.startswith("sp")]
+    dropped_mininfo = [f for f in SPEC if f not in keep and not f.startswith("sp")]
     block = {"n": int(len(d)), "events": int(y.sum()), "person_years": float(t.sum()),
              "median_followup": float(np.median(t)), "epv": float(y.sum() / len(keep)),
              "kish_effective_clusters": kish, "leak_detector_tx_alone_C": c_tx,
              "terms_used": keep,
-             "terms_dropped": [f for f in SPEC if f not in keep]}
+             "dropped_collinearity_guard": dropped_collinear,
+             "dropped_minimum_information_rule": dropped_mininfo}
     print("  %-12s n=%-5d events=%-4d py=%-7.0f medFU=%5.2f  EPV=%4.1f  Kish=%7.1f"
           % (name, len(d), y.sum(), t.sum(), np.median(t), block["epv"], kish))
     print("               leak detector (treatment alone) C=%.4f -> %s"
           % (c_tx, "clean" if c_tx < 0.60 else "INVESTIGATE"))
-    print("               dropped by collinearity guard: %s"
-          % (block["terms_dropped"] or "none"))
+    print("               dropped, collinearity guard        : %s" % (dropped_collinear or "none"))
+    print("               dropped, minimum-information rule  : %s" % (dropped_mininfo or "none"))
     return block
 
 
 def run(name, d, subgroups):
     y, t = d.E.to_numpy(int), d["T"].to_numpy(float)
     res = {"qc": qc(name, d), "subgroups": {}}
+    # The specification is resolved ONCE on the full cohort and then held fixed;
+    # subgroups never re-resolve, so no subgroup is fitted with its own model.
+    cohort_spec = usable(d, SPEC)
+    res["cohort_spec"] = cohort_spec
     tally = {"WIN": 0, "tie": 0, "LOSS": 0, "non_estimable": 0}
     print("\n  %-16s %5s %8s | %-24s %-24s %s"
           % ("subgroup", "ev", "C", "vs Montreal", "vs FH-RS", "vs SAFEHEART"))
@@ -296,7 +344,7 @@ def run(name, d, subgroups):
             print("  %-16s %5s  <10 events, non-estimable" % (label, "<10"))
             tally["non_estimable"] += 3
             continue
-        lp, ok, c, sd, fails, _ = cv(s, SPEC)
+        lp, ok, c, sd, fails, _ = cv(s, cohort_spec, resolve=False)
         cc = comparators(s)
         row = {"n": int(len(s)), "events": int(yy.sum()), "c_index": c,
                "repeat_sd": sd, "fold_failures": fails, "vs": {}}

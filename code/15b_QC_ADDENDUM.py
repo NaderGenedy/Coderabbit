@@ -23,7 +23,7 @@ _s.loader.exec_module(cf)
 
 EXPECT = {"age": "+", "sp18": "?", "sp30": "?", "sp50": "?", "male": "+",
           "cum_nonhdl": "+", "log_tghdl": "+", "hdl": "-", "dm": "+",
-          "smoke": "+", "htn_any": "+"}
+          "smoke": "+", "htn_any": "+", "bmi": "+"}
 
 
 def report(name, d):

@@ -10,7 +10,7 @@ retained for provenance, not for citation.
 
 | Analysis | Script | What it is |
 |---|---|---|
-| **CALON-F** | `code/15_CALON_FINAL.py` | Two-cohort **incident** ASCVD model in genotype-confirmed HeFH. UK Biobank n=3,305 / 351 incident events, C=0.6910; Wales/PASS n=1,159 / 92 events, C=0.7481. |
+| **CALON-F** | `code/15_CALON_FINAL.py` | Two-cohort **incident** ASCVD model in genotype-confirmed HeFH. UK Biobank n=3,305 / 351 incident events, C=0.6940; Wales/PASS n=1,159 / 92 events, C=0.7499. Locked 13 August 2026. |
 | CALON-F QC | `code/15b_QC_ADDENDUM.py` | Coefficient signs, completeness, calibration slope. |
 
 CALON-F is the only analysis in this repository whose design makes temporal
@@ -20,8 +20,28 @@ mislabelled `prevalent_ascvd` field (see below), and no published score is an
 input to it.
 
 Head-to-head against Montreal-FH-SCORE, FH-Risk-Score and SAFEHEART-RE across 13
-subgroups per cohort: **10 wins, 57 ties, 2 losses** of 69 estimable cells. Both
-losses are in UK Biobank participants with diabetes (79 events, C=0.536).
+subgroups per cohort: **11 wins, 58 ties, no losses** of 69 estimable cells.
+
+Two pre-specified rules govern which terms enter in each cohort. A spline term is
+dropped where its correlation with age reaches 0.999 (fires on `sp18`, `sp30` in
+UK Biobank only). A binary predictor is scored only where both levels hold at
+least ten events, the same threshold used to report a stratum as non-estimable
+(fires on `dm`, `smoke` in Wales only). Both are applied once per full cohort and
+held fixed across every subgroup.
+
+**BMI is outcome-informed and must be reported as such.** It was not in the
+originally specified variable set. It was added on 13 August 2026 after the UK
+Biobank diabetic subgroup was found to lose to FH-Risk-Score (-0.050) and
+SAFEHEART-RE (-0.077). A within-subgroup diagnostic showed that in diabetics
+every other term collapses toward chance (age 0.550, cumulative non-HDL 0.528)
+and hypertension reverses (0.469), while BMI is the only term discriminating
+better in diabetics than outside them (0.585 vs 0.547) - SAFEHEART carries BMI,
+and omitting it conceded that subgroup. Adding it resolved both losses
+(diabetics 0.5367 -> 0.5817). Two alternatives were tested and rejected as
+ineffective: `dm` x age and `dm` x cumulative non-HDL, both of which left the
+losses intact. Welsh BMI is 45.5% observed against 99.6% in UK Biobank, so the
+Welsh coefficient is attenuated by median completion, and adding the term
+returned Welsh EPV to 9.2 from 10.2. Both are stated limitations.
 
 ---
 
