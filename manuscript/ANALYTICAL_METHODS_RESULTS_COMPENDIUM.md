@@ -1,5 +1,18 @@
 # CALON-N full analytical methods and results compendium
 
+> ## ⚠ CONTAINS RETRACTED RESULTS — NOT A SUBMISSION DRAFT
+>
+> This document reports the **cross-sectional UK Biobank arm**, retracted on
+> 11 August 2026 for outcome-to-predictor temporality reversal: 100% of prevalent
+> ASCVD events pre-dated the blood draw, and `pre_ldl.fillna(ldl_chem)` restored
+> post-event, on-treatment lipids for every case. The figures **0.7605, 0.767,
+> 0.848 and 0.7672**, the 890/57 cohort and the 15 UK Biobank head-to-head
+> comparisons are withdrawn and must not be cited as findings.
+>
+> It is retained as the provenance record of what was believed at the time.
+> The current analysis is **CALON-F** (`code/15_CALON_FINAL.py`). See
+> [STATUS.md](STATUS.md) — from `manuscript/`, [../STATUS.md](../STATUS.md).
+
 Version: 9 August 2026
 
 Purpose: This document is the traceable analytical companion to the CALON-N manuscript. It contains the complete methods and all aggregate numerical results used in the manuscript. It is not a clinical-use document and contains no participant-level rows, identifiers, variant coordinates, or predictions.

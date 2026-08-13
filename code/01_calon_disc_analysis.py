@@ -3,7 +3,7 @@
 
 SUPERSEDED - RETAINED FOR PROVENANCE ONLY. DO NOT REUSE THIS DESIGN.
 
-Two reasons this script must not be treated as current:
+Three reasons this script must not be treated as current:
 
 1. It violates the programme's binding modelling rule. `CANDIDATES` below feeds
    published risk scores into a fitted model as features - `montreal` in seven
@@ -13,8 +13,13 @@ Two reasons this script must not be treated as current:
    comparators, never inputs.
 
 2. The estimand is cross-sectional (established/prevalent ASCVD), so a
-   predictor measured after the event can enter the fit. That is how the
-   temporal leakage documented elsewhere in this repository arose.
+   predictor measured after the event can enter the fit.
+
+3. The UK Biobank arm it builds was RETRACTED on 11 August 2026 for
+   outcome-to-predictor temporality reversal: 100% of prevalent events pre-dated
+   the blood draw, and `pre_ldl.fillna(ldl_chem)` restored post-event,
+   on-treatment lipids for every case. Its AUC 0.7605 / 0.767 / 0.848 must not
+   be cited. See STATUS.md.
 
 The current model is code/15_CALON_FINAL.py: raw variables only, incident
 design in both cohorts, so leakage is structurally impossible rather than

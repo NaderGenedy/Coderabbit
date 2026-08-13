@@ -1,4 +1,7 @@
 {
+  "status": "RETRACTED PACKAGE MANIFEST - DO NOT USE FOR VERIFICATION",
+  "status_note": "This manifest describes the CALON-N package, whose cross-sectional UK Biobank arm was retracted on 11 August 2026 for outcome-to-predictor temporality reversal. It is also no longer a valid integrity check: 43 of the files it lists are data, figures and model objects correctly excluded by .gitignore and absent from this repository, and 14 hashes no longer match because the files were edited or had absolute paths replaced with environment variables. Retained as a provenance record only. See STATUS.md.",
+  "superseded_by": "code/15_CALON_FINAL.py (CALON-F)",
   "package": "CALON-N",
   "version": "2026-08-09",
   "estimand": "cross-sectional established-ASCVD case identification",

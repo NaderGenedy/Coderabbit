@@ -1,5 +1,18 @@
 # Cover letter — Journal of Clinical Lipidology
 
+> ## ⚠ CONTAINS RETRACTED RESULTS — NOT A SUBMISSION DRAFT
+>
+> This document reports the **cross-sectional UK Biobank arm**, retracted on
+> 11 August 2026 for outcome-to-predictor temporality reversal: 100% of prevalent
+> ASCVD events pre-dated the blood draw, and `pre_ldl.fillna(ldl_chem)` restored
+> post-event, on-treatment lipids for every case. The figures **0.7605, 0.767,
+> 0.848 and 0.7672**, the 890/57 cohort and the 15 UK Biobank head-to-head
+> comparisons are withdrawn and must not be cited as findings.
+>
+> It is retained as the provenance record of what was believed at the time.
+> The current analysis is **CALON-F** (`code/15_CALON_FINAL.py`). See
+> [STATUS.md](STATUS.md) — from `manuscript/`, [../STATUS.md](../STATUS.md).
+
 Dr Nader Genedy, MBBCh, MRCP(UK), MRCPI, SCE(AIM), MRCGP
 Department of Metabolic Medicine, University Hospital of Wales
 Cardiff and Vale University Health Board, Cardiff, UK
@@ -16,7 +29,7 @@ We submit the above manuscript for consideration as an Original Research article
 
 Existing familial hypercholesterolaemia risk instruments were developed in clinically ascertained cohorts using conventional lipids, and we could identify none built from raw apolipoprotein measurements and tested for transport between ascertainment settings. We therefore developed CALON-N, a seven-variable classifier of established atherosclerotic cardiovascular disease fitted from raw clinical and laboratory variables — with published scores prohibited as inputs and retained only as comparators — and evaluated it reciprocally between a genetically ascertained Welsh specialist FH clinic (424 participants, 62 cases, 219 families) and coordinate-verified UK Biobank *LDLR* pathogenic/likely pathogenic carriers (890 participants, 57 cases). Discrimination transported in both directions (AUC 0.767, 95% CI 0.712–0.828, and 0.848, 0.796–0.896), but absolute probabilities did not: expected:observed ratios were 3.00 and 0.45.
 
-We believe the work suits the Journal for two reasons. First, apolipoprotein B is moving from a research measurement to a clinical one, and this is, to our knowledge, the first FH-specific model built from raw apoB, LDL-C and apoA1 and subjected to reciprocal clinic-to-biobank transport. Second, and more importantly, the paper is as informative where it fails as where it succeeds. CALON-N did not outperform Montreal-FH-SCORE in either direction, age plus sex alone achieved the highest AUC in the clinic cohort (0.895), and the model exceeded the best comparator in only one of 14 estimable subgroup analyses. We report all of this, including two candidate architectures that failed a prespecified coefficient-direction gate, and we withdrew a comparative decision-curve analysis at quality control after establishing that the comparators were ranking scores rather than calibrated probabilities on a common scale. The calibration reversal is, in our view, the paper's most useful result for the field: it quantifies how far a single equation can drift when ascertainment changes within one disease.
+We believe the work suits the Journal for two reasons. First, apolipoprotein B is moving from a research measurement to a clinical one, and we identified no FH-specific model built from raw apoB, LDL-C and apoA1 and subjected to reciprocal clinic-to-biobank transport. Second, and more importantly, the paper is as informative where it fails as where it succeeds. CALON-N did not outperform Montreal-FH-SCORE in either direction, age plus sex alone achieved the highest AUC in the clinic cohort (0.895), and the model exceeded the best comparator in only one of 14 estimable subgroup analyses. We report all of this, including two candidate architectures that failed a prespecified coefficient-direction gate, and we withdrew a comparative decision-curve analysis at quality control after establishing that the comparators were ranking scores rather than calibrated probabilities on a common scale. The calibration reversal is, in our view, the paper's most useful result for the field: it quantifies how far a single equation can drift when ascertainment changes within one disease.
 
 The study carries the analyses a critical reader will expect: prespecified low-dimensional candidate architectures with ridge penalisation; family-intact and qualifying-variant-component-intact resampling; fold-local completion, transformation, scaling and penalty tuning; a locked physiological sign gate; reciprocal transport without target recalibration; 4,000-replicate cluster bootstraps for all paired differences; and sensitivity analyses across an alternative genetic definition, two alternative endpoint definitions, and complete cases. Reporting was mapped item by item to TRIPOD+AI and STROBE, with risk of bias appraised by PROBAST; we state plainly that architecture selection consumed outcome information from both cohorts and that this is therefore target-informed reciprocal development rather than protected external validation. We make no prospective-risk, threshold, or clinical-deployment claim.
 

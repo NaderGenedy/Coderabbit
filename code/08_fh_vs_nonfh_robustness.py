@@ -89,27 +89,49 @@ def build():
     return fh, x
 
 
+def _terms(d):
+    g = lambda c, fb: (pd.to_numeric(d[c], errors="coerce") if c in d
+                       else pd.Series(fb, index=d.index))
+    age = g("age", np.nan)
+    hdl = g("hdl", np.nan).fillna(1.35)
+    ldl = g("ldl", np.nan)
+    return (age.fillna(age.median()), hdl, ldl.fillna(ldl.median()),
+            g("male", 0).fillna(0), g("hypertension", 0).fillna(0),
+            g("smoke_ever", 0).fillna(0), g("lpa", 0).fillna(0))
+
+
 def montreal(d):
-    """Montreal-FH-SCORE on its published scale (age, sex, HDL-C, hypertension,
-    smoking, Lp(a)); used here only as a ranking score."""
-    age = pd.to_numeric(d["age"], errors="coerce")
-    return (age.fillna(age.median())
-            + 10 * pd.to_numeric(d["male"], errors="coerce").fillna(0)
-            - 10 * pd.to_numeric(d["hdl"], errors="coerce").fillna(1.4)
-            + 5 * pd.to_numeric(d["hypertension"], errors="coerce").fillna(0)
-            + 5 * pd.to_numeric(d["smoke_ever"], errors="coerce").fillna(0)).to_numpy(float)
+    """Montreal-FH-SCORE, published coefficients (Paquette 2017).
+
+    CORRECTED 13 August 2026. This function previously used invented weights
+    (age + 10*male - 10*HDL + 5*hypertension + 5*smoking) while its docstring
+    claimed an Lp(a) term it never contained. Montreal has no Lp(a) term; the
+    published model is age and HDL-C standardised, plus sex, hypertension and
+    smoking. code/16_R3_comparator_recheck.py scores both versions side by side:
+    the correction moved AUC by <=0.007 and left the R3 verdict unchanged.
+    """
+    age, hdl, _, male, htn, smoke, _ = _terms(d)
+    return np.asarray(0.75 * (age - age.mean()) / age.std()
+                      - 0.27 * (hdl - hdl.mean()) / hdl.std()
+                      + 0.25 * male + 0.19 * htn + 0.12 * smoke, float)
 
 
 def fhrs(d):
-    """FH-Risk-Score ranking form (age, sex, HDL-C, LDL-C, hypertension,
-    smoking, Lp(a))."""
-    age = pd.to_numeric(d["age"], errors="coerce")
-    return (age.fillna(age.median())
-            + 8 * pd.to_numeric(d["male"], errors="coerce").fillna(0)
-            - 8 * pd.to_numeric(d["hdl"], errors="coerce").fillna(1.4)
-            + 2 * pd.to_numeric(d["ldl"], errors="coerce").fillna(3.9)
-            + 6 * pd.to_numeric(d["hypertension"], errors="coerce").fillna(0)
-            + 6 * pd.to_numeric(d["smoke_ever"], errors="coerce").fillna(0)).to_numpy(float)
+    """FH-Risk-Score, published banded coefficients (Paquette 2021).
+
+    CORRECTED 13 August 2026; the previous form used invented linear weights.
+    Age, LDL-C and HDL-C enter as published bands, not linear terms, and Lp(a)
+    enters as a threshold indicator at 105 nmol/L.
+    """
+    age, hdl, ldl, male, htn, smoke, lpa = _terms(d)
+    ab = lambda v: (0 if v <= 30 else .938 if v <= 35 else 1.383 if v <= 40 else 1.621 if v <= 45
+                    else 1.738 if v <= 50 else 1.804 if v <= 55 else 1.964 if v <= 60 else 2.256)
+    lb = lambda v: (0 if v <= 5.5 else .315 if v <= 7.5 else .718 if v <= 8.5
+                    else .918 if v <= 9.5 else 1.136)
+    hb = lambda v: (0 if v > 1.30 else .298 if v >= 1.01 else .712 if v >= 0.85 else .752)
+    return np.asarray(np.array([ab(v) for v in age]) + np.array([lb(v) for v in ldl])
+                      + np.array([hb(v) for v in hdl]) + 0.721 * male + 0.644 * htn
+                      + 0.625 * smoke + 0.434 * (lpa >= 105).astype(float), float)
 
 
 def main():
