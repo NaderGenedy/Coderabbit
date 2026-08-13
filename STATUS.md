@@ -10,7 +10,7 @@ retained for provenance, not for citation.
 
 | Analysis | Script | What it is |
 |---|---|---|
-| **CALON-F** | `code/15_CALON_FINAL.py` | Two-cohort **incident** ASCVD model in genotype-confirmed HeFH. UK Biobank n=3,305 / 351 incident events, C=0.6940; Wales/PASS n=1,159 / 92 events, C=0.7499. Locked 13 August 2026. |
+| **CALON-F** | `code/15_CALON_FINAL.py` | Two-cohort **incident** ASCVD model in genotype-confirmed HeFH. **Endpoint: ASCVD only — I21/I25/I63/I70/I73/G45. I50 heart failure EXCLUDED.** UK Biobank n=3,333 / 289 incident events, C=0.6996; Wales/PASS n=1,159 / 92 events, C=0.7499. Locked 13 August 2026. |
 | CALON-F QC | `code/15b_QC_ADDENDUM.py` | Coefficient signs, completeness, calibration slope. |
 
 CALON-F is the only analysis in this repository whose design makes temporal
@@ -20,7 +20,18 @@ mislabelled `prevalent_ascvd` field (see below), and no published score is an
 input to it.
 
 Head-to-head against Montreal-FH-SCORE, FH-Risk-Score and SAFEHEART-RE across 13
-subgroups per cohort: **11 wins, 58 ties, no losses** of 69 estimable cells.
+subgroups per cohort: **10 wins, 58 ties, 1 loss** of 69 estimable cells. The
+single loss is UK Biobank diabetics vs SAFEHEART-RE (64 events, -0.062).
+
+**Endpoint corrected 13 August 2026.** The composite `ascvd_first_date_best`
+includes I50 heart failure, which is not atherosclerotic disease. 62 of 351
+events in the broad version were heart-failure-only. Those participants are now
+non-cases, censored at their recorded event date. This raised discrimination
+(0.6940 -> 0.6996) and reintroduced one loss that the broad endpoint had masked.
+The correct endpoint was preferred over the higher tally.
+
+UK Biobank calibration slope is 1.214 (1.017, 1.411) — the interval no longer
+covers 1, so predictions are somewhat too compressed. Stated limitation.
 
 Two pre-specified rules govern which terms enter in each cohort. A spline term is
 dropped where its correlation with age reaches 0.999 (fires on `sp18`, `sp30` in

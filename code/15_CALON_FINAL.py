@@ -12,7 +12,10 @@ SPECIFICATION
 
 COHORTS (both INCIDENT, predictors measured at baseline, events dated after it)
   UK Biobank : LDLR carriers, prevalent excluded. Outcome from
-               data_corrected/corrected_ascvd_outcomes.csv (I21/I25/I50/I63/I70/I73/G45).
+               data_corrected/corrected_ascvd_outcomes.csv, ATHEROSCLEROTIC ONLY:
+               I21 / I25 / I63 / I70 / I73 / G45.  I50 HEART FAILURE IS EXCLUDED -
+               it is not atherosclerotic disease. 62 of 351 events in the broad
+               composite were heart-failure-only; counting them as ASCVD was wrong.
                The master's `prevalent_ascvd` is NOT used.
                CORRECTED 13 Aug 2026 - the earlier characterisation in this docstring was WRONG.
                `first_angina` (p131286) IS mislabelled hypertension, but it was verified ABSENT
@@ -94,16 +97,54 @@ _s.loader.exec_module(vw)
 
 
 # ----------------------------------------------------------------- cohorts
+def corrected_root():
+    """Locate the corrected-outcome data, preferring copies held ON THIS MAC.
+
+    The file lives in two places, verified byte-identical (md5
+    ab364bc996c7a843c2f3b7f620dafbf0, 18,118,515 bytes): the synced Google Drive
+    folder and the UnionSine external drive. Hard-coding the external path made
+    the model unrunnable whenever that drive was unplugged. Resolution order:
+    CALON_CORRECTED_DATA, then any local Google Drive copy, then UnionSine.
+    """
+    marker = Path("data_corrected") / "corrected_ascvd_outcomes.csv"
+    cands = []
+    env = os.environ.get("CALON_CORRECTED_DATA")
+    if env:
+        cands.append(Path(env))
+    cands += sorted(Path.home().glob(
+        "Library/CloudStorage/GoogleDrive-*/My Drive/Projects/CALON_AlphaFold_Rebuild"))
+    cands.append(Path(os.environ["CALON_CORRECTED_DATA"]))
+    for c in cands:
+        if (c / marker).exists():
+            return c
+    raise RuntimeError(
+        "corrected_ascvd_outcomes.csv not found. Set CALON_CORRECTED_DATA to the "
+        "folder containing data_corrected/. Tried: "
+        + ", ".join(str(x) for x in cands))
+
+
 def build_ukb():
     master = Path(os.environ["CALON_SHARED_MASTER"]) / "UKB" / "ukb_master.csv"
-    corrected = Path(os.environ["CALON_CORRECTED_DATA"]) / "data_corrected/corrected_ascvd_outcomes.csv"
-    meds = Path(os.environ["CALON_CORRECTED_DATA"]) / "New folder/04a_meds_touch.csv"
+    _root = corrected_root()
+    corrected = _root / "data_corrected" / "corrected_ascvd_outcomes.csv"
+    meds = _root / "New folder" / "04a_meds_touch.csv"
     use = ["eid", "ldlr_carrier", "date_baseline", "age_exact_baseline", "age_at_recruit",
            "sex_F", "tc_chem", "hdl_chem", "ldl_chem", "tg_chem", "diabetes_combined",
            "smoking_ever", "sbp", "dbp", "on_statin_self", "bmi_direct", "lpa_chem",
            "death_date"]
     m = pd.read_csv(master, usecols=use, low_memory=False)
-    c = pd.read_csv(corrected, usecols=["eid", "ascvd_first_date_best"], low_memory=False)
+    # STRICT ATHEROSCLEROTIC ENDPOINT (corrected 13 Aug 2026).
+    # `ascvd_first_date_best` is a composite that includes I50 heart failure.
+    # 62 of 351 incident events (17.7%) were heart-failure-only, with no
+    # atherosclerotic component - so nearly one in five "ASCVD" events was not
+    # ASCVD. Those participants are now treated as NON-cases and censored at
+    # their recorded event date, rather than counted as events.
+    c = pd.read_csv(corrected, usecols=["eid", "ascvd_first_date_best", "i21_event",
+                                        "i25_event", "i63_event", "i70_event",
+                                        "i73_event", "g45_event"], low_memory=False)
+    _g = lambda k: pd.to_numeric(c[k], errors="coerce").fillna(0).gt(0)
+    c["athero"] = (_g("i21_event") | _g("i25_event") | _g("i63_event")
+                   | _g("i70_event") | _g("i73_event") | _g("g45_event"))
     md = pd.read_csv(meds, low_memory=False)
     md.columns = [x.replace("participant.", "") for x in md.columns]
     has2 = lambda col: md[col].astype(str).str.contains(r"\b2\b", na=False)
@@ -118,9 +159,12 @@ def build_ukb():
     base = pd.to_datetime(d.date_baseline, errors="coerce")
     ev = pd.to_datetime(d.ascvd_first_date_best, errors="coerce")
     death = pd.to_datetime(d.death_date, errors="coerce")
-    prevalent = ev.notna() & base.notna() & ev.le(base)
-    incident = ev.notna() & base.notna() & ev.gt(base)
-    end = ev.where(incident, death.fillna(STUDY_END))          # F1
+    athero = d["athero"].fillna(False).astype(bool)
+    prevalent = ev.notna() & base.notna() & ev.le(base) & athero
+    incident = ev.notna() & base.notna() & ev.gt(base) & athero
+    # heart-failure-only participants: not events; censored at their event date
+    hf_only = ev.notna() & base.notna() & ev.gt(base) & ~athero
+    end = ev.where(incident | hf_only, death.fillna(STUDY_END))   # F1
 
     x = pd.DataFrame(index=d.index)
     x["age"] = n("age_exact_baseline").fillna(n("age_at_recruit"))
