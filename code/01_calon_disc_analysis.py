@@ -1,6 +1,25 @@
 #!/usr/bin/env python3
 """Locked CALON-DISC multi-cohort cross-sectional analysis.
 
+SUPERSEDED - RETAINED FOR PROVENANCE ONLY. DO NOT REUSE THIS DESIGN.
+
+Two reasons this script must not be treated as current:
+
+1. It violates the programme's binding modelling rule. `CANDIDATES` below feeds
+   published risk scores into a fitted model as features - `montreal` in seven
+   of nine candidates, and `score_stack_disc` stacking `montreal` and `fhrs`
+   together. No published score, no prior model from this programme, and no
+   linear predictor derived from either may be a feature. Published scores are
+   comparators, never inputs.
+
+2. The estimand is cross-sectional (established/prevalent ASCVD), so a
+   predictor measured after the event can enter the fit. That is how the
+   temporal leakage documented elsewhere in this repository arose.
+
+The current model is code/15_CALON_FINAL.py: raw variables only, incident
+design in both cohorts, so leakage is structurally impossible rather than
+merely tested for.
+
 Writes aggregate/model outputs only. Participant identifiers, family/variant
 labels, participant rows, and participant-level predictions are never written.
 """

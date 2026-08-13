@@ -44,15 +44,26 @@ treatment. The analysis outcome is prevalent/established ASCVD. Re-labelling
 the output as 10-year incidence would introduce reverse causation and temporal
 leakage. The pooled probability is a cross-sectional research score only.
 
-## Relation to the separate Welsh ascertainment idea
+## Relation to the separate Welsh ascertainment idea — WITHDRAWN
 
-Updating FH-Risk-Score with proband/cascade-specific baseline hazards is a
-promising **separate prospective model-updating project**. It can borrow stable
-published coefficients and address an absolute-risk calibration gap. It is not
-de novo and is not part of CALON-N. Its reported 90% reduction in E:O error must
-be re-estimated with family-disjoint out-of-fold baselines, censoring and
-competing death, shrinkage, ordinary-intercept recalibration as a comparator,
-and external registry validation.
+An earlier version of this report described updating FH-Risk-Score with
+proband/cascade-specific baseline hazards as a promising separate project. That
+idea is **withdrawn**, for two reasons.
+
+First, it is disallowed by the programme's binding rule: no published score, no
+prior model from this programme, and no linear predictor derived from either may
+enter a new model as a feature. Published scores are comparators, never inputs.
+
+Second, its premise has since been falsified by measurement. The idea rested on
+the claim that borrowing published relative effects would beat re-estimating a
+model from a small number of events. A model estimated from raw variables alone
+(CALON-F) subsequently tied FH-Risk-Score in Wales (+0.002) and beat it in UK
+Biobank by +0.031 with a confidence interval excluding zero.
+
+The accompanying claim of a 90% reduction in E:O error was never established.
+Fitting a free intercept per ascertainment stratum forces the observed/expected
+ratio towards one within that stratum by construction, so a calibration gain
+measured that way is arithmetic rather than evidence.
 
 ## Release verdict
 
