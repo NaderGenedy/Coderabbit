@@ -3,10 +3,16 @@
 
 WHY THIS SUPERSEDES EVERYTHING RUN ON 10-11 AUGUST
 ---------------------------------------------------
-The master file's `prevalent_ascvd` is built from p131286-p131296, which are mislabelled
-by six ICD-10 codes: `first_ascvd` = min(p131288,90,92,94,96) = I11+I12+I13+I15+I20, i.e.
-four hypertension codes plus angina. Verified against UK Biobank Showcase (bug report
-2026-04-28) and by the raw extract header.
+CORRECTED 13 Aug 2026 - the earlier characterisation in this docstring was WRONG.
+`first_angina` (p131286) IS mislabelled hypertension, but it was verified ABSENT
+from the composite (`first_ascvd` == min over the five non-angina fields for
+42,145/42,145 records). `prevalent_ascvd` is therefore NOT a hypertension flag:
+measured in 3,540 LDLR carriers it flags 165 of which 161 are true prevalent
+ASCVD, i.e. 98% precision. Its real defect is UNDER-ASCERTAINMENT - true
+prevalent ASCVD is 235, so it misses 74 (31%), and the missed cases have the
+same composition as the caught ones (90.5% I25, 63.5% I21). We use
+`corrected_ascvd_outcomes.csv` because the master flag misses a third of cases,
+not because it is mislabelled. See CLAUDE.md section 0a.
 
 This script instead uses `data_corrected/corrected_ascvd_outcomes.csv`, built from the
 CORRECT fields (p131298 I21, p131306 I25, p131354 I50, plus I63/I70/I73/G45 and the HES

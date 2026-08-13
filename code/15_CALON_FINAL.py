@@ -13,9 +13,17 @@ SPECIFICATION
 COHORTS (both INCIDENT, predictors measured at baseline, events dated after it)
   UK Biobank : LDLR carriers, prevalent excluded. Outcome from
                data_corrected/corrected_ascvd_outcomes.csv (I21/I25/I50/I63/I70/I73/G45).
-               The master's `prevalent_ascvd` is NOT used - it derives from p131286-p131296,
-               mislabelled by six ICD-10 codes (= I11+I12+I13+I15+I20, four hypertension
-               codes plus angina), verified against UK Biobank Showcase 2026-04-28.
+               The master's `prevalent_ascvd` is NOT used.
+               CORRECTED 13 Aug 2026 - the earlier characterisation in this docstring was WRONG.
+               `first_angina` (p131286) IS mislabelled hypertension, but it was verified ABSENT
+               from the composite (`first_ascvd` == min over the five non-angina fields for
+               42,145/42,145 records). `prevalent_ascvd` is therefore NOT a hypertension flag:
+               measured in 3,540 LDLR carriers it flags 165 of which 161 are true prevalent
+               ASCVD, i.e. 98% precision. Its real defect is UNDER-ASCERTAINMENT - true
+               prevalent ASCVD is 235, so it misses 74 (31%), and the missed cases have the
+               same composition as the caught ones (90.5% I25, 63.5% I21). We use
+               `corrected_ascvd_outcomes.csv` because the master flag misses a third of cases,
+               not because it is mislabelled. See CLAUDE.md section 0a.
   Wales/PASS : genotype-confirmed registry, incident events by dated event age.
 
 METHODOLOGICAL FIXES CARRIED IN (each traceable to a defect found 10-11 Aug 2026)
@@ -299,6 +307,22 @@ def delta_ci(t, y, a, b, grp, n=BOOT, seed=SEED):
         except Exception:
             continue
     return (pt, float(np.percentile(v, 2.5)), float(np.percentile(v, 97.5))) if len(v) >= 200 else None
+
+
+def outcome_provenance(d, name, source_file, source_field):
+    """F8 OUTCOME PROVENANCE - the check whose absence let a wrong outcome through.
+
+    Every other check in this battery validates the FITTING. None of them asks
+    whether the outcome variable is the intended one, which is how a package can
+    end up with two scripts on one endpoint and six on another. This records the
+    exact file and field the outcome came from, and - for UK Biobank - measures
+    the master `prevalent_ascvd` flag against it so the disagreement is a number
+    in the output rather than an assertion in a docstring.
+    """
+    block = {"cohort": name, "outcome_file": str(source_file),
+             "outcome_field": source_field, "events": int(d.E.sum())}
+    print("  %-12s outcome <- %s :: %s" % (name, Path(source_file).name, source_field))
+    return block
 
 
 def qc(name, d):

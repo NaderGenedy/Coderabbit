@@ -124,20 +124,38 @@ still crossed zero. The comparator functions in `code/08` have been replaced wit
 the published equations.
 
 *Problem 2, outstanding.* The re-test used the **retracted** 890/57 prevalent
-UK Biobank cohort. The temporality reversal applies to both arms of that
-comparison, so the contrast may still be informative, but the finding cannot be
+UK Biobank cohort, and it scored `prevalent_ascvd` rather than the corrected
+outcome (`code/16` inherits `build()` from `code/08`). The endpoint is therefore
+under-ascertained by roughly a third, and the temporality reversal applies to
+both arms. The contrast may still be informative, but the finding cannot be
 reported as more than hypothesis-generating until it is rebuilt on the incident
-cohort used by CALON-F.
+cohort with the corrected outcome.
+
+*Scripts still on the under-ascertained endpoint:* `code/07`, `code/08`,
+`code/16`, `code/audit_2026_08_10/audit_common.py`,
+`code/audit_2026_08_10/03_locked_reproduction.py` and
+`code/audit_2026_08_10/08_open_model_search.py`. Only `code/14` and `code/15`
+use the corrected file. **CALON-F is unaffected.**
 
 ---
 
 ## Known data traps
 
-- **UK Biobank first-occurrence fields p131286–p131296 are mislabelled by six
-  ICD-10 codes.** `prevalent_ascvd` derives from I11+I12+I13+I15+I20 — four
-  hypertension codes plus angina. Use
-  `data_corrected/corrected_ascvd_outcomes.csv` instead. Verified against
-  UK Biobank Showcase, 28 April 2026.
+- **UK Biobank outcome fields — two separate facts, repeatedly conflated.**
+  `first_angina` (p131286) IS mislabelled: it encodes I10 essential hypertension
+  (41.70% of all UKB, SBP 148.9 vs 133.2, no male excess). **But it was verified
+  absent from the composite** — `first_ascvd` equals the min over the five
+  non-angina fields for 42,145/42,145 records. So `prevalent_ascvd` is **not** a
+  hypertension flag: measured in the 3,540 LDLR carriers it flags 165 of which
+  161 are true prevalent ASCVD, 98% precision.
+  Its real defect is **under-ascertainment**: true prevalent ASCVD is 235, so it
+  misses 74 (31%), and the missed cases have the same composition as the caught
+  ones (90.5% I25, 63.5% I21). Use
+  `data_corrected/corrected_ascvd_outcomes.csv` / `ascvd_first_date_best`
+  because the master flag misses a third of cases, **not** because it is
+  mislabelled. Measured 13 August 2026; an earlier claim in this file and in the
+  docstrings of code/13, 14 and 15 that `prevalent_ascvd` = I11+I12+I13+I15+I20
+  was wrong and has been withdrawn.
 - **DRAGON `MtachedLDLC` is already pre-treatment.** Applying the ÷0.70 statin
   back-correction to it double-corrects the treated majority. The UK Biobank
   `pre_ldl` field is a measured baseline, so Patel eTable 1 does apply there.

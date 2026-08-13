@@ -41,7 +41,7 @@ from sklearn.metrics import roc_auc_score
 ROOT = Path(os.environ["CALON_PROJECT_ROOT"])
 BASE = ROOT / "code" / "01_calon_disc_analysis.py"
 OUT = ROOT / "outputs"
-UKB = Path(os.environ["CALON_SHARED_MASTER"]) / "UKB/ukb_master.csv"
+UKB = Path(os.environ["HOME"]) / "Library/CloudStorage/GoogleDrive-[redacted]/My Drive/Projects/SHARED_MASTER_DATA/UKB/ukb_master.csv"
 WALES = Path(os.environ["CALON_WALES_DATA"]) / "WALES_FH_CLEANED.csv"
 SEED = 20260810
 BOOT = 2000

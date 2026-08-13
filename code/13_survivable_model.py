@@ -3,9 +3,17 @@
 
 DESIGN RULES, each traceable to a specific defect
 -------------------------------------------------
-R1  UK Biobank is EXCLUDED. Its outcome fields p131286-p131296 are mislabelled by six
-    ICD-10 codes; `first_ascvd` = min(p131288,90,92,94,96) = I11+I12+I13+I15+I20, i.e.
-    four hypertension codes plus angina. `prevalent_ascvd` is not ASCVD.
+R1  UK Biobank is EXCLUDED from THIS script (a Welsh-only analysis).
+    CORRECTED 13 Aug 2026 - the earlier characterisation in this docstring was WRONG.
+    `first_angina` (p131286) IS mislabelled hypertension, but it was verified ABSENT
+    from the composite (`first_ascvd` == min over the five non-angina fields for
+    42,145/42,145 records). `prevalent_ascvd` is therefore NOT a hypertension flag:
+    measured in 3,540 LDLR carriers it flags 165 of which 161 are true prevalent
+    ASCVD, i.e. 98% precision. Its real defect is UNDER-ASCERTAINMENT - true
+    prevalent ASCVD is 235, so it misses 74 (31%), and the missed cases have the
+    same composition as the caught ones (90.5% I25, 63.5% I21). We use
+    `corrected_ascvd_outcomes.csv` because the master flag misses a third of cases,
+    not because it is mislabelled. See CLAUDE.md section 0a.
 R2  TIME-TO-EVENT IS CORRECT. Cases get (event age - baseline age); non-cases get
     (censor age - baseline age). The previous script gave cases their censoring time,
     inflating case follow-up by a median 3.7 years and discarding half the usable pairs.
