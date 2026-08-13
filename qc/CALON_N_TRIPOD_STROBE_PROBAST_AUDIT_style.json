@@ -1,0 +1,140 @@
+{
+  "input": "${CALON_PROJECT_ROOT}/manuscript/CALON_N_TRIPOD_STROBE_PROBAST_AUDIT.docx",
+  "fonts_by_char_count": {
+    "Calibri": 10685
+  },
+  "direct_run_formatting_runs": 310,
+  "direct_paragraph_formatting_paragraphs": 300,
+  "heading_like_paragraphs_not_heading_style": [
+    {
+      "para_index": 6,
+      "text": "ORIGINAL RESEARCH",
+      "style": "Normal"
+    },
+    {
+      "para_index": 7,
+      "text": "CALON-N reporting and risk-of-bias audit",
+      "style": "Normal"
+    },
+    {
+      "para_index": 32,
+      "text": "Local item",
+      "style": "Normal"
+    },
+    {
+      "para_index": 33,
+      "text": "Paraphrased reporting requirement",
+      "style": "Normal"
+    },
+    {
+      "para_index": 34,
+      "text": "Status",
+      "style": "Normal"
+    },
+    {
+      "para_index": 35,
+      "text": "Manuscript/package evidence and residual action",
+      "style": "Normal"
+    },
+    {
+      "para_index": 196,
+      "text": "STROBE item",
+      "style": "Normal"
+    },
+    {
+      "para_index": 197,
+      "text": "Paraphrased requirement",
+      "style": "Normal"
+    },
+    {
+      "para_index": 198,
+      "text": "Status",
+      "style": "Normal"
+    },
+    {
+      "para_index": 199,
+      "text": "Manuscript/package evidence and residual action",
+      "style": "Normal"
+    },
+    {
+      "para_index": 300,
+      "text": "Domain",
+      "style": "Normal"
+    },
+    {
+      "para_index": 301,
+      "text": "Signalling summary",
+      "style": "Normal"
+    },
+    {
+      "para_index": 302,
+      "text": "Risk of bias",
+      "style": "Normal"
+    },
+    {
+      "para_index": 303,
+      "text": "Applicability concern",
+      "style": "Normal"
+    }
+  ],
+  "examples": {
+    "direct_paragraph_formatting": [
+      {
+        "para_index": 1,
+        "text": "",
+        "style": "Normal"
+      },
+      {
+        "para_index": 2,
+        "text": "",
+        "style": "Normal"
+      },
+      {
+        "para_index": 3,
+        "text": "",
+        "style": "Normal"
+      },
+      {
+        "para_index": 4,
+        "text": "",
+        "style": "Normal"
+      },
+      {
+        "para_index": 5,
+        "text": "",
+        "style": "Normal"
+      }
+    ],
+    "direct_run_formatting": [
+      {
+        "para_index": 6,
+        "run_text": "ORIGINAL RESEARCH",
+        "style": "Normal"
+      },
+      {
+        "para_index": 7,
+        "run_text": "CALON-N reporting and risk-of-bias audit",
+        "style": "Normal"
+      },
+      {
+        "para_index": 8,
+        "run_text": "Full TRIPOD+AI and STROBE mapping with PROBAST judgement",
+        "style": "Normal"
+      },
+      {
+        "para_index": 9,
+        "run_text": "Target journal: Journal of Clinical Lipidology",
+        "style": "Normal"
+      },
+      {
+        "para_index": 10,
+        "run_text": "Analysis freeze: 9 August 2026",
+        "style": "Normal"
+      }
+    ]
+  },
+  "notes": [
+    "Direct formatting is not always wrong, but it often causes inconsistent output when templates change.",
+    "Heading-like paragraphs not using Heading styles can break TOC and accessibility."
+  ]
+}
