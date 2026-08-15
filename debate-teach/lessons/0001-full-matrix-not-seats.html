@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lesson 1 — Full matrix, not fixed seats</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body>
+<main>
+  <h1>Full matrix, not fixed seats</h1>
+  <p class="lede">Mission: govern the CALON panel so a claim cannot pass merely because the model assigned to “audit” failed to notice it.</p>
+
+  <h2>One idea</h2>
+  <p>An <strong>agent</strong> is Claude, Codex, Kimi, or Grok. A <strong>lens</strong> is Methodology, Implementation, Adversarial audit, or Clinical/publication reality. They are different dimensions.</p>
+  <table>
+    <thead><tr><th>Fixed seats — reject</th><th>Full matrix — use</th></tr></thead>
+    <tbody>
+      <tr><td>Claude only does method</td><td>Claude answers all four lenses</td></tr>
+      <tr><td>Codex only does implementation</td><td>Codex answers all four lenses</td></tr>
+      <tr><td>Kimi/Grok only audit</td><td>Kimi/Grok also answer method, implementation, and clinical reality</td></tr>
+      <tr><td>Four partial opinions</td><td>Sixteen positions: 4 agents × 4 lenses</td></tr>
+    </tbody>
+  </table>
+  <div class="box">
+    <strong>Why this matters:</strong> if the “auditor” disputes the “methodologist,” a fixed-seat design cannot distinguish a real scientific disagreement from two jobs emphasizing different things. In a full matrix, all four agents address the same lens, making disagreement interpretable.
+  </div>
+
+  <h2>The live loop</h2>
+  <ol>
+    <li><strong>Gate 0:</strong> prove all four CLIs use their subscriptions.</li>
+    <li><strong>Resource audit:</strong> each agent reads the permitted evidence independently; no raw participant data.</li>
+    <li><strong>Round 1:</strong> blind, four agents × four lenses.</li>
+    <li><strong>Round 2+:</strong> each attacks named claims from another agent, under a named lens.</li>
+    <li><strong>Close:</strong> <code>consensus.mjs</code>, not a model, decides. Open objections mean another round; DEADLOCK is an honest outcome.</li>
+  </ol>
+
+  <h2>Retrieval check</h2>
+  <div class="quiz">
+    <p>Which instruction preserves the design?</p>
+    <label><input type="radio" name="q" value="a"> Assign Codex to implementation and Grok to auditing.</label>
+    <label><input type="radio" name="q" value="b"> Ask all four agents to answer all four lenses before they see one another.</label>
+    <label><input type="radio" name="q" value="c"> Let Claude decide whether the audit objections are persuasive.</label>
+    <button type="button" onclick="check()">Check answer</button>
+    <p class="feedback" id="feedback" aria-live="polite"></p>
+  </div>
+
+  <h2>Practical rule</h2>
+  <p>When you read a panel output, ask: “Which <em>agent</em> made this claim, under which <em>lens</em>, and what artefact would settle it?” If one of those is absent, the claim is not ready for consensus.</p>
+
+  <p class="foot">Primary project sources: <code>debate/mandates/ROLES.md</code>, <code>AGENT.md</code>, and <code>bin/consensus.mjs</code>. Ask a follow-up question whenever a live round is unclear.</p>
+</main>
+<script>
+function check() {
+  const answer = document.querySelector('input[name="q"]:checked');
+  document.getElementById('feedback').textContent =
+    answer && answer.value === 'b'
+      ? 'Correct. Agent and lens are independent; blindness protects the four first-pass positions.'
+      : 'Not quite. The full matrix requires every agent to answer every lens independently before exchange.';
+}
+</script>
+</body>
+</html>

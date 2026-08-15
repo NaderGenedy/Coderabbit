@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>0001 — Full matrix: agent ≠ seat</title>
+  <link rel="stylesheet" href="../assets/lesson.css" />
+</head>
+<body>
+<main>
+  <h1>Full matrix: agent ≠ seat</h1>
+  <p class="lede">One tangible win: you can reject “Claude is methodology, Codex is implementation” and require every agent to answer all four lenses before debate.</p>
+
+  <h2>Why fixed seats fail</h2>
+  <p>If only Kimi “audits” and only Claude “does method,” a disagreement is confounded: is it a real scientific conflict, or two different jobs producing different emphases? Worse, the model that would have caught collinearity never gets the audit lens.</p>
+  <div class="box">
+    <strong>Full matrix</strong> (see <a href="file:///Users/nader85/Documents/CALON/calon_discordance_model_2026_08_09/debate/mandates/ROLES.md">ROLES.md</a>):
+    Claude, Codex, Kimi, and Grok each produce Methodology + Implementation + Adversarial + Fifth lens every step → 16 positions, then exchange.
+  </div>
+
+  <h2>The loop you will watch</h2>
+  <ol>
+    <li><strong>Gate 0</strong> — four subscriptions smoked (<code>subscription-preflight.mjs</code>)</li>
+    <li><strong>Round 1 blind</strong> — each agent gets brief + register; not others’ text</li>
+    <li><strong>Show all four files</strong> — all four lens headings each</li>
+    <li><strong>Round 2+</strong> — attack specific lens-positions by name</li>
+    <li><strong>consensus.mjs</strong> — only exit 0 / documented DEADLOCK closes the story</li>
+  </ol>
+
+  <h2>Skill check</h2>
+  <div class="quiz" id="q1">
+    <p>Which statement is correct?</p>
+    <label><input type="radio" name="q1" value="a" /> Claude owns methodology; Grok owns second audit.</label>
+    <label><input type="radio" name="q1" value="b" /> Each agent answers all four lenses; disagreement is same-question signal.</label>
+    <label><input type="radio" name="q1" value="c" /> Seats rotate every third step so fixed roles stay honest.</label>
+    <button type="button" onclick="check()">Check</button>
+    <p class="feedback" id="fb" hidden></p>
+  </div>
+
+  <h2>Primary source</h2>
+  <p>Read <a href="file:///Users/nader85/Documents/CALON/calon_discordance_model_2026_08_09/debate/mandates/ROLES.md">debate/mandates/ROLES.md</a> end to end — especially “Why this beats fixed seats.”</p>
+
+  <p class="foot">Ask follow-up questions in chat — the agent is your teacher. Glossary: <a href="../reference/GLOSSARY.md">reference/GLOSSARY.md</a>. Mission: <a href="../MISSION.md">MISSION.md</a>.</p>
+</main>
+<script>
+function check() {
+  const v = document.querySelector('input[name="q1"]:checked');
+  const fb = document.getElementById('fb');
+  fb.hidden = false;
+  if (!v) { fb.textContent = 'Pick one.'; return; }
+  fb.textContent = v.value === 'b'
+    ? 'Correct. Lens ≠ seat; 16 positions then debate.'
+    : 'Not quite. Fixed seats / rotation are the failure mode — see the box above.';
+}
+</script>
+</body>
+</html>
