@@ -1,0 +1,30 @@
+{
+  "model": "CALON-F",
+  "outcome": "incident atherosclerotic event: i21|i25|i63|i70|i73|g45; I50 excluded",
+  "endpoint_caveat": "coronary-weighted: date completeness I21 100, I25 100, I63 40.9, I70 64.3, I73 52.8, G45 37.0 percent",
+  "cohort": "UK Biobank LDLR variant carriers (NOT clinical FH); prevalent and undated excluded",
+  "primary_horizon": "full follow-up, 289 events",
+  "sensitivity_horizon": "5 years, 97 events",
+  "features": [
+    "age",
+    "male",
+    "htn_any",
+    "dm",
+    "smoke_curr",
+    "cum_nonhdl",
+    "log_tghdl"
+  ],
+  "estimator": "TODO: Cox vs ridge-logistic \u2014 state and justify",
+  "missing_data": "TODO: state the single rule applied identically to model and comparators",
+  "comparators": [
+    "SAFEHEART-RE",
+    "FH-Risk-Score",
+    "Montreal-FH-SCORE (CANDIDATE, no PDF)"
+  ],
+  "sign_convention": "delta = C(model) - C(comparator); positive favours the model",
+  "bootstrap_B": 300,
+  "min_events": 10,
+  "cohort_sha256": "8c3a1e0598770c1beefe29db28d42fb7074f233f382c25c19eb0c843b59f49b2",
+  "frozen_at": "2026-08-15T22:30:40.154774+00:00",
+  "spec_sha256": "dff51da99bb72ea82d54634658fc399604182225d58a61eb1dfa0224ba1303f9"
+}

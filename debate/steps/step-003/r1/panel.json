@@ -1,0 +1,48 @@
+{
+  "outDir": "debate/steps/step-003/r1",
+  "model_pin": {
+    "claude": "opus/max",
+    "codex": "gpt-5.6-sol/ultra",
+    "kimi": "kimi-code/k3",
+    "grok": "grok-4.6/xhigh"
+  },
+  "prompt_chars": 35104,
+  "results": [
+    {
+      "name": "claude",
+      "provider": "Anthropic · Claude · opus/max",
+      "ok": true,
+      "code": 0,
+      "ms": 679785,
+      "error": "",
+      "response_chars": 70208
+    },
+    {
+      "name": "codex",
+      "provider": "OpenAI · Codex · gpt-5.6-sol/ultra",
+      "ok": false,
+      "code": null,
+      "ms": 900014,
+      "error": "2026-08-15T21:30:35.534482Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5",
+      "response_chars": 0
+    },
+    {
+      "name": "kimi",
+      "provider": "Moonshot · Kimi · k3/max",
+      "ok": false,
+      "code": 1,
+      "ms": 321760,
+      "error": "error: failed to run prompt: provider.api_error: 403 You've reached your usage limit for this billing cycle. Your quota will be refreshed in the next cycle. To continue now, purchase extra usage or upgrade your plan: https://www.kimi.com/code/#pricing See log: /Users/nader85/.kimi-code/logs/kimi-code.log",
+      "response_chars": 404
+    },
+    {
+      "name": "grok",
+      "provider": "xAI · Grok · 4.6/xhigh",
+      "ok": true,
+      "code": 0,
+      "ms": 295905,
+      "error": "",
+      "response_chars": 1206
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+  [2026-08-15T22:00:16.329Z] START claude (Anthropic · Claude · opus/max)
+  [2026-08-15T22:14:18.969Z] OK   claude  Anthropic · Claude · opus/max 842640ms · 33221 chars
+PANEL (1/1 responded) → debate/steps/step-001/r1
+  OK   claude  Anthropic · Claude · opus/max 842640ms · 33221 chars
+
+Human Markdown: debate/steps/step-001/r1/<name>.md   |   raw: debate/steps/step-001/r1/<name>.txt   |   progress: debate/steps/step-001/r1/progress.log

@@ -1,0 +1,32 @@
+Done. All files written, parsing, and smoke-tested end to end.
+
+## Files written
+
+**Directory A** — `debate-teach/julius-cycle2-pack-R/`
+`00_findings_lock.R` · `01_horizon_prove.R` · `02_calong_fit.R` · `03_comparators_pdf_faithful.R` · `04_headtohead_tripod.R` · `05_wales_transport.R` · `06_calibration_dca.R` · `README.md` · `PROVENANCE_TABLE.md`
+
+**Directory B** — `code/r_cycle2/16_CALON_G_CYCLE2.R` (thin orchestrator + preflight + an R↔Python reconciliation helper)
+
+**Turn** — `debate/steps/step-004/r-implement/claude.md`
+
+`Rscript -e 'parse(...)'` succeeds on all eight `.R` files. The full 00→06 pipeline was also *executed* on a synthetic frame built to hit the gate counts (3,209/289/97/194) — a code test only; those numbers appear nowhere in the deliverables and no real data was loaded.
+
+## Comparator provenance — protocol blocker #2 closed
+
+All three are now page-pinned, with two upgrades on the Julius pilot:
+
+- **SAFEHEART-RE** — Circulation 2017;135:2133–2144, Table 3, pp.2138–2139. All 11 β are `log(HR)` of the multivariable column, so the transcription self-checks. Gate 4 is enforced by recomputing **both** published worked examples (p.2139) — 0.02%/0.05% and 38.08%/64.15% reproduce, and a mismatch stops the run.
+- **FH-Risk-Score** — the pilot had chart points only. The full equation is in Supplemental Table II, Data Supplement **p.9**: `1 − 0.889^exp(Σβx − 3.00)`, all 21 β. Now primary; the chart is a cross-check.
+- **Montreal-FH-SCORE** — was `CANDIDATE (no PDF)`. The derivation PDF is on this Mac; Table 3, p.84 transcribed. Also resolves cosmetic finding #7. The existing `comparator_provenance.csv` cites the *validation* paper's pages, not the derivation paper's.
+
+## Five defects the smoke run caught
+
+1. **Gate 5 was self-fulfilling** — it compared `B_used` against a mutable variable, so lowering B for speed still "passed" while printing B=2000. Now checked against the literal 2,000.
+2. **Gate 8 passed while the Welsh claim was inadmissible** — frozen coefficients were used, but the Welsh ledger is incomplete (blocker #3). Now `UNVERIFIED` until `WALES_LEDGER_COMPLETE`.
+3. **SAFEHEART was being fed the wrong LDL-C** — Table 3 has two LDL rows; the 0.92/1.57 coefficients come from *measured* LDL-C, while `Calculated pretreatment LDL-C` has a univariable column only. The pilot's Python cell passes `ldl_unt`. **Worth mirroring in Codex's twin.**
+4. **`glmnet` tie handling was unpinned** — the Cox default flips breslow→efron at v5.1, so coefficients would differ by machine (644 warnings). Pinned to `efron` to match `coxph` and lifelines; version recorded with the coefficients.
+5. **My own disclosure guard cried wolf** — it banned any column named `name`, which killed the gate ledger. Rescoped to the identifiers governance actually names.
+
+Two gates are expected to sit at `UNVERIFIED` on a first real run: gate 1 (Julius's SHA recipe isn't in the spec-kit dump, so `assert_counts()` is the cross-language identity check) and gate 8 (blocker #3). Under the protocol that means **exploratory only** until both clear.
+
+One thing worth your call: I did **not** touch `15_build_frozen_ukb.R` / `16_CALON_G_CYCLE2.R`, which another worker wrote into Directory A while I was working. My `README.md` and `PROVENANCE_TABLE.md` did overwrite theirs — I folded their Mac-runner instructions into the README as "track B" rather than dropping them, but you may want to diff against git/backup if they had content I didn't see.

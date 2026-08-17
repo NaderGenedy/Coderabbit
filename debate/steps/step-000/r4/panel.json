@@ -1,0 +1,30 @@
+{
+  "outDir": "debate/steps/step-000/r4",
+  "model_pin": {
+    "claude": "opus/max",
+    "codex": "gpt-5.6-sol/ultra",
+    "kimi": "kimi-code/k3",
+    "grok": "grok-4.6/xhigh"
+  },
+  "prompt_chars": 11141,
+  "results": [
+    {
+      "name": "codex",
+      "provider": "OpenAI · Codex · gpt-5.6-sol/ultra",
+      "ok": true,
+      "code": 0,
+      "ms": 776300,
+      "error": "",
+      "response_chars": 8214
+    },
+    {
+      "name": "grok",
+      "provider": "xAI · Grok · 4.6/xhigh",
+      "ok": true,
+      "code": 0,
+      "ms": 481067,
+      "error": "",
+      "response_chars": 18308
+    }
+  ]
+}

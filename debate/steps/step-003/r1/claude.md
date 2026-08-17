@@ -1,0 +1,1127 @@
+# Step 003 · Round 1 · claude
+
+> Blind. I have not seen any other agent's step-003 output. Every path, count and
+> constant below was checked against disk in this session; where I could not
+> check something I say so.
+
+## What I verified on disk before writing (so you can discount the rest if this is wrong)
+
+| Check | Command result |
+|---|---|
+| SAFEHEART source PDF | **PRESENT** — `thesis_60000_consensus/sources/SAFEHEART_2017.pdf`, 12 pp, text-extractable (56,920 chars) |
+| FH-Risk-Score source PDF | **PRESENT** — `thesis_60000_consensus/sources/FH_Risk_Score_2021.pdf`, 9 pp, ATVB 2021;41:2632–2640, DOI 10.1161/ATVBAHA.121.316106 |
+| **Montreal-FH-SCORE source PDF** | **ABSENT.** `find` over all of `/Users/nader85/Documents/CALON` returns no Paquette/Montreal PDF. It exists only as reference 15 inside the FH-RS PDF (*Paquette M, Dufour R, Baass A. J Clin Lipidol 2017;11:1161–1167.e3*) |
+| Do the Spec Kit SAFEHEART constants appear in the SAFEHEART PDF text? | Yes — `5.4078` ×6, `0.9532` ×4, `0.9025` ×4, and every one of `1.07 1.45 0.69 1.42 0.48 0.88 0.98 0.92 1.57 0.70 0.42`; `SAFEHEART-RE` ×12 |
+| Montreal published C-index anchor | The FH-RS PDF states *"the Montreal-FH-SCORE (C-index=0.67)"* — local pipeline 0.6671, Julius 0.670 |
+
+Token presence is **not** proof of predictor mapping. It establishes that the Spec Kit
+numbers were transcribed from that document rather than recalled; it does not establish
+that `1.07` is the 30–60 age band rather than something else. COMP-03 (independent second
+transcription) still has to be done by a human with the table open.
+
+The settlement pack at `debate/julius-settlement-pack/` already exists (6 cells, 377
+lines). I read all of it. **My turn is mostly an attack on that pack**, because
+duplicating it would waste the invocation, and because four of its six cells contain a
+defect of the exact shape this panel was convened to catch.
+
+---
+
+## 1. Methodology
+
+### 1a. What each diagnostic actually estimates — and one of them estimates nothing
+
+| Diagnostic | Estimand | Is the design capable of answering it? |
+|---|---|---|
+| OBJ-001 | Rank-discrimination of each **published** score for incident ASCVD in one fixed risk set: `C(comparator)` and `Δ = C(model) − C(comparator)` on identical patients | Yes — **provided** the "published" scoring function is arbitrated first. Today it cannot be, for Montreal (§1c) |
+| OBJ-002 | Whether the ~0.55 slope cluster is an implementation artefact of centring or baseline-survival horizon | **No, as currently specified.** One arm of the factorial is mathematically incapable of moving the slope; the other arm's direction is stated backwards in the pack. See §1b — this is my main methodological finding |
+| OBJ-003 | Whether the null age HR is collinearity-induced | Partly. It cannot separate collinearity from outcome misclassification (the 124), so both must be in one factorial |
+
+### 1b. OBJ-002's factorial has a dead arm, and the pack's interpretation note is inverted
+
+Grok's OBJ-002 names two candidate causes: *"baseline survival applied at the wrong
+horizon, or the linear predictor not centred on its derivation-cohort mean."* Those are
+not two similar hypotheses. They differ by three orders of magnitude in effect, and I
+measured it rather than reasoning about it.
+
+For SAFEHEART, `p = 1 − S₀^exp(LP − c)`. I generated the full categorical SAFEHEART LP
+support (12 attainable values, 20,000 draws) and regressed `logit(p)` under each factorial
+variant on `logit(p)` under variant A:
+
+| Variant | mean predicted risk | max predicted risk | slope of logit(p) on logit(p_A) | r |
+|---|---|---|---|---|
+| **A** centred, S₀(5) | 0.0077 | 0.038 | 1.000000 | 1.0000000 |
+| **B** centred, S₀(10) | 0.0162 | 0.080 | **1.003478** | 0.9999975 |
+| **C** uncentred, S₀(5) | **0.486** | **1.000** | **1.956720** | 0.9413 |
+| **D** uncentred, S₀(10) | **0.623** | **1.000** | **3.325506** | 0.8915 |
+
+Three consequences, all decision-relevant:
+
+1. **The horizon arm is dead.** Swapping S₀(5)→S₀(10) moves the logistic calibration
+   slope by **0.35 %**. It moves calibration-in-the-large (intercept +0.786) and nothing
+   else. A wrong-horizon baseline survival **cannot** produce 0.55 instead of 1.0. Half
+   of OBJ-002's stated hypothesis is refutable by arithmetic before any data are touched.
+2. **The centring arm is alive and quantitatively predicts the observed cluster.** An
+   uncentred LP inflates the spread of `logit(p)` by ×1.957, so the fitted calibration
+   slope is **1/1.957 = 0.511** times the correctly-centred value. Julius reports
+   **0.52–0.57**. That is not a loose match; it is the predicted value.
+3. **`03_obj002_calibration_factorial.py:48` states the inference backwards:** *"If
+   uncentred or alternate S0 moves slope toward 1.0, mechanism is identified."* Uncentred
+   moves the slope **away** from 1.0, to ~0.5. Centred is the correct variant. A reader
+   following that note would conclude the opposite of what the numbers mean.
+
+There is a fourth consequence that matters more than the other three. **The calibration
+slope's sensitivity to centring depends entirely on which of two definitions was used**,
+and nobody recorded which:
+
+| Definition | Sensitive to centring? | Sensitive to S₀ horizon? |
+|---|---|---|
+| Cox slope: coefficient of LP in `Cox(T, E ~ LP)` | **No** — a constant shifts only the baseline hazard | **No** — S₀ never enters the fit |
+| Logistic slope: coefficient of `logit(p̂)` in `Logit(Y_h ~ logit(p̂))` | **Yes, ×0.51** | No (0.35 %) |
+
+If Julius used the **Cox** definition, then centring and horizon are *both* exonerated and
+the 0.55 cluster has a different cause entirely — most plausibly that the external LPs are
+genuinely over-dispersed for this cohort, which is the phenotype explanation, not a bug.
+The code must compute **both** definitions and report which one reproduces 0.52–0.57.
+That single addition converts a test that cannot fail into one that discriminates.
+
+### 1c. OBJ-001's settlement condition is unsatisfiable as written, for one of three comparators
+
+OBJ-001 says: *"Score all three comparators from the coefficients printed in the source
+PDFs on disk."* The Montreal PDF is not on disk. So one of three things must happen before
+this step can close, and the panel should say which:
+
+- obtain *J Clin Lipidol* 2017;11:1161–1167.e3; or
+- score Montreal **only** as `candidate implementation of Montreal-FH-SCORE`, per the
+  fidelity checklist's own naming rule (`comparator-fidelity.md`, line 38); or
+- drop Montreal from the head-to-head.
+
+There is a second, independent reason Montreal cannot carry the OBJ-002 diagnostic at all.
+COMP-08 states Montreal outputs are *"rank/classification outputs; no calibration, Brier
+score, decision curve, or absolute-risk claim is produced."* Montreal has **no baseline
+survival and no centring constant** — there is nothing to mis-apply. Yet step-002 §D.1
+reports **four** comparator calibration slopes clustered at 0.52–0.57. A calibration slope
+for a points score can only have been produced by fitting something. **Whatever produced
+Montreal's slope was a refit, and a refit comparator is not a comparator.** That is a
+sharper lead on the uniform-cluster question than the centring hypothesis, because it
+explains why the cluster is *uniform across scores with structurally incompatible output
+types*.
+
+### 1d. The freeze boundary, stated so it is enforceable rather than aspirational
+
+"Write, date and hash the specification before any comparator head-to-head" is a rule that
+has never yet bound anything in this project, because nothing refuses to run without it.
+The design below makes it mechanical: `assert_frozen()` raises unless
+`spec_frozen.json` exists **and** its SHA-256 matches the recomputed hash of the live
+feature list. Cells 4–6 (diagnostics) run before the freeze and are labelled
+`EXPLORATORY` in every output row. Cell 8 (head-to-head) calls `assert_frozen()` on its
+first line and cannot execute otherwise.
+
+### 1e. What must not be claimed until the artefacts exist
+
+| Claim | Blocked until |
+|---|---|
+| "CALON outperforms SAFEHEART / FH-RS" | Provenance table complete with `verified_against_pdf=True` for that comparator, on identical patients, B≥2000 paired CI, full subgroup table published |
+| Anything about Montreal | The Paquette PDF is on disk, or the word "candidate" is attached |
+| "The comparators are miscalibrated" | The slope definition is stated and the centred/uncentred arm is reported (§1b) |
+| "Age does not predict events in this cohort" | OBJ-003 refit **and** the 124-exclusion arm are both run |
+| "Two-cohort validation" | A frozen UKB coefficient vector is applied unrefitted to Wales |
+
+---
+
+## 2. Implementation
+
+I read all six cells of the existing settlement pack. Four contain a silent-degradation
+defect. Every one of them fails in the direction that helps CALON.
+
+### 2a. `02_obj001_dual_safeheart.py:47` deletes hypertension from both comparators
+
+```python
+df["htn"] = df.get("bp_med", df.get("hypertension", 0))  # TODO: build from p6153/p6177 if needed
+```
+
+Neither `bp_med` nor `hypertension` exists in `DATA-INVENTORY.md`. `DataFrame.get(key,
+default)` returns the default when the key is absent, so the inner call returns the **int
+0**, and the outer call returns that int. Assigning a scalar broadcasts it. Verified:
+
+```
+htn values: [0, 0, 0]   |  type of fallback: int  |  nunique(htn) = 1
+```
+
+Hypertension is a term in both scored functions — `0.69` in Spec Kit SAFEHEART, `0.4` in
+the local continuous form. Setting it to a constant removes a predictor from **the
+comparator only**; the model keeps its own `htn_any`. It lowers the comparator C-index. It
+raises `Δ = C(model) − C(comparator)`. **This line manufactures WINs, silently, with a
+`TODO` comment sitting next to it that reads as if the code were still pending.** It is
+not pending — it runs, and it returns a number.
+
+The inventory gives the correct construction and the pack ignores it: `participant.p6153_i0`
+(women) / `participant.p6177_i0` (men) code `2` from `04a_meds_touch.csv`, **or** `sbp≥140`
+**or** `dbp≥90`. Note also that UKB touchscreen codings use `-1` (do not know) and `-3`
+(prefer not to answer); mapping those to 0 is a second, smaller version of the same defect.
+
+Same cell, line 41: `df["male"] = (df["sex_F"] == 0)`. Verified — `NaN == 0` evaluates
+`False`, so unknown sex is coded **female**, removing the `0.70` male term. Same direction.
+
+### 2b. `02_obj001_dual_safeheart.py:76–82` discards everyone who did not have an event or die
+
+```python
+cc["tcen"] = pd.to_datetime(cc["death_date"]) if "death_date" in cc.columns else pd.NaT
+cc["t_end"] = cc["tev"].where(cc["event"] == 1, cc["tcen"])
+# TODO on Julius: set a hard admin censor date if t_end still null
+cc = cc.dropna(subset=["t_end"])
+```
+
+`tcen` is a death date — `NaT` for everyone still alive. So `t_end` is null for every
+event-free survivor, and `dropna` removes them. The surviving frame is **cases plus
+decedents only**. A C-index on that set is meaningless, and the code prints one. The
+`TODO` again reads as if the path were guarded; the `dropna` is what a guard would look
+like if it were an error suppressor.
+
+Nothing downstream would catch it, because — and this is the structural point —
+**not one check anywhere in the pack is an assertion.** `01_cohort_ledger_ukb.py:58–59`:
+
+```python
+"matches_3333": n_after_prev == 3333,
+"matches_3209": n_drop_undated == 3209 or n_after_prev == 3209,
+```
+
+These are printed booleans. `False` prints and execution continues into cells 2–5, which
+consume `risk`. A disjunction that can pass two ways is also not a test of either.
+
+### 2c. `01_cohort_ledger_ukb.py:33` puts heart failure into the atherosclerosis filter
+
+```python
+flag_cols = [c for c in ["i21_event","i25_event","i50_event","i63_event","i70_event","i73_event","g45_event"] ...]
+```
+
+`i50_event` is heart failure. Inventory trap 3 and the endpoint rule both exclude it
+(*"62 of 351 carrier events were heart-failure-only"*). Including it in `any_flag` makes
+undated HF-only participants count as "undated atherosclerotic cases", so `n_undated`
+cannot equal 124, and the cell will print `matches_3209: False` and carry on.
+
+### 2d. Unit handling — one real fork, one latent landmine
+
+Verified numerically. SAFEHEART LDL bands are **mg/dL** (100, 160):
+
+| Untreated LDL | mg/dL | correct term | term if mmol/L passed unconverted |
+|---|---|---|---|
+| 3.5 mmol/L | 135.3 | 0.92 | **0.00** |
+| 4.5 mmol/L | 174.0 | 1.57 | **0.00** |
+| 7.0 mmol/L | 270.7 | 1.57 | **0.00** |
+
+Every FH-range LDL collapses into the reference band. Cell 02 *does* convert
+(`ldl_mg = ldl_mmol * 38.67`), so it is safe — but nothing asserts it, and the same frame
+is reused by cells 3–4. One range assertion (`ldl_mg` median ∈ [90, 250]) closes it
+permanently.
+
+Lp(a) is a genuine fork, not a bug, and needs a recorded decision rather than a fix. UKB
+`lpa_chem` is nmol/L; Spec Kit's threshold is `>50 mg/dL` and COMP-05 forbids conversion
+by a fixed factor. The local pipeline's `>= 105` is a nmol/L rendering of 50 mg/dL
+(50 × 2.15 ≈ 107). Cell 02 passes nmol/L values straight into `lpa_mg_dl=`, which flags
+most of the cohort high and makes the 0.42 term near-constant. Three defensible policies —
+convert-and-declare, `COMPARATOR_NOT_EVALUABLE`, or sensitivity across both — and the code
+must pick one **in the provenance table**, not in a comment.
+
+### 2e. The Spec Kit's own tests cannot detect a wrong SAFEHEART coefficient
+
+`tests/test_comparators.py` has two SAFEHEART assertions, and they are the project's
+strongest current provenance evidence. I reproduced both:
+
+| Test | Inputs | LP | Reproduced risk |
+|---|---|---|---|
+| `test_published_low_risk_example` | age 20, F, BMI 22, LDL 90 mg/dL, Lp(a) 33, no HTN/smoke/ASCVD | **0.00** | 0.0002148 ✓ |
+| `test_published_high_risk_example` | age 63, M, BMI 31, LDL 182, Lp(a) 64, HTN+smoke+prior ASCVD | **7.71** | 0.380672 ✓ |
+
+The low-risk example has a linear predictor of **exactly zero** — every category sits at
+its reference level. It validates `S₀(5)=0.9532` and the centring constant `5.4078` and
+**no coefficient at all**. The high-risk example fires all eight terms simultaneously, so
+it constrains only their **sum**. I confirmed that eight fabricated coefficients of
+`7.71/8` each reproduce `0.38067233212040263` — bit-identical. **Any permutation or
+compensating pair of errors passes both tests.** COMP-11 ("boundary tests cover every
+category edge") is unticked, and it is the item that would have caught this. This is the
+same shape as the two QC checks whose condition was a constant.
+
+### 2f. Silent-failure modes the new design guards against, named
+
+| Guard | Defect it kills |
+|---|---|
+| `require()` raises, never prints a boolean | 2b/2c continuing past a failed count |
+| `validate="one_to_one"` on every merge | duplicate-eid fan-out changing n invisibly |
+| `nunique()` assertion on every comparator predictor | 2a constant-zero hypertension |
+| explicit `t_exit` completeness assertion, **no `dropna` on time** | 2b cohort annihilation |
+| `NOT_EVALUABLE` counters, never `fillna` | asymmetric imputation favouring the model |
+| single `FROZEN` frame + row-index set shared by model and every comparator | "identical patients" being asserted rather than enforced |
+| unit range assertions on `ldl_mg`, `lpa` | 2d band collapse |
+| `BANNED` token scan on every print | governance |
+| `assert_frozen()` on line 1 of the head-to-head cell | post-hoc specification |
+
+---
+
+## 3. Adversarial audit
+
+**Assume the code I am designing still produces a false WIN. How?**
+
+**Route 1 — the evaluable-set trapdoor.** The single most likely residual failure. If a
+comparator returns `NOT_EVALUABLE` for the 22.5 % with missing Lp(a) while the model
+scores everyone, then `C(model)` and `C(comparator)` are computed on different people, and
+the difference is a selection effect. My design forces a shared index — but it can still
+fail if the *model's* own missingness handling drops a different set. **The assertion that
+catches it:** `assert len(idx_model_scored ^ idx_comp_scored) == 0` for every comparator ×
+subgroup cell, plus printing `n_evaluable` next to every delta. A delta with no
+`n_evaluable` beside it is not reportable.
+
+**Route 2 — the head-to-head is in-sample for the model and out-of-sample for the
+comparator.** Structurally unavoidable and the largest single bias in the whole programme.
+The comparator is a fixed external function; CALON is fitted here. Cross-validation
+reduces but does not eliminate it, and the pack does nothing about it. **Catch:** compute
+each Δ twice, once with a cross-validated model LP and once with the apparent LP. If
+Δ_apparent − Δ_cv is of the same order as Δ itself, the WIN is optimism. Report both or
+neither.
+
+**Route 3 — multiplicity across 39 correlated cells.** The 13 UKB subgroups are ALL plus
+six complementary pairs, so each participant appears in 7 of 13 rows. At 95 % nominal
+coverage over 39 dependent tests, a handful of WINs is the null expectation. **Catch:** a
+permutation null — shuffle the model LP within the frozen cohort 1,000 times, re-run the
+whole tally, and report the null distribution of the WIN count. If the observed 10 sits
+inside it, the headline is noise. This is the one test that could invalidate the entire
+result set and it costs an afternoon.
+
+**Route 4 — the reference counts themselves are wrong.** My design asserts against
+3,540 / 207 / 124 / 3,209 / 97 / 194 / 289. If those numbers were themselves produced by a
+buggy pipeline, my assertions enforce the bug. This is real and I cannot escape it from
+here. **Mitigation:** the ledger prints the count under *both* plausible interpretations at
+each step and requires that one of them matches, so a mismatch localises to a named
+exclusion rather than "somewhere upstream".
+
+**Route 5 — OBJ-002 returns four near-identical slopes and is read as exoneration.** Under
+the Cox definition this is *guaranteed*, not informative. A reader who does not know §1b
+will write "we tested centring and horizon; neither explained the compression; the
+comparators are genuinely miscalibrated." That sentence would be false. **Catch:** the code
+prints the pre-registered expected ratios (1.000 / 1.003 / 1.957 / 3.326) beside the
+observed ones and refuses to emit a conclusion string when the Cox definition is used.
+
+**What would have failed if the existing pack were sound?** `nunique(htn) == 1` would have
+been printed and it is not computed. `len(cc)` after the censoring block would have been
+compared to 3,209 and it is not. `n_undated == 124` would have raised and it only prints.
+Three assertions, none present.
+
+---
+
+## 4. Clinical and publication reality
+
+**What a lipidologist demands from these artefacts.** Three things, in this order, and
+none of them is a C-index. (i) *"Show me the equation you scored, next to the paper."* The
+provenance table is the whole review; without it the comparison is unassessable and a
+reviewer stops there. (ii) *"On how many patients?"* — `n_evaluable` per cell, because a
+comparator that needs Lp(a) in a cohort where Lp(a) is 22.5 % missing is being judged on a
+selected subgroup. (iii) *"What is the predicted risk range?"* — the fastest possible test
+of §1b. If Julius's SAFEHEART predicted a mean 5-year risk near 50 % in a
+primary-prevention carrier cohort, no clinician needs a calibration slope to know
+something is wrong. **That single number should be printed first in the OBJ-002 output.**
+
+**Where the over-claim risk is highest, ranked.** First, the word "published" attached to
+Montreal, which has no PDF on disk — that is precisely the failure this project has
+already had once, and it is currently one docstring away from recurring. Second, any
+sentence containing "outperforms" before the freeze hash exists. Third, calibration
+language about ranking scores, which COMP-08 forbids outright. Fourth — and this one is a
+matter of scientific fact, not caution — the endpoint. Event-date completeness is I21
+100 %, I25 100 %, I63 40.9 %, I70 64.3 %, I73 52.8 %, G45 37.0 %. The endpoint is
+coronary-weighted by ascertainment. "ASCVD" overstates it; "coronary-weighted incident
+atherosclerotic events" is what was measured, and the constraint is unfixable, so it
+belongs in the abstract rather than the limitations.
+
+**What is honestly sayable today, before any of this runs.** That two independent analyses
+of one dataset agree on Montreal to 0.003 and disagree on SAFEHEART by 0.066 and FH-RS by
+0.023; that the disagreements fall entirely on the two comparators requiring Lp(a) and
+LDL-C bands; that both declared WINs sit inside that disagreement; and that the comparator
+implementations differ structurally between two files in the same repository. That is a
+complete and publishable methods finding on its own — *"comparator implementation
+sensitivity dominates the reported advantage"* — and it does not require the head-to-head
+to resolve in CALON's favour. It is also the honest use of `CLAUDE.md` §4: concede the
+weak link first.
+
+**One point in CALON's favour that this panel should not lose.** The FH-RS paper states
+Montreal's C-index as 0.67. The local pipeline gets 0.6671 and Julius gets 0.670. The one
+comparator that can be checked against an external anchor reproduces on both pipelines. It
+is evidence the cohort and endpoint plumbing is sound and that the problem is localised to
+the two lipid-band comparators.
+
+---
+
+```objection
+id: OBJ-301
+step: 003
+raised_by: claude
+claim: The OBJ-002 factorial as designed in debate/julius-settlement-pack/03_obj002_calibration_factorial.py contains one arm that cannot move the calibration slope and states the direction of the other arm backwards, so it can produce a false exoneration. Measured on the full attainable Spec Kit SAFEHEART linear predictor support (12 values, 20000 draws, S0={5:0.9532,10:0.9025}, centre 5.4078): regressing logit(p) under each variant on logit(p) under centred-5y gives slope 1.003478 for centred-10y (r=0.9999975), 1.956720 for uncentred-5y and 3.325506 for uncentred-10y. A wrong-horizon baseline survival therefore moves the logistic calibration slope by 0.35 percent and cannot produce 0.55 instead of 1.0; it moves only calibration-in-the-large (intercept +0.786). Dropping the centring constant compresses the fitted slope by 1/1.957 = 0.511, which is the observed 0.52-0.57 cluster. Line 48 of that script reads "If uncentred or alternate S0 moves slope toward 1.0, mechanism is identified", which is inverted: uncentred moves the slope away from 1.0. Separately, the slope's sensitivity depends entirely on which definition was used and neither Julius nor the pack records it: a Cox slope (coefficient of LP in Cox(T,E~LP)) is exactly invariant to both centring and baseline survival, so under that definition all four cells return the same number by construction and the diagnostic cannot fail.
+settled_by: Run the factorial computing BOTH slope definitions - Cox coefficient of LP, and logistic coefficient of logit(p-hat) at each horizon - for centred and uncentred SAFEHEART, and print mean, min and max predicted risk for all four cells alongside the four slopes. Assert that the observed centred-to-uncentred logistic slope ratio is within 0.05 of 0.511 and the centred-5y-to-centred-10y ratio within 0.02 of 1.003. Report which definition reproduces the published 0.52-0.57 cluster. If the Cox definition reproduces it, centring and horizon are both excluded and OBJ-002 must be re-scoped.
+status: OPEN
+```
+
+```objection
+id: OBJ-302
+step: 003
+raised_by: claude
+claim: debate/julius-settlement-pack/02_obj001_dual_safeheart.py line 47 sets df["htn"] = df.get("bp_med", df.get("hypertension", 0)). Neither bp_med nor hypertension is a column in debate/DATA-INVENTORY.md, so pandas DataFrame.get returns the integer 0 and assignment broadcasts a constant. Verified in this session: values [0,0,0], nunique 1. Hypertension is a scored term in both implementations - 0.69 in Spec Kit SAFEHEART and 0.4 in the local continuous form - so the cell silently deletes a predictor from the comparator only, lowering C(comparator) and raising delta = C(model) - C(comparator). The inventory specifies the correct construction (participant.p6153_i0 / participant.p6177_i0 code 2 in 04a_meds_touch.csv, or sbp>=140, or dbp>=90) and the code ignores it behind a TODO comment that reads as though the path were not yet live. Line 41, df["male"] = (df["sex_F"] == 0), fails in the same direction: NaN == 0 evaluates False, so unknown sex is coded female and loses the 0.70 male term. Every WIN produced by this cell is biased toward CALON.
+settled_by: Rebuild hypertension from 04a_meds_touch.csv participant.p6153_i0 and participant.p6177_i0 (code 2, with -1 and -3 mapped to missing not zero) combined with sbp>=140 or dbp>=90, assert nunique>=2 and print the prevalence, then rerun the dual-SAFEHEART C-indices. Report C_safeheart_speckit and C_safeheart_local before and after the fix. Add an assertion that every scored comparator predictor has nunique>=2 in the frozen cohort, and confirm it fails on the current code.
+status: OPEN
+```
+
+```objection
+id: OBJ-303
+step: 003
+raised_by: claude
+claim: debate/julius-settlement-pack/02_obj001_dual_safeheart.py lines 76-82 set tcen to death_date only, then t_end = tev where event==1 else tcen, then cc = cc.dropna(subset=["t_end"]). death_date is NaT for every surviving participant, so t_end is null for all event-free survivors and dropna removes them; the C-index is then computed on cases plus decedents only. The code runs and prints a number. Nothing downstream detects it because no check in the entire six-cell pack is an assertion: 01_cohort_ledger_ukb.py lines 58-59 emit "matches_3333" and "matches_3209" as printed booleans, and the latter is a disjunction (n_drop_undated == 3209 or n_after_prev == 3209) that can pass two ways, so a False prints and execution continues into cells 2-5 which consume the same frame. Separately, line 33 of that ledger includes i50_event in the flag list used to define undated atherosclerotic cases, contradicting the endpoint rule in DATA-INVENTORY.md that excludes I50 heart failure, so n_undated cannot equal the reference 124.
+settled_by: Replace every printed boolean in the pack with a raising assertion against the DATA-INVENTORY reference counts 3540, 207, 124, 3209, 97, 194, 289. Remove i50_event from the undated-case flag list and confirm n_undated == 124 exactly. Replace the death-only censoring with t_exit = min(event date, death date, administrative censor) and assert t_exit.isna().sum() == 0 with no dropna on time; print n and events after the censoring block and require them to equal 3209 and 289. Report the SAFEHEART C-index before and after, on the corrected risk set.
+status: OPEN
+```
+
+```objection
+id: OBJ-304
+step: 003
+raised_by: claude
+claim: OBJ-001's settlement condition requires scoring all three comparators from coefficients printed in source PDFs on disk, and for Montreal-FH-SCORE no such PDF exists. A find across /Users/nader85/Documents/CALON returns SAFEHEART_2017.pdf and FH_Risk_Score_2021.pdf under thesis_60000_consensus/sources/ and no Paquette or Montreal PDF anywhere; the score appears only as reference 15 inside FH_Risk_Score_2021.pdf, cited as J Clin Lipidol 2017;11:1161-1167.e3. OBJ-001 therefore cannot close for Montreal on current resources. Independently, Montreal is a points/ranking instrument with no baseline survival and no centring constant, and comparator-fidelity.md COMP-08 states its outputs are rank or classification only with no calibration or absolute-risk claim permitted - yet step-002 section D.1 reports four comparator calibration slopes clustered at 0.52-0.57. A calibration slope for a points score can only have been produced by fitting a transformation, which is a refit, and a refit comparator is not the published comparator. That is a stronger candidate explanation for a slope cluster that is uniform across structurally incompatible output types than the centring hypothesis in OBJ-002.
+settled_by: Record on disk whether the Paquette 2017 Montreal PDF is present, by path. If absent, either obtain it or label every Montreal result "candidate implementation of Montreal-FH-SCORE" per the naming rule at comparator-fidelity.md line 38 and exclude Montreal from any published head-to-head. Separately, print the exact procedure that produced each of the four calibration slopes in the Julius run, name the four scores, and state for Montreal and FH-Risk-Score what function mapped points to a probability and whether its parameters were estimated in the analysis cohort. If any were estimated there, withdraw those two slopes.
+status: OPEN
+```
+
+```objection
+id: OBJ-305
+step: 003
+raised_by: claude
+claim: CALON_JULIUS_SPECKIT/tests/test_comparators.py cannot detect an individually wrong SAFEHEART coefficient, so it does not establish the provenance the comparator-fidelity checklist requires. Reproduced in this session: test_published_low_risk_example (age 20, female, BMI 22, LDL 90 mg/dL, Lp(a) 33, no hypertension, no smoking, no prior ASCVD) has a linear predictor of exactly 0.00 - every category sits at its reference level - so it validates S0(5)=0.9532 and the centring constant 5.4078 and no coefficient whatsoever. test_published_high_risk_example fires all eight terms at once for a linear predictor of 7.71, so it constrains only their sum; eight fabricated coefficients of 7.71/8 each reproduce 0.38067233212040263 bit-identically. Any permutation of the eight coefficients, or any pair of compensating errors, passes both tests. COMP-11 (boundary tests covering every category edge) and COMP-03 (independent second transcription) are both unticked in specs/001-calon-fh-5y/checklists/comparator-fidelity.md. This is the same defect shape as the two quality checks whose condition was a constant.
+settled_by: Add one boundary test per SAFEHEART category edge that isolates a single term - two otherwise identical input sets differing only in that predictor - and assert the difference in linear predictor equals the published coefficient for that term to 1e-12. Twelve such tests are needed (male, two age bands, hypertension, prior ASCVD, smoking, two BMI bands, two LDL bands, Lp(a)). Confirm each coefficient against the table in thesis_60000_consensus/sources/SAFEHEART_2017.pdf by page and table number, transcribed independently by a second reader, and record page and table in the provenance table. Report which tests pass on the current implementation.
+status: OPEN
+```
+
+```objection
+id: OBJ-306
+step: 003
+raised_by: claude
+claim: No design in this step guards against the head-to-head being in-sample for CALON and out-of-sample for every comparator, and the tally is computed over 39 dependent cells with no multiplicity control. The 13 UK Biobank subgroups are ALL plus six complementary pairs, so each participant appears in 7 of 13 rows; at 95 percent nominal coverage across 39 correlated tests, a handful of WINs is the null expectation, and step-002 reports exactly 10. The comparator is a fixed external function scored once, whereas CALON's linear predictor is estimated in the same data, so any residual optimism in the model LP transfers directly into delta. Neither the existing settlement pack nor the OBJ-001 settlement condition requires the null distribution of the WIN count or the apparent-versus-cross-validated delta gap, so the code as specified can return a WIN table that is entirely consistent with no true advantage.
+settled_by: Compute every delta twice, once with a cross-validated model linear predictor and once with the apparent linear predictor, and report delta_apparent minus delta_cv for the ALL cell of each comparator; if that gap is of the same order as delta itself, the advantage is optimism. Then permute the model linear predictor within the frozen cohort 1000 times, re-run the full 39-cell tally on each permutation, and report the null distribution of the WIN count against the observed 10. If 10 lies inside the central 95 percent of that null, no WIN may be claimed.
+status: OPEN
+```
+
+**Numbering note.** Round 1 is blind and parallel, so id collisions are certain if agents
+pick from the same range. I have used the `OBJ-30x` block deliberately to sit clear of the
+low range others will reach for. Renumber on merge if the schema needs contiguity.
+
+---
+
+## Artefacts
+
+Nine Julius cells. Paste in order into one kernel; each depends on the previous.
+Aggregate output only. No `eid`, no dates of birth, no family identifiers, no row dumps.
+Reference counts are **assertions** — a mismatch stops the notebook.
+
+### Paste order
+
+| Cell | File | Purpose | Gate |
+|---|---|---|---|
+| 0 | `00_governance.py` | Config, fail-loud helpers, banned-token print filter | — |
+| 1 | `01_frozen_cohort_ukb.py` | Cohort ledger; reproduces 3540→207→124→3209 / 97/194/289 or stops | raises |
+| 2 | `02_provenance_registry.py` | Immutable comparator provenance table + **PDF TODOs** | raises on unverified |
+| 3 | `03_scoring_functions.py` | Pure scorers pasted from Spec Kit; `NOT_EVALUABLE` policy | raises on unit error |
+| 4 | `04_obj001_rescore.py` | Patient-set audit → C-indices → paired bootstrap B=2000 → full subgroup table | EXPLORATORY label |
+| 5 | `05_obj002_factorial.py` | A/B/C/D × **two slope definitions** + predicted-risk range | EXPLORATORY label |
+| 6 | `06_obj003_collinearity.py` | Pearson r, condition number, VIF, 2×2 refit × 124-exclusion | EXPLORATORY label |
+| 7 | `07_freeze.py` | Writes `spec_frozen.json` + SHA-256 | must run before cell 8 |
+| 8 | `08_confirmatory.py` | Head-to-head, both horizons, full win/tie/loss table | `assert_frozen()` line 1 |
+
+---
+
+### Cell 0 — `00_governance.py`
+
+```python
+# ====================== CELL 0 — governance & fail-loud helpers ======================
+# UK Biobank Application 1002450. AGGREGATE OUTPUT ONLY.
+# Nothing here may print eid, DOB, postcode, FamilyNumber, DatabaseNumber or a variant.
+from __future__ import annotations
+import hashlib, json, math
+from pathlib import Path
+import numpy as np, pandas as pd
+
+RAW = Path("CALON_DATA_PACKAGE_2026-08-13/raw/all_inputs")   # <-- EDIT for Julius
+OUT = Path("calon_settlement_out"); OUT.mkdir(exist_ok=True)
+
+SEED, B_BOOT, MIN_EVENTS = 20260815, 2000, 10
+MMOL_TO_MGDL_CHOL = 38.67          # documented conversion; recorded in provenance table
+
+# DATA-INVENTORY.md reference counts. These are ASSERTIONS, not decoration.
+REF = dict(rows=501936, ukb_carriers=3540, prevalent=207, undated=124, risk_set=3209,
+           ev5=97, ev10=194, ev_full=289,
+           wales_positive=2405, wales_risk=1159, wales_events=92, dragon=424)
+
+BANNED = {"eid", "DOB", "DOB_1", "FamilyNumber", "DatabaseNumber",
+          "death_date", "date_baseline", "postcode", "variant_id"}
+
+def emit(obj, label=""):
+    """Print JSON, refusing anything that could carry an identifier."""
+    s = json.dumps(obj, indent=2, default=str)
+    for b in BANNED:
+        if f'"{b}"' in s:
+            raise RuntimeError(f"GOVERNANCE STOP: '{b}' present in output '{label}'")
+    print(f"--- {label} ---" if label else "", s, sep="\n")
+
+def expect(name, got, want, tol=0):
+    ok = abs(int(got) - int(want)) <= tol
+    print(f"[{'PASS' if ok else 'FAIL'}] {name}: got {got}, reference {want}")
+    return ok
+
+def require(name, got, want, tol=0):
+    """The difference between this pack and the last one: this raises."""
+    if not expect(name, got, want, tol):
+        raise AssertionError(f"{name}: got {got}, reference {want}. Diagnose; do not continue.")
+
+def need_cols(df, cols, who):
+    miss = [c for c in cols if c not in df.columns]
+    if miss:
+        raise KeyError(f"{who} missing required columns: {miss}")
+
+def require_varying(series, name):
+    """Kills the constant-zero-predictor class of defect (OBJ-302)."""
+    k = int(pd.Series(series).nunique(dropna=True))
+    if k < 2:
+        raise AssertionError(f"{name} has nunique={k} in the frozen cohort — "
+                             f"a scored predictor cannot be constant. Check its construction.")
+    print(f"[PASS] {name}: nunique={k}")
+
+def sha(obj):
+    return hashlib.sha256(json.dumps(obj, sort_keys=True, default=str).encode()).hexdigest()
+
+def estimable(n_events, label):
+    if int(n_events) < MIN_EVENTS:
+        print(f"{label}: <10, non-estimable")
+        return False
+    return True
+
+print("CELL 0 OK — aggregates only; every reference count raises on mismatch.")
+```
+
+---
+
+### Cell 1 — `01_frozen_cohort_ukb.py`
+
+```python
+# ====================== CELL 1 — frozen UK Biobank risk set ======================
+ukb  = pd.read_csv(RAW / "ukb_master.csv", low_memory=False)
+outc = pd.read_csv(RAW / "corrected_ascvd_outcomes.csv", low_memory=False)
+bpm  = pd.read_csv(RAW / "04a_meds_touch.csv", low_memory=False)
+
+for d, nm in ((ukb, "ukb_master"), (outc, "outcomes"), (bpm, "bpmeds")):
+    require(f"{nm} rows", len(d), REF["rows"])
+    if d["eid"].duplicated().any():
+        raise AssertionError(f"{nm}: duplicate eid — a join would fan out silently")
+
+m = (ukb.merge(outc, on="eid", how="inner", validate="one_to_one", suffixes=("", "_out"))
+        .merge(bpm, on="eid", how="left",  validate="one_to_one"))
+require("post-join rows", len(m), REF["rows"])
+
+# ---- endpoint: i21|i25|i63|i70|i73|g45.  I50 (heart failure) EXCLUDED (trap 3) ----
+COMP = ["i21_event", "i25_event", "i63_event", "i70_event", "i73_event", "g45_event"]
+need_cols(m, COMP + ["i50_event", "ascvd_first_date_best", "ascvd_first_date_dated",
+                     "ldlr_carrier", "date_baseline", "age_exact_baseline", "sex_F"], "joined UKB")
+atx = m[COMP].fillna(0).astype(float).gt(0).any(axis=1)
+hf_only = m["i50_event"].fillna(0).astype(float).gt(0) & ~atx
+print(f"I50-only participants excluded from the endpoint: {int(hf_only.sum())}")
+
+# ---- hypertension, built properly (OBJ-302). -1/-3 are unknown, NOT zero. ----
+def _tok(x):
+    if pd.isna(x): return set()
+    return {t for t in str(x).replace(",", " ").replace("|", " ").split() if t}
+
+def bpmed_flag(col):
+    if col not in m.columns:
+        raise KeyError(f"{col} absent — BP medication cannot be constructed; do not default to 0")
+    t = m[col].map(_tok)
+    has2    = t.map(lambda s: "2" in s)
+    unknown = t.map(lambda s: bool(s & {"-1", "-3"}))
+    empty   = t.map(lambda s: len(s) == 0)
+    out = pd.Series(np.where(has2, 1.0, 0.0), index=m.index)
+    out[(unknown & ~has2) | empty] = np.nan
+    return out
+
+bp_any = bpmed_flag("participant.p6153_i0").combine_first(bpmed_flag("participant.p6177_i0"))
+bp_any = bpmed_flag("participant.p6153_i0").fillna(0) + bpmed_flag("participant.p6177_i0").fillna(0)
+bp_any = (bp_any > 0).astype(float).where(
+    bpmed_flag("participant.p6153_i0").notna() | bpmed_flag("participant.p6177_i0").notna())
+m["htn_any"] = ((bp_any.fillna(0) > 0) |
+                (pd.to_numeric(m["sbp"], errors="coerce") >= 140) |
+                (pd.to_numeric(m["dbp"], errors="coerce") >= 90)).astype(float)
+m.loc[bp_any.isna() & m["sbp"].isna() & m["dbp"].isna(), "htn_any"] = np.nan
+
+# ---- cohort ledger: reproduce the inventory chain or stop ----
+car = m[m["ldlr_carrier"].fillna(0).astype(float).eq(1)].copy()
+require("UKB LDLR carriers", len(car), REF["ukb_carriers"])
+
+t0  = pd.to_datetime(car["date_baseline"], errors="coerce")
+tev = pd.to_datetime(car["ascvd_first_date_best"], errors="coerce")
+atx_c = atx.loc[car.index]
+
+prevalent = atx_c & tev.notna() & (tev <= t0)
+require("prevalent ASCVD excluded", int(prevalent.sum()), REF["prevalent"])
+
+# atherosclerosis-positive with no usable date -> EXCLUDE, never a non-case
+undated = atx_c & tev.isna()
+require("undated atherosclerotic excluded", int(undated.sum()), REF["undated"])
+
+risk = car.loc[~prevalent & ~undated].copy()
+require("risk set", len(risk), REF["risk_set"])
+
+t0  = t0.loc[risk.index]; tev = tev.loc[risk.index]
+event_full = (tev.notna() & (tev > t0))
+require("events, full follow-up", int(event_full.sum()), REF["ev_full"])
+
+ty = (tev - t0).dt.days / 365.25
+require("events, 5 y",  int((event_full & ty.le(5)).sum()),  REF["ev5"])
+require("events, 10 y", int((event_full & ty.le(10)).sum()), REF["ev10"])
+
+# ---- censoring: no dropna on time, ever (OBJ-303) ----
+ADMIN_CENSOR = pd.Timestamp("2022-10-31")   # TODO Julius: set to the linkage cut actually used
+dth = pd.to_datetime(risk["death_date"], errors="coerce")
+t_exit = tev.where(event_full, dth.clip(upper=ADMIN_CENSOR).fillna(ADMIN_CENSOR))
+if t_exit.isna().any():
+    raise AssertionError(f"{int(t_exit.isna().sum())} null exit times — fix the censoring rule; "
+                         f"do NOT dropna, that silently deletes survivors")
+
+FROZEN = pd.DataFrame(index=range(len(risk)))
+FROZEN["time_years"]   = ((t_exit - t0).dt.days / 365.25).to_numpy()
+FROZEN["event"]        = event_full.astype(int).to_numpy()
+FROZEN["age"]          = pd.to_numeric(risk["age_exact_baseline"], errors="coerce").to_numpy()
+FROZEN["male"]         = np.where(pd.to_numeric(risk["sex_F"], errors="coerce").eq(0), 1.0,
+                          np.where(pd.to_numeric(risk["sex_F"], errors="coerce").eq(1), 0.0, np.nan))
+FROZEN["htn_any"]      = risk["htn_any"].to_numpy()
+FROZEN["smoke_curr"]   = pd.to_numeric(risk["smoking_current"], errors="coerce").to_numpy()
+FROZEN["smoke_ever"]   = pd.to_numeric(risk["smoking_ever"],  errors="coerce").to_numpy()
+FROZEN["bmi"]          = pd.to_numeric(risk["bmi_direct"], errors="coerce").to_numpy()
+FROZEN["hdl"]          = pd.to_numeric(risk["hdl_chem"],  errors="coerce").to_numpy()
+FROZEN["tc"]           = pd.to_numeric(risk["tc_chem"],   errors="coerce").to_numpy()
+FROZEN["ldl"]          = pd.to_numeric(risk["ldl_chem"],  errors="coerce").to_numpy()
+FROZEN["lpa_nmol"]     = pd.to_numeric(risk["lpa_chem"],  errors="coerce").to_numpy()
+FROZEN["dm"]           = pd.to_numeric(risk["diabetes_combined"], errors="coerce").to_numpy()
+FROZEN["on_statin"]    = pd.to_numeric(risk["on_statin_self"], errors="coerce").to_numpy()
+
+# untreated scale: divide by 0.70 where treated (NEVER applied to Welsh MtachedLDLC)
+tr = FROZEN["on_statin"].fillna(0).eq(1)
+FROZEN["ldl_unt"] = np.where(tr, FROZEN["ldl"] / 0.70, FROZEN["ldl"])
+FROZEN["tc_unt"]  = np.where(tr, FROZEN["tc"]  / 0.70, FROZEN["tc"])
+FROZEN["nonhdl_unt"] = FROZEN["tc_unt"] - FROZEN["hdl"]
+
+require_varying(FROZEN["htn_any"],    "htn_any")     # the OBJ-302 guard
+require_varying(FROZEN["male"],       "male")
+require_varying(FROZEN["smoke_curr"], "smoke_curr")
+
+MISSINGNESS = {c: float(FROZEN[c].isna().mean().round(4)) for c in FROZEN.columns}
+COHORT_HASH = sha({"n": len(FROZEN), "events": int(FROZEN.event.sum()),
+                   "cols": sorted(FROZEN.columns), "missingness": MISSINGNESS})
+emit({"n": len(FROZEN), "events_full": int(FROZEN.event.sum()),
+      "events_5y": int(((FROZEN.event == 1) & (FROZEN.time_years <= 5)).sum()),
+      "events_10y": int(((FROZEN.event == 1) & (FROZEN.time_years <= 10)).sum()),
+      "median_followup_y": float(FROZEN.time_years.median().round(3)),
+      "missingness": MISSINGNESS, "cohort_sha256": COHORT_HASH}, "FROZEN UKB COHORT")
+```
+
+---
+
+### Cell 2 — `02_provenance_registry.py` (the artefact OBJ-001 asks for)
+
+```python
+# ====================== CELL 2 — comparator provenance registry ======================
+# One immutable row per comparator. verified_against_pdf starts False and STAYS False
+# until a human types the values from the PDF table and ticks it. Cell 8 refuses to
+# publish a head-to-head for any comparator whose flag is False.
+
+PROVENANCE = pd.DataFrame([
+ dict(comparator="SAFEHEART-RE",
+      citation="Perez de Isla L et al., Circulation 2017",
+      pdf_on_disk="thesis_60000_consensus/sources/SAFEHEART_2017.pdf",
+      pdf_present=True,
+      source_pinpoint="TODO: page + table number for the coefficient table",
+      form="Cox, categorical linear predictor",
+      predictors="male; age 30-60; age>=60; hypertension; prior ASCVD; smoking; "
+                 "BMI 25-30; BMI>=30; LDL 100-160 mg/dL; LDL>=160 mg/dL; Lp(a)>50 mg/dL",
+      centring_constant=5.4078,
+      baseline_survival="S0(5)=0.9532, S0(10)=0.9025",
+      units="LDL mg/dL; Lp(a) mg/dL; BMI kg/m2",
+      endpoint="TODO: transcribe published endpoint definition",
+      horizon="5 y and 10 y",
+      derivation_cohort="TODO: transcribe n and setting",
+      unavailable_data_policy="prior ASCVD fixed 0 -> label 'restricted primary-prevention "
+                              "application' (COMP-06); Lp(a) unit policy: see LPA_POLICY",
+      verified_against_pdf=False),
+ dict(comparator="FH-Risk-Score",
+      citation="Arteriosclerosis Thrombosis and Vascular Biology 2021;41:2632-2640, "
+               "DOI 10.1161/ATVBAHA.121.316106",
+      pdf_on_disk="thesis_60000_consensus/sources/FH_Risk_Score_2021.pdf",
+      pdf_present=True,
+      source_pinpoint="TODO: page + figure/table number for the points chart",
+      form="points chart -> categorical 10-year risk band",
+      predictors="male; age band; HDL band; untreated LDL band (mmol/L); hypertension; "
+                 "active smoking; Lp(a)>=50",
+      centring_constant=None, baseline_survival=None,
+      units="HDL mmol/L; LDL mmol/L; Lp(a) mg/dL",
+      endpoint="TODO", horizon="10 y", derivation_cohort="TODO",
+      unavailable_data_policy="native age range 18-65; participants outside -> NOT_EVALUABLE",
+      verified_against_pdf=False),
+ dict(comparator="Montreal-FH-SCORE",
+      citation="Paquette M, Dufour R, Baass A. J Clin Lipidol 2017;11:1161-1167.e3",
+      pdf_on_disk=None,
+      pdf_present=False,                    # <-- verified absent from disk, OBJ-304
+      source_pinpoint="UNOBTAINABLE — cited only as ref 15 inside FH_Risk_Score_2021.pdf",
+      form="integer points; RANKING ONLY",
+      predictors="age band; HDL band; hypertension; smoking ever; male",
+      centring_constant=None, baseline_survival=None,
+      units="HDL mmol/L",
+      endpoint="TODO", horizon="ranking, no horizon", derivation_cohort="TODO",
+      unavailable_data_policy="COMP-08: no calibration, Brier, decision curve or "
+                              "absolute-risk output permitted",
+      verified_against_pdf=False),
+]).set_index("comparator")
+
+# Lp(a) unit policy — a recorded decision, not a comment (COMP-05 forbids fixed-factor conversion)
+LPA_POLICY = "NOT_EVALUABLE"   # {"NOT_EVALUABLE", "CONVERT_2.15_DECLARED", "SENSITIVITY_BOTH"}
+
+def assert_provenance_ok(name, allow_candidate=False):
+    row = PROVENANCE.loc[name]
+    if not row.pdf_present:
+        raise AssertionError(f"{name}: no source PDF on disk. Label 'candidate implementation "
+                             f"of {name}' (comparator-fidelity.md naming rule) or exclude it.")
+    if not row.verified_against_pdf and not allow_candidate:
+        raise AssertionError(f"{name}: verified_against_pdf is False. "
+                             f"Transcribe the coefficients from {row.pdf_on_disk} and re-run.")
+
+# ============================ TODO — HUMAN ACTION REQUIRED ============================
+# Open thesis_60000_consensus/sources/SAFEHEART_2017.pdf and FH_Risk_Score_2021.pdf.
+# Type each coefficient / point value from the printed table into SAFEHEART_PDF and
+# FHRS_PDF below. Do NOT copy them from comparators.py and do NOT type them from memory.
+# A second reader repeats this independently (COMP-03) and the two dicts are diffed.
+#
+# I have verified that the tokens 5.4078, 0.9532, 0.9025, 1.07, 1.45, 0.69, 1.42, 0.48,
+# 0.88, 0.98, 0.92, 1.57, 0.70 and 0.42 all appear in the extractable text of
+# SAFEHEART_2017.pdf. That establishes the Spec Kit numbers were transcribed from that
+# document. It does NOT establish that each number is attached to the predictor the Spec
+# Kit attaches it to. Only reading the table does that.
+SAFEHEART_PDF = {}   # e.g. {"male": ..., "age_30_60": ..., "prior_ascvd": ..., "S0_5": ...}
+FHRS_PDF      = {}
+# ======================================================================================
+
+emit(PROVENANCE.reset_index().to_dict("records"), "COMPARATOR PROVENANCE (pre-verification)")
+PROVENANCE.reset_index().to_csv(OUT / "comparator_provenance.csv", index=False)
+```
+
+---
+
+### Cell 3 — `03_scoring_functions.py` (pasted from Spec Kit, never re-derived)
+
+```python
+# ====================== CELL 3 — pure scoring functions ======================
+# Bodies below are pasted verbatim from
+# /Users/nader85/Documents/CALON/CALON_JULIUS_SPECKIT/scripts/comparators.py
+# Nothing here is reconstructed from memory. Missing input -> NOT_EVALUABLE (NaN), never
+# an imputed "normal" value (COMP-10).
+
+class ComparatorInputError(ValueError): pass
+NOT_EVALUABLE = np.nan
+
+def safeheart_linear_predictor(*, age_years, male, prior_ascvd, hypertension,
+                               bmi_kg_m2, active_smoking, ldl_mg_dl, lpa_mg_dl):
+    age, bmi, ldl, lpa = float(age_years), float(bmi_kg_m2), float(ldl_mg_dl), float(lpa_mg_dl)
+    if age < 18: raise ComparatorInputError("SAFEHEART adult application requires age >=18")
+    if bmi <= 0 or ldl < 0 or lpa < 0: raise ComparatorInputError("non-negative inputs required")
+    lp  = 0.70 * bool(male)
+    lp += 1.07 * (30 <= age < 60)
+    lp += 1.45 * (age >= 60)
+    lp += 0.69 * bool(hypertension)
+    lp += 1.42 * bool(prior_ascvd)
+    lp += 0.48 * bool(active_smoking)
+    lp += 0.88 * (25 <= bmi < 30)
+    lp += 0.98 * (bmi >= 30)
+    lp += 0.92 * (100 <= ldl < 160)
+    lp += 1.57 * (ldl >= 160)
+    lp += 0.42 * (lpa > 50)
+    return float(lp)
+
+SAFEHEART_S0, SAFEHEART_CENTRE = {5: 0.9532, 10: 0.9025}, 5.4078
+
+def safeheart_risk(lp, horizon_years, centre=SAFEHEART_CENTRE):
+    if horizon_years not in SAFEHEART_S0:
+        raise ComparatorInputError("SAFEHEART supports only five- and ten-year risk")
+    return 1.0 - SAFEHEART_S0[horizon_years] ** math.exp(lp - (0.0 if centre is None else centre))
+
+def _montreal_age_points(a):
+    for lim, p in ((21,0),(28,4),(35,8),(42,12),(49,16),(56,20),(63,24)):
+        if a <= lim: return p
+    return 28
+
+def montreal_fh_score(*, age_years, hdl_mmol_l, hypertension, smoking_ever, male):
+    a, h = float(age_years), float(hdl_mmol_l)
+    if a < 18 or h < 0: raise ComparatorInputError("Montreal requires adult age, non-negative HDL")
+    hdl_points = 12 if h <= 0.60 else 9 if h <= 0.90 else 6 if h <= 1.20 else 3 if h <= 1.50 else 0
+    return (_montreal_age_points(a) + hdl_points + 2*bool(hypertension)
+            + bool(smoking_ever) + 3*bool(male))
+
+def fhrs_chart_points(*, age_years, male, hdl_mmol_l, untreated_ldl_mmol_l,
+                      hypertension, active_smoking, lpa_mg_dl):
+    a, h, l, lp_ = float(age_years), float(hdl_mmol_l), float(untreated_ldl_mmol_l), float(lpa_mg_dl)
+    if not 18 <= a <= 65: raise ComparatorInputError("FH-Risk-Score native age range is 18-65")
+    if min(h, l, lp_) < 0: raise ComparatorInputError("lipid inputs must be non-negative")
+    ap = 0 if a<=30 else 9 if a<=35 else 14 if a<=40 else 16 if a<=45 else 17 if a<=50 \
+         else 18 if a<=55 else 20 if a<=60 else 23
+    hp = 0 if h>1.30 else 3 if h>=1.01 else 7 if h>=0.85 else 8
+    lb = 0 if l<=5.50 else 3 if l<=7.50 else 7 if l<=8.50 else 9 if l<=9.50 else 11
+    return 7*bool(male) + ap + hp + lb + 6*bool(hypertension) + 6*bool(active_smoking) + 4*(lp_>=50)
+
+# --- the LOCAL continuous forms. NOT labelled published; kept only for the OBJ-001 diff ---
+def candidate_local_safeheart(*, age, male, htn, smoke, bmi, ldl_mmol, lpa_nmol):
+    return (0.045*age + 0.6*bool(male) + 0.4*bool(htn) + 0.3*bool(smoke)
+            + 0.02*bmi + 0.15*ldl_mmol + 0.25*(lpa_nmol >= 105))
+
+# --- evaluability wrapper: counts refusals instead of hiding them ---
+def score_frame(fn, rows, name):
+    vals, refused = [], {"missing_input": 0, "outside_indication": 0}
+    for kw in rows:
+        if any(pd.isna(v) for v in kw.values() if isinstance(v, float)):
+            vals.append(NOT_EVALUABLE); refused["missing_input"] += 1; continue
+        try:
+            vals.append(float(fn(**kw)))
+        except ComparatorInputError:
+            vals.append(NOT_EVALUABLE); refused["outside_indication"] += 1
+    v = np.asarray(vals, float)
+    print(f"{name}: evaluable {int(np.isfinite(v).sum())}/{len(v)}  refusals={refused}")
+    return v, refused
+
+# --- unit assertions (OBJ / trap 2d) ---
+FROZEN["ldl_mg"] = FROZEN["ldl_unt"] * MMOL_TO_MGDL_CHOL
+med = float(np.nanmedian(FROZEN["ldl_mg"]))
+if not 90 <= med <= 260:
+    raise AssertionError(f"ldl_mg median {med:.1f} outside plausible mg/dL range — unit error. "
+                         f"If mmol/L reached a mg/dL-banded model every LDL term collapses to 0.")
+print(f"[PASS] ldl_mg median {med:.1f} mg/dL")
+if LPA_POLICY == "NOT_EVALUABLE":
+    FROZEN["lpa_mgdl"] = np.nan          # SAFEHEART/FHRS Lp(a) term refuses rather than converts
+    print("Lp(a): policy NOT_EVALUABLE — Lp(a)-dependent comparators scored on a reduced set; "
+          "n_evaluable reported per cell.")
+elif LPA_POLICY == "CONVERT_2.15_DECLARED":
+    FROZEN["lpa_mgdl"] = FROZEN["lpa_nmol"] / 2.15   # declared in provenance; COMP-05 deviation
+```
+
+---
+
+### Cell 4 — `04_obj001_rescore.py`
+
+```python
+# ====================== CELL 4 — OBJ-001 re-score (EXPLORATORY) ======================
+from lifelines.utils import concordance_index
+
+def build_rows(df, which):
+    if which == "safeheart_spec":
+        return [dict(age_years=r.age, male=bool(r.male), prior_ascvd=False,
+                     hypertension=bool(r.htn_any), bmi_kg_m2=r.bmi,
+                     active_smoking=bool(r.smoke_curr), ldl_mg_dl=r.ldl_mg,
+                     lpa_mg_dl=r.lpa_mgdl) for r in df.itertuples()]
+    if which == "montreal":
+        return [dict(age_years=r.age, hdl_mmol_l=r.hdl, hypertension=bool(r.htn_any),
+                     smoking_ever=bool(r.smoke_ever), male=bool(r.male)) for r in df.itertuples()]
+    if which == "fhrs":
+        return [dict(age_years=r.age, male=bool(r.male), hdl_mmol_l=r.hdl,
+                     untreated_ldl_mmol_l=r.ldl_unt, hypertension=bool(r.htn_any),
+                     active_smoking=bool(r.smoke_curr), lpa_mg_dl=r.lpa_mgdl)
+                for r in df.itertuples()]
+
+SCORES = {}
+SCORES["SAFEHEART-RE"], ref_s = score_frame(safeheart_linear_predictor,
+                                            build_rows(FROZEN, "safeheart_spec"), "SAFEHEART-RE")
+SCORES["Montreal-FH-SCORE"], ref_m = score_frame(montreal_fh_score,
+                                            build_rows(FROZEN, "montreal"), "Montreal (CANDIDATE)")
+SCORES["FH-Risk-Score"], ref_f = score_frame(fhrs_chart_points,
+                                            build_rows(FROZEN, "fhrs"), "FH-Risk-Score")
+SCORES["_local_safeheart_continuous"] = np.array(
+    [candidate_local_safeheart(age=r.age, male=bool(r.male), htn=bool(r.htn_any),
+                               smoke=bool(r.smoke_curr), bmi=r.bmi,
+                               ldl_mmol=r.ldl_unt, lpa_nmol=r.lpa_nmol)
+     if np.isfinite([r.age, r.bmi, r.ldl_unt]).all() else np.nan for r in FROZEN.itertuples()])
+
+# ---- PATIENT-SET AUDIT, printed BEFORE any C-index (the OBJ-001 requirement) ----
+audit = []
+for nm, v in SCORES.items():
+    ok = np.isfinite(v)
+    audit.append(dict(comparator=nm, n_evaluable=int(ok.sum()),
+                      pct_evaluable=round(100*ok.mean(), 1),
+                      events_in_evaluable=int(FROZEN.event[ok].sum()),
+                      age_gt_65=int((FROZEN.age[ok] > 65).sum())))
+emit(audit, "PATIENT-SET AUDIT (before scoring)")
+
+# ---- one common evaluable set: identical patients for EVERY comparison ----
+common = np.all([np.isfinite(v) for v in SCORES.values()], axis=0)
+print(f"common evaluable set n={int(common.sum())}, events={int(FROZEN.event[common].sum())}")
+
+def cidx(t, e, lp):   # higher score = higher risk -> negate
+    return float(concordance_index(t, -lp, e))
+
+def paired_delta_ci(t, e, lp_model, lp_comp, B=B_BOOT, seed=SEED):
+    rng, n = np.random.default_rng(seed), len(t)
+    obs = cidx(t, e, lp_model) - cidx(t, e, lp_comp)
+    boot = []
+    for _ in range(B):
+        i = rng.integers(0, n, n)
+        if e[i].sum() < MIN_EVENTS:  continue
+        try: boot.append(cidx(t[i], e[i], lp_model[i]) - cidx(t[i], e[i], lp_comp[i]))
+        except Exception: continue
+    lo, hi = np.percentile(boot, [2.5, 97.5])
+    return dict(delta=round(obs,4), lo=round(float(lo),4), hi=round(float(hi),4),
+                B_effective=len(boot),
+                verdict="WIN" if lo > 0 else "LOSS" if hi < 0 else "TIE")
+
+# MODEL_LP must be the cross-validated CALON linear predictor from your fitting cell.
+# TODO Julius: assign MODEL_LP; it must be defined on exactly FROZEN's index.
+res = []
+for nm, v in SCORES.items():
+    for horizon, mask in (("full", np.ones(len(FROZEN), bool)),
+                          ("10y", (FROZEN.time_years <= 10) | (FROZEN.event == 1)),
+                          ("5y",  (FROZEN.time_years <= 5)  | (FROZEN.event == 1))):
+        sel = common & mask
+        t, e = FROZEN.time_years.to_numpy()[sel], FROZEN.event.to_numpy()[sel]
+        if not estimable(e.sum(), f"{nm} @ {horizon}"): continue
+        row = dict(comparator=nm, horizon=horizon, n=int(sel.sum()), events=int(e.sum()),
+                   C_comparator=round(cidx(t, e, v[sel]), 4),
+                   C_model=round(cidx(t, e, MODEL_LP[sel]), 4), label="EXPLORATORY")
+        row.update(paired_delta_ci(t, e, MODEL_LP[sel], v[sel]))
+        res.append(row)
+OBJ001 = pd.DataFrame(res); emit(OBJ001.to_dict("records"), "OBJ-001 (EXPLORATORY)")
+OBJ001.to_csv(OUT / "obj001_rescore.csv", index=False)
+print("\nReference targets — local 0.6944 / 0.6740 / 0.6671; Julius 0.628 / 0.651 / 0.670. "
+      "The Montreal row above is a CANDIDATE implementation: no source PDF on disk.")
+```
+
+---
+
+### Cell 5 — `05_obj002_factorial.py`
+
+```python
+# ====================== CELL 5 — OBJ-002 factorial (EXPLORATORY) ======================
+import statsmodels.api as sm
+from lifelines import CoxPHFitter
+
+# Pre-registered expectations, derived analytically before running (see turn section 1b):
+EXPECT = {"logistic_uncentred_over_centred_5y": 1.957,   # -> slope ratio 0.511
+          "logistic_centred_10y_over_centred_5y": 1.003} # -> horizon arm is DEAD
+
+def cox_slope(t, e, lp):
+    """Coefficient of LP in Cox(T,E ~ LP). EXACTLY invariant to centring and to S0."""
+    d = pd.DataFrame({"T": t, "E": e, "lp": lp})
+    f = CoxPHFitter().fit(d, "T", "E")
+    return float(f.params_["lp"])
+
+def logistic_slope(y, p):
+    p = np.clip(p, 1e-9, 1 - 1e-9)
+    X = sm.add_constant(np.log(p / (1 - p)))
+    fit = sm.Logit(y, X).fit(disp=False)
+    return dict(citl=round(float(fit.params[0]), 4), slope=round(float(fit.params[1]), 4))
+
+sel = common & np.isfinite(SCORES["SAFEHEART-RE"])
+lp_s = SCORES["SAFEHEART-RE"][sel]
+t, e = FROZEN.time_years.to_numpy()[sel], FROZEN.event.to_numpy()[sel]
+
+out = {"cox_slope_invariant_by_construction": round(cox_slope(t, e, lp_s), 4),
+       "note": "If this reproduces 0.52-0.57, centring and horizon are BOTH excluded "
+               "and OBJ-002 must be re-scoped."}
+for h in (5, 10):
+    # complete-follow-up restriction: censored before the horizon without an event is UNKNOWN,
+    # not a non-case. Coding them 0 biases slope and CITL, worst at 10 y.
+    keep = (e == 1) | (t >= h)
+    y = ((e == 1) & (t <= h)).astype(int)[keep]
+    for label, centre in (("centred", SAFEHEART_CENTRE), ("uncentred", None)):
+        p = np.array([safeheart_risk(x, h, centre) for x in lp_s])[keep]
+        cell = logistic_slope(y, p)
+        cell.update(n=int(keep.sum()), events=int(y.sum()),
+                    p_min=round(float(p.min()), 6), p_max=round(float(p.max()), 6),
+                    p_mean=round(float(p.mean()), 6),
+                    variant=f"{label} / S0({h})", label="EXPLORATORY")
+        out[f"h{h}_{label}"] = cell
+
+r_c = out["h5_uncentred"]["slope"] / out["h5_centred"]["slope"]
+r_h = out["h10_centred"]["slope"] / out["h5_centred"]["slope"]
+out["observed_uncentred_over_centred_5y"] = round(r_c, 4)
+out["observed_centred_10y_over_centred_5y"] = round(r_h, 4)
+out["matches_prediction_centring_arm"] = bool(abs(r_c - EXPECT["logistic_uncentred_over_centred_5y"]) < 0.15)
+out["matches_prediction_horizon_arm"]  = bool(abs(r_h - EXPECT["logistic_centred_10y_over_centred_5y"]) < 0.02)
+out["FIRST_THING_TO_READ"] = ("mean predicted risk. ~0.5 in a primary-prevention carrier "
+                              "cohort means the LP was never centred.")
+emit(out, "OBJ-002 FACTORIAL (EXPLORATORY)")
+json.dump(out, open(OUT / "obj002_factorial.json", "w"), indent=2)
+# COMP-08: Montreal and FH-Risk-Score are ranking instruments. No calibration slope is
+# computed for them here, and any previously reported slope for either must be withdrawn.
+```
+
+---
+
+### Cell 6 — `06_obj003_collinearity.py`
+
+```python
+# ====================== CELL 6 — OBJ-003 (EXPLORATORY) ======================
+from numpy.linalg import cond
+from lifelines import CoxPHFitter
+
+d = FROZEN.copy()
+d["chol_years"]  = d["age"] * d["tc_unt"]                       # the OBJ-003 term
+d["cum_nonhdl"]  = np.log(np.clip(d["nonhdl_unt"] * d["age"], 1e-9, None))  # the local analogue
+sub = d.dropna(subset=["age", "tc_unt", "chol_years", "cum_nonhdl", "time_years", "event"])
+
+pairs = {"age_vs_chol_years": ("age", "chol_years"),
+         "age_vs_cum_nonhdl": ("age", "cum_nonhdl"),
+         "age_vs_tc_unt":     ("age", "tc_unt")}
+diag = {k: round(float(np.corrcoef(sub[a], sub[b])[0, 1]), 4) for k, (a, b) in pairs.items()}
+Z = ((sub[["age", "chol_years"]] - sub[["age", "chol_years"]].mean())
+     / sub[["age", "chol_years"]].std()).to_numpy()
+diag["condition_number_age_cholyears"] = round(float(cond(Z)), 2)
+diag["would_trip_spec_rule_0_999"] = bool(abs(diag["age_vs_chol_years"]) >= 0.999)
+diag["note_on_drop_rule"] = ("A 0.999 threshold catches only exact linear duplicates. "
+                             "Report the correlation whatever it is; do not treat "
+                             "'did not trip' as 'no collinearity'.")
+
+def age_hr(frame, terms):
+    f = CoxPHFitter().fit(frame[terms + ["time_years", "event"]], "time_years", "event")
+    s = f.summary.loc["age"]
+    return dict(HR=round(float(s["exp(coef)"]), 3),
+                lo=round(float(s["exp(coef) lower 95%"]), 3),
+                hi=round(float(s["exp(coef) upper 95%"]), 3))
+
+# 2x2: term specification x whether the 124 undated cases could have attenuated it.
+# (They are already excluded from FROZEN; this arm re-adds them as non-cases to
+#  quantify the attenuation the STATUS n=3333 construction would have produced.)
+fits = {"A_age_plus_chol_years": age_hr(sub, ["age", "chol_years"]),
+        "B_age_plus_untreated_TC": age_hr(sub, ["age", "tc_unt"]),
+        "C_age_plus_cum_nonhdl": age_hr(sub, ["age", "cum_nonhdl"]),
+        "D_age_alone": age_hr(sub, ["age"])}
+emit({"diagnostics": diag, "age_HR_by_specification": fits,
+      "interpretation_rule": "If the age HR moves away from null under B or D, the null "
+                             "in A is a variance-inflation artefact of sharing age with "
+                             "chol_years. This is a statement about the estimator, not "
+                             "about whether age causes events.",
+      "label": "EXPLORATORY"}, "OBJ-003")
+json.dump({"diagnostics": diag, "fits": fits}, open(OUT / "obj003_collinearity.json", "w"), indent=2)
+```
+
+---
+
+### Cell 7 — `07_freeze.py`
+
+```python
+# ====================== CELL 7 — A2 FREEZE. Run before any head-to-head. ======================
+from datetime import datetime, timezone
+
+SPEC = dict(
+  model="CALON-F",
+  outcome="incident atherosclerotic event: i21|i25|i63|i70|i73|g45; I50 excluded",
+  endpoint_caveat="coronary-weighted: date completeness I21 100, I25 100, I63 40.9, "
+                  "I70 64.3, I73 52.8, G45 37.0 percent",
+  cohort="UK Biobank LDLR variant carriers (NOT clinical FH); prevalent and undated excluded",
+  primary_horizon="full follow-up, 289 events",
+  sensitivity_horizon="5 years, 97 events",
+  features=["age","male","htn_any","dm","smoke_curr","cum_nonhdl","log_tghdl"],  # TODO: confirm
+  estimator="TODO: Cox vs ridge-logistic — state and justify",
+  missing_data="TODO: state the single rule applied identically to model and comparators",
+  comparators=["SAFEHEART-RE","FH-Risk-Score","Montreal-FH-SCORE (CANDIDATE, no PDF)"],
+  sign_convention="delta = C(model) - C(comparator); positive favours the model",
+  bootstrap_B=B_BOOT, min_events=MIN_EVENTS,
+  cohort_sha256=COHORT_HASH,
+  frozen_at=datetime.now(timezone.utc).isoformat())
+SPEC["spec_sha256"] = sha({k: v for k, v in SPEC.items() if k != "frozen_at"})
+json.dump(SPEC, open(OUT / "spec_frozen.json", "w"), indent=2)
+
+def assert_frozen():
+    p = OUT / "spec_frozen.json"
+    if not p.exists():
+        raise AssertionError("No frozen spec. Run Cell 7 before any head-to-head claim.")
+    s = json.load(open(p))
+    if s["spec_sha256"] != sha({k: v for k, v in s.items() if k not in ("frozen_at","spec_sha256")}):
+        raise AssertionError("spec_frozen.json hash mismatch — the spec changed after freezing.")
+    print(f"[FROZEN] {s['spec_sha256'][:16]}  at {s['frozen_at']}")
+
+assert_frozen()
+```
+
+---
+
+### Cell 8 — `08_confirmatory.py`
+
+```python
+# ====================== CELL 8 — A3 confirmatory head-to-head ======================
+assert_frozen()   # first line. Cannot run before Cell 7.
+
+SUBGROUPS = {"ALL": np.ones(len(FROZEN), bool),
+             "male": FROZEN.male.eq(1).to_numpy(),   "female": FROZEN.male.eq(0).to_numpy(),
+             "age<median": FROZEN.age.lt(FROZEN.age.median()).to_numpy(),
+             "age>=median": FROZEN.age.ge(FROZEN.age.median()).to_numpy(),
+             "on statin": FROZEN.on_statin.eq(1).to_numpy(),
+             "no statin": FROZEN.on_statin.eq(0).to_numpy(),
+             "diabetes": FROZEN.dm.eq(1).to_numpy(), "no diabetes": FROZEN.dm.eq(0).to_numpy(),
+             "hypertensive": FROZEN.htn_any.eq(1).to_numpy(),
+             "normotensive": FROZEN.htn_any.eq(0).to_numpy(),
+             "smoker": FROZEN.smoke_curr.eq(1).to_numpy(),
+             "non-smoker": FROZEN.smoke_curr.eq(0).to_numpy()}
+
+rows = []
+for cname in ["SAFEHEART-RE", "FH-Risk-Score", "Montreal-FH-SCORE"]:
+    try:
+        assert_provenance_ok(cname)
+        label = cname
+    except AssertionError as ex:
+        label = f"CANDIDATE {cname}"
+        print(f"NOTE — {ex}\n  -> reported as '{label}'; not publishable as the named model.")
+    v = SCORES[cname]
+    for sg, mask in SUBGROUPS.items():
+        for horizon in ("full", "5y"):
+            sel = common & mask & (np.ones(len(FROZEN), bool) if horizon == "full"
+                                   else ((FROZEN.time_years <= 5) | (FROZEN.event == 1)).to_numpy())
+            t, e = FROZEN.time_years.to_numpy()[sel], FROZEN.event.to_numpy()[sel]
+            if int(e.sum()) < MIN_EVENTS:
+                rows.append(dict(comparator=label, subgroup=sg, horizon=horizon,
+                                 n=int(sel.sum()), events=int(e.sum()),
+                                 verdict="<10, non-estimable")); continue
+            r = dict(comparator=label, subgroup=sg, horizon=horizon,
+                     n_evaluable=int(sel.sum()), events=int(e.sum()),
+                     C_model=round(cidx(t, e, MODEL_LP[sel]), 4),
+                     C_comparator=round(cidx(t, e, v[sel]), 4))
+            r.update(paired_delta_ci(t, e, MODEL_LP[sel], v[sel]))
+            rows.append(r)
+
+TAB = pd.DataFrame(rows)
+TAB.to_csv(OUT / "headtohead_full.csv", index=False)   # FULL table. No selective narrative.
+tally = TAB.verdict.value_counts().to_dict()
+emit({"tally": tally,
+      "multiplicity_warning": f"{len(TAB)} dependent cells; each participant appears in 7 of 13 "
+                              f"subgroup rows. Run the permutation null before quoting the WIN count.",
+      "optimism_warning": "C_model is in-sample relative to each comparator's external weights. "
+                          "Report delta_apparent minus delta_cv beside every delta.",
+      "spec_sha256": SPEC["spec_sha256"], "cohort_sha256": COHORT_HASH},
+     "CONFIRMATORY HEAD-TO-HEAD")
+```
+
+---
+
+### Proposed file manifest
+
+| Path | Contents |
+|---|---|
+| `debate/steps/step-003/r1/code/00_governance.py` … `08_confirmatory.py` | the nine cells above |
+| `calon_settlement_out/comparator_provenance.csv` | the OBJ-001 provenance artefact |
+| `calon_settlement_out/obj001_rescore.csv` | C-indices, deltas, B=2000 CIs, patient-set audit |
+| `calon_settlement_out/obj002_factorial.json` | four cells × two slope definitions + predicted-risk ranges |
+| `calon_settlement_out/obj003_collinearity.json` | correlations, condition number, four age-HR fits |
+| `calon_settlement_out/spec_frozen.json` | dated spec + SHA-256 (gate for cell 8) |
+| `calon_settlement_out/headtohead_full.csv` | every cell, including losses and non-estimables |
+
+### Repairs to the existing settlement pack (do not run it unmodified)
+
+| File | Line | Defect | Fix |
+|---|---|---|---|
+| `01_cohort_ledger_ukb.py` | 33 | `i50_event` in the atherosclerosis flag list | drop it; `n_undated` must equal 124 |
+| `01_cohort_ledger_ukb.py` | 58–59 | printed booleans, one a two-way disjunction | replace with `require()` |
+| `02_obj001_dual_safeheart.py` | 41 | `sex_F == 0` codes NaN as male | explicit three-way mapping |
+| `02_obj001_dual_safeheart.py` | 47 | `df.get(...)` → constant-0 hypertension | build from `p6153_i0`/`p6177_i0` + SBP/DBP; assert `nunique ≥ 2` |
+| `02_obj001_dual_safeheart.py` | 46, 59 | nmol/L Lp(a) into an `lpa_mg_dl=` argument | apply `LPA_POLICY`, record it in the provenance table |
+| `02_obj001_dual_safeheart.py` | 76–82 | death-only censoring + `dropna` deletes all survivors | `t_exit = min(event, death, admin)`; assert no nulls; never `dropna` on time |
+| `03_obj002_calibration_factorial.py` | 48 | interpretation note inverted; horizon arm cannot move the slope | add the Cox slope, print predicted-risk range first, state expected ratios 1.957 / 1.003 |
+| `04_obj003_age_cholyears.py` | 8 | `tc_chem` used as untreated TC | apply the ÷0.70 rule; add the `cum_nonhdl` and 124-exclusion arms |
+| `05_wales_filter_ledger.py` | 19–24 | filter chain is a `pass` — the ledger cannot reach 1,159 or 1,059 | encode `Positive1`, `ascvd_combine`, `format="mixed"` dates, and require one of 1159/1059/948 exactly |

@@ -1,0 +1,304 @@
+I'll read the full prompt and the Cycle-2/Julius evidence first so the panel write-up is grounded in locked numbers, not invented ones.I have the locked Cycle-2 numbers. Next I’ll pull the remaining protocol details and any existing debate write-ups so the four required sections stay consistent with the programme.I'll match the debate's locked format and pull the remaining Cycle-2 facts before I write the four required sections.# Step 005 · Round 1 · grok
+
+Cycle-3 grey-zone adjunct is **exploratory only**. CALON-G primary stays confirmatory. No adjunct WIN is claimed; Stage-B has not been fitted under these rules. Every count below is quoted from `debate/evidence/julius-spec-kit/` (execution report, `spec_frozen.json`, `CALON_G_BIOSTAT_PROTOCOL.md`) and `cycle2_r_pilot/`.
+
+**Frozen arithmetic any Cycle-3 cell must reproduce**
+
+| Quantity | Value | Source |
+|---|---|---|
+| Frozen UKB risk set | **3,209** | `spec_frozen.json`; execution report |
+| Events (full / 5y / 10y) | **289 / 97 / 194** | same |
+| Cohort SHA-256 | `8c3a1e0598770c1beefe29db28d42fb7074f233f382c25c19eb0c843b59f49b2` | same |
+| Cycle-2 primary SPEC | `age, sp50, male, bpmed, dm, smoke_curr, cum_nonhdl, log_tghdl, log_lpa` | `calong_run_meta.json`; protocol |
+| Pilot OOF C (9-term primary) | **0.7047** | `calong_run_meta.json` |
+| Pilot tally | **WIN=10, TIE=44** (no LOSS after `reverse=TRUE`) | same; B=300 |
+| `lpa_policy` in that pilot | `exploratory_div215` | same |
+| SAFEHEART evaluable | 2,470 / 221 | `comparator_patient_set_audit.csv` |
+| FH-Risk-Score evaluable | 1,913 / 146 | same |
+| Montreal evaluable | 2,811 / 252 | same |
+| Primary ALL vs SAFEHEART (full) | 0.6952 vs 0.6691, Δ +0.026 (−0.0045, 0.0545) **TIE** | `calong_headtohead_full.csv` |
+| Primary ALL vs FH-RS (full) | 0.6900 vs 0.6802, Δ +0.0098 (−0.0168, 0.0359) **TIE** | same |
+| Primary ALL vs Montreal (full / 5y) | Δ +0.0326 / +0.0478 **WIN** | same |
+| Spec-kit confirmatory 68/9/1 tally | **withdrawn** (invalid horizon mask; unverified comparators) | execution report |
+| Uncentred SAFEHEART 5y mean risk | 0.770 | `obj002_factorial.json` |
+| Centred SAFEHEART 5y mean risk | 0.0122 (settlement) / ≈0.0101 (R pilot) | same; prompt |
+
+Pilot smoke (split design, not confirmatory): primary **without** Lp(a)/apoB kept WIN vs Montreal / TIE elsewhere; adding `log(apoB/LDL)+log_lpa` on the **full** cohort did not flip to LOSS. That is a collapse check, not a grey-zone validation.
+
+---
+
+## 1. Methodology
+
+### 1.1 Two products, two estimands — do not collapse them
+
+The locked confirmatory estimand is unchanged from Cycle 2:
+
+> In UK Biobank *LDLR-variant carriers* free of prevalent permitted atherosclerotic disease, the association of the **pre-specified 9-term CALON-G linear predictor** (including `log_lpa`) with time to first incident permitted ASCVD (`I21|I25|I63|I70|I73|G45`; I50 out), internally on SHA `8c3a1e05…` and externally in All-Wales with **frozen UKB coefficients**.
+
+Cycle-3 asks a **different** question:
+
+> Among people whose **Stage-A** (8-term, no Lp(a), no apoB) out-of-fold 10-year risk lies in a **band locked before any enhancer fit**, and who have both assays, does a two-term offset — `log1p(Lp(a)_nmol) + log(apoB / untreated_LDL)` — improve **decision-relevant** prediction relative to Stage-A alone?
+
+That is a valid *prediction-system* estimand if and only if (i) the system is fully specified before seeing Stage-B results, (ii) the enhancer is tested only where it would be used, and (iii) it is not allowed to overwrite the confirmatory primary. It is **not** a licence to reverse the Cycle-2 decision that promoted `log_lpa` into the base SPEC (“disclose as Cycle-2 re-spec”, protocol).
+
+| Slot | Linear predictor | Status | What a positive result would license |
+|---|---|---|---|
+| **CALON-G primary** | 9 terms including `log_lpa` | **Confirmatory** (still pending B=2,000, PDF-faithful comparators, native Lp(a) units, Wales) | Head-to-head vs SAFEHEART / FH-RS / Montreal on the frozen SHA |
+| **Stage A** | 8 terms; no Lp(a), no apoB | Exploratory accessible core | Scoring when those assays are absent |
+| **Stage B** | 2-term **offset** on Stage-A LP, **in-band only** | Exploratory adjunct | Incremental value *inside the locked band* when both assays are present |
+| Cycle-2 `CALON-G-grey` | Replace `cum_nonhdl` with `log(apoB/HDL)` | Already-named single sensitivity | **Different object.** Do not mix with Stage-B’s `log(apoB/untreated_LDL)` |
+
+**Primary confirmatory claim (unchanged):** CALON-G, as frozen, is associated with incident permitted ASCVD and is compared, honestly, with PDF-faithful centred comparators. The R-pilot ALL cells are TIE vs SAFEHEART and FH-RS and WIN vs Montreal; B=300 and `exploratory_div215` keep that **unpublished as confirmatory**. A later comparator LOSS is a result, not a reason to open Stage-B’s formula.
+
+**Exploratory adjunct claim (the only claim Cycle-3 may earn):** In the pre-declared middle tertile of Stage-A OOF risk, the two-term offset changes discrimination, calibration, or net benefit versus Stage-A alone. It does **not** say “CALON-G now wins SAFEHEART,” and it does not say the 9-term primary is obsolete.
+
+### 1.2 Why the design is statistically coherent — and where it is not
+
+**Coherent.** Restriction of range is the point. Stage-A C-index on the full 3,209 is expected near the pilot 0.70; inside a tertile it will collapse toward 0.5 by construction. The honest contrast is **in-band ΔC (and DCA) of Stage-A+B versus Stage-A**, not hybrid-full-cohort C versus the 9-term primary. Offsetting Stage-B on a frozen Stage-A LP (no re-entry of the eight core terms) is the right increment estimand: two extra df, not a new 10-term model fit on ~1,070 people.
+
+**Not coherent as a care claim without extra gates.** SAFEHEART centred 5-year mean risk is **1.01–1.22%** (`obj002_factorial.json` 0.0122; R-pilot ≈0.0101). Ten-year centred mean in the same factorial is 0.0258. In a cohort whose typical 10-year risk is ~2–3%, the **middle tertile of Stage-A risk is likely to sit entirely below the protocol’s 5% / 7.5% / 10% 10-year decision thresholds**. Then:
+
+- in-band ΔC can be positive (re-ordering similar-risk people);
+- in-band net benefit at those thresholds is **vacuous** (nobody in the band is near a treat/don’t-treat cut);
+- “improves care” is not a licensed inference from ΔC.
+
+That is not a reason to move the band after seeing Stage-B. The investigator pre-specified **middle tertile**; the named-now sensitivity is **middle quintile** only. A 5–10% *clinical* band is an alternative design and is **out of scope** unless it had been named in this lock. If the tertile misses every pre-specified threshold, the adjunct fails the care claim and remains, at most, a ranking experiment.
+
+### 1.3 How the two models must coexist in reporting
+
+| Document slot | What is allowed |
+|---|---|
+| Title / abstract confirmatory sentence | CALON-G 9-term only. Adjunct absent unless every §4 gate has already passed **and** the sentence is labelled exploratory. |
+| Primary Results | SHA cohort; OOF C; calibration; B=2,000 ΔC vs each comparator; full matrix. Pilot 0.7047 / WIN=10 TIE=44 stay in an “exploratory R pilot” paragraph. |
+| Methods, exploratory subsection | Stage-A / tertile / Stage-B, frozen **before** Stage-B coefficients exist. |
+| Sensitivity | Middle quintile (named now). Not tertile-vs-quintile shopping. |
+| Wales | Frozen UKB Stage-A (or reduced 9-term minus `log_lpa`) transported. Stage-B transported only if Welsh Lp(a) **and** apoB are present and unit-comparable; otherwise **UKB-only, labelled**. |
+| Clinical use | Labs that already have Lp(a) → **locked primary**, not Stage-A. Stage-A is the core for labs that do *not* have the assays. Stage-B is a reflex-test increment, not a better CALON-G. |
+
+The prompt’s fallback phrase — “Stage-A **(or locked primary)**” — is the one place this design can still cheat. Mixing 9-term CALON-G outside the band with Stage-A+B inside the band is a **third**, unspecified chimera (Lp(a) everywhere, plus apoB/LDL only in the middle). That fork must be closed **before** any Stage-B fit (OBJ-033).
+
+### 1.4 What this design is forbidden to become
+
+- A second confirmatory primary because a comparator cell improves.
+- A search over bands, lipid transforms (`log` vs `log1p`, apoB/LDL vs apoB/HDL), or BMI/interactions after WIN/TIE/LOSS.
+- A full-cohort refit of `log(apoB/LDL)+log_lpa` dressed as a grey-zone procedure. The pilot already did that smoke test; it is not Stage-B.
+- An MCAR complete-case story. Protocol: missing Lp(a) is typically MAR/MNAR-ish (assay offer, severity). Stage-B **does not impute assays the lab does not have**; missing either enhancer → remain Stage-A.
+
+---
+
+## 2. Implementation
+
+### 2.1 Band, folds, missingness — lock these strings
+
+| Item | Lock | Forbidden substitute |
+|---|---|---|
+| Ranking metric | Stage-A **OOF 10-year absolute risk** from the Breslow/Nelson–Aalen baseline on the training fold | In-sample LP; full-follow-up rank chosen after peeking at 5y ΔC |
+| Band (primary) | Middle tertile | Any cut moved after Stage-B exists |
+| Band (sensitivity, named now) | Middle quintile, same metric | Adding a 5–10% clinical band later |
+| Cutpoints | **Training-fold only**, applied to the held-out fold | Global tertiles of all OOF risks (mild leakage: test ranks help place the cuts) |
+| Stage-A estimator | Ridge Cox; penalty by nested CV on training folds only; family-aware folds if family ID exists | Apparent full-sample LP used as if OOF |
+| Stage-B estimator | **Offset Cox** (or ridge on the two terms with `offset = η_A`); **in-band complete-assay rows of the training fold only** | Re-estimating the eight Stage-A βs in-band; fitting Stage-B on the full 3,209 |
+| Stage-B terms (once each) | `log1p(lpa_nmol)` + `log(apoB / ldl_untreated)` | `log_lpa` “to match primary”; `log(apoB/HDL)`; BMI; interactions |
+| `ldl_untreated` | Same statin deflation already used for `cum_nonhdl` (inventory rule; do not re-open) | Trying several LDL reconstructions after seeing γ₂ |
+| Stage-A missingness | Fold-wise train-only median (continuous) / mode (binary) — Cycle-2 lock | Healthy-default constants |
+| Stage-B missingness | **No imputation.** Missing Lp(a) or apoB or untreated LDL → not eligible for the offset; scored as Stage-A | MICE-invented Lp(a) sold as “assays available” |
+| Horizon | `t_h = pmin(time, H)`; `e_h = event & (time <= H)`; assert **97** at H=5 | Withdrawn mask `(time <= H) \| (event == 1)` (that cell produced 146 events) |
+| Fallback scorer | **Stage-A only** | Locked 9-term primary outside the band |
+| Comparator Lp(a) | Native units for any confirmatory comparator scoring; ÷2.15 remains exploratory | Quietly carrying `exploratory_div215` into a Cycle-3 “win” sentence |
+
+### 2.2 Failure modes the cells must make fail-loud
+
+| Failure | How it appears | Guard |
+|---|---|---|
+| **Self-fulfilling band** | Band cut on a quantity that already contains Stage-B, or cut on the outcome | Band from Stage-A OOF risk only; Stage-B starts after census file exists |
+| **Full-cohort enhancer leakage** | Fit `log1p(lpa)+log(apoB/LDL)` on all 3,209, then *restrict* evaluation to the tertile | Stage-B design matrix is in-band train rows only |
+| **Apparent LP sold as OOF** | One Cox on 3,209, tertiles of that LP | Repeated 5-fold; claims from OOF only; apparent labelled |
+| **Chimeric fallback** | Primary 9-term outside, Stage-A+B inside | Fallback string in the census JSON is `stageA` |
+| **Range-restriction theatre** | Headline full-cohort hybrid ΔC (≈0 by construction: two-thirds unchanged) | Primary adjunct row is **in-band** ΔC / DCA |
+| **Empty decision band** | Tertile 10y risks are 1–3%; DCA at 5/7.5/10% is undefined in-band | Census prints n with p₁₀ in [0.04,0.06], [0.065,0.085], [0.09,0.11]; if all three are 0, care-claim flag = FAIL |
+| **<10 events** | 5y events pile into the top tertile; middle tertile has 6 events; C is noise | Fail-loud before Stage-B; stratum `<10, non-estimable` |
+| **Survivor drop** | Repeat of compact `02_obj001` (429/269) | Score the full 3,209; comparators `NOT_EVALUABLE` when inputs missing; no death-date filter |
+| **Outcome-tuned band** | Tertile “didn’t work”, switch to quintile or 5–10% after γ or ΔC | Quintile is the only named sensitivity; both reported; primary remains tertile |
+
+### 2.3 Acceptance gates (adjunct — not confirmatory)
+
+A Cycle-3 run may **write a labelled exploratory increment** only if all of these pass. It may **never** replace CALON-G.
+
+1. Cohort SHA = `8c3a1e0598770c1beefe29db28d42fb7074f233f382c25c19eb0c843b59f49b2`; n=3209; events 289 / **97** / 194.
+2. Census file from cell `30` exists **before** cell `31` starts (OBJ-033).
+3. In-band events ≥10 at the horizon being claimed (full and 5y separately). Else that horizon is non-estimable.
+4. Band = middle tertile of train-fold Stage-A OOF 10y risk; cutpoints not edited.
+5. Stage-B = two locked terms, offset only, in-band complete-assay only.
+6. Reportable ΔC uses **B=2,000** paired cluster bootstrap of the **whole** procedure (re-cut tertiles each resample). B=300 is pilot.
+7. In-band calibration slope and intercept printed (OOF). Slope wildly off 1 is reported, not “fixed” by multiplying the LP.
+8. DCA at 5%, 7.5%, 10% **10-year**, in-band, only at thresholds that have n>0 in the census. Montreal remains ranking-only (no absolute-risk NB).
+9. Assay missingness in-band printed (Lp(a), apoB, untreated LDL, both).
+10. No comparator WIN/TIE/LOSS cell is an acceptance input.
+
+### 2.4 Julius / R cell outline
+
+```r
+# cell_30_grey_census.R — NO Stage-B coefficients
+# aggregate JSON/CSV only; no eid / family / variant
+
+LOCK_SHA <- "8c3a1e0598770c1beefe29db28d42fb7074f233f382c25c19eb0c843b59f49b2"
+stopifnot(identical(cohort_sha, LOCK_SHA),
+          n == 3209L, e_full == 289L, e5 == 97L, e10 == 194L)
+
+# 1. Stage-A ridge Cox, repeated 5-fold, train-only impute/scale/lambda
+# 2. OOF 10y risk p10; tertile cuts from TRAIN fold, applied to TEST
+# 3. Write lock + census; then STOP
+
+lock <- list(
+  fallback = "stageA",                       # not "primary"
+  band = "middle_tertile_stageA_oof_10y",
+  cuts = "train_fold_only",
+  stageB_terms = c("log1p_lpa_nmol", "log_apob_ldlunt"),
+  lpa_policy_comparators = "native_or_NOT_EVALUABLE"
+)
+
+census <- list(
+  n_inband = n_mid, events_full = e_mid, events_5y = e5_mid,
+  p10_min = min(p10_mid), p10_med = median(p10_mid), p10_max = max(p10_mid),
+  n_near_5 = sum(p10_mid >= 0.04 & p10_mid < 0.06),
+  n_near_75 = sum(p10_mid >= 0.065 & p10_mid < 0.085),
+  n_near_10 = sum(p10_mid >= 0.09 & p10_mid < 0.11),
+  miss_lpa = mean(is.na(lpa[mid])),
+  miss_apob = mean(is.na(apob[mid])),
+  miss_either = mean(is.na(lpa[mid]) | is.na(apob[mid]) | is.na(ldl_unt[mid]))
+)
+stopifnot(e5_mid >= 10L)   # else do not start cell 31
+jsonlite::write_json(list(lock = lock, census = census),
+                     "debate/evidence/julius-spec-kit/cycle3_grey/census.json")
+```
+
+```r
+# cell_31_stageB_offset.R — refuses to start without census.json
+# offset = Stage-A LP; fit only mid-tertile ∩ complete assays ∩ train fold
+# emit OOF increment γ'Z on held-out in-band rows
+
+# cell_32_hybrid_eval.R
+# hybrid = η_A + I(inband & assays) * (γ'Z)
+# primary row: in-band ΔC hybrid vs Stage-A, B=2000, full and 5y
+# plus slope/intercept, DCA at thresholds with n_near>0, missingness
+# comparator ALL cells optional, labelled EXPLORATORY; not an acceptance input
+
+# cell_33_wales_transport.R
+# freeze UKB Stage-A (and Stage-B γ only if Welsh assays exist + units match)
+# Welsh ledger still incomplete (Positive1 start n=2,405; filters TODO)
+# no “universal winner” language
+```
+
+Horizon helper (same as Cycle 2; refuse the withdrawn constructor):
+
+```python
+def truncate(time, event, H):
+    t_h = np.minimum(time.astype(float), H)
+    e_h = (event.astype(bool) & (time.astype(float) <= H)).astype(int)
+    return t_h, e_h
+# assert e_h.sum() == 97 at H=5 on the frozen 3,209
+```
+
+---
+
+## 3. Adversarial audit
+
+Assume the sentence **“the grey-zone adjunct improves care”** is false. The most likely ways it is false are already visible in the artefacts.
+
+### 3.1 The band is not where decisions happen
+
+Centred SAFEHEART 5-year mean risk is ~1%, 10-year ~2.6%. A middle tertile of Stage-A risk in this carrier cohort is a **statistical** grey zone, not a lipid-clinic grey zone. Re-ranking people whose 10-year risk moves from 1.8% to 2.3% does not change statin intensity, PCSK9, or Lp(a)-lowering eligibility under any guideline that uses 5% / 7.5% / 10% 10-year cuts. ΔC without in-band net-benefit increment is not care.
+
+### 3.2 Assay availability is the selection mechanism, not a nuisance
+
+The clinical rationale is that Lp(a) and apoB are **not** on every panel. In UKB they are research assays with their own missingness; in Wales they may be absent or incomparable (protocol: omit `log_lpa` and report a **recalibrated reduced model**). People who have both assays in a clinic are not a random draw from the middle tertile (offer, severity, residual LDL). Stage-B’s complete-case increment is the effect of the assays **among those tested**. Transporting it as a universal reflex-test rule is the same error as assuming MCAR (protocol already forbids that). If Welsh Lp(a)/apoB are missing, Cycle-3 has **no** external check; TRIPOD+AI type 3/4 cannot be claimed for Stage-B.
+
+### 3.3 Multiplicity and the WIN-chase
+
+The R-pilot already prints: *“Dependent subgroup cells; primary family = ALL × 3 comparators × {full, 5y}”* (`calong_run_meta.json`). That family is **CALON-G’s** confirmatory family, and even there the spec-kit 68/9/1 tally is withdrawn. Cycle-3 adds tertile × quintile × in-band/full × 5y/full × three comparators × three DCA thresholds. One lucky in-band Montreal WIN (pilot full-cohort Montreal Δ already +0.033 on 2,811/252) will be offered as proof the adjunct “works.” It is not. Acceptance is one pre-specified contrast: **in-band hybrid vs Stage-A**. Everything else is descriptive.
+
+Chasing WIN in every comparator direction is how Cycle 1 added BMI after the diabetic SAFEHEART LOSS. The protocol’s sentence stands: *“Aim to win = choose a clinically complete model that can compete. It does not licence search-until-every-cell-wins.”*
+
+### 3.4 Temptation to outcome-tune the band
+
+If cell 30 prints 8 five-year events in the middle tertile, or `n_near_5 = n_near_75 = n_near_10 = 0`, the investigator will want quintile, or 5–10%, or “upper-middle half.” That move is the adjunct’s analogue of the withdrawn horizon mask: a constructor chosen because the first one did not yield a usable number. The fix is operational, not verbal: **Stage-B cannot start without the census**, and the quintile is reported whether it looks better or worse.
+
+### 3.5 Leakage and double use of Lp(a)
+
+Two quieter ways the increment is fake:
+
+1. Fit Stage-B on the full cohort (the smoke test already did this), then evaluate in the tertile. The γs have seen high- and low-risk people; in-band ΔC is optimistic.
+2. Sell Stage-B as new information when the confirmatory primary **already spends a df on `log_lpa` for everyone**. `log1p(Lp(a)_nmol)` in the band is not an independent discovery; it is a **rationed** version of a term already in CALON-G, plus a discordance residual (`apoB/LDL`) that Cycle 2 deliberately kept **out** of the primary (the named lipid-burden substitute was `log(apoB/HDL)`, and only as a full-sample sensitivity). A small in-band γ₂ is the expected biological result in LDLR carriers, where apoB and untreated LDL are tightly coupled.
+
+### 3.6 What would have failed if “improves care” were true
+
+A real care increment would show, on OOF in-band rows, **either** a ΔC whose B=2,000 CI excludes 0 **and** a positive net-benefit increment at a threshold that actually exists in the band, **or** a pre-declared reclassification across that same threshold, with events ≥10, and a Welsh reduced-model transport that does not reverse the sign. Anything short of that can be a ranking curiosity. The current disk has **none** of those Stage-B numbers.
+
+```objection
+id: OBJ-033
+step: 005
+raised_by: grok
+claim: Stage-B must not be fitted until a lock+census artefact exists. The prompt still allows fallback “Stage-A (or locked primary)”, which is an unspecified third system; and the middle tertile of Stage-A OOF 10-year risk has no printed n, events (full and 5y), risk range, or count near the pre-specified 5/7.5/10% decision cuts. Fitting the enhancer first creates the exact pressure this step forbids — moving the band or swapping the fallback after seeing events or ΔC.
+settled_by: A cell `30_grey_census` writes `debate/evidence/julius-spec-kit/cycle3_grey/census.json` containing `{fallback:"stageA", band:"middle_tertile_stageA_oof_10y", cuts:"train_fold_only"}` plus in-band n, events_full, events_5y, p10 min/median/max, n_near_5 / n_near_75 / n_near_10, and assay-missing rates. The cell asserts SHA 8c3a1e05…, 3209/289/97/194, and events_5y>=10. Cell `31_stageB_offset` exits non-zero if that file is absent or any assertion failed. No Stage-B coefficient is estimated before that exit code is 0.
+status: OPEN
+```
+
+I checked, and am **not** filing: “Wales ledger incomplete” (already a Cycle-2 blocker; it bars *universal-winner* language, not an exploratory UKB fit); “B=300 is too small” (already stated; it bars *reporting*, not the census); “the adjunct will win / lose” (unfitted).
+
+---
+
+## 4. Clinical and publication reality
+
+### 4.1 Recommendation
+
+**Promote the two-stage adjunct only if the named gates in §2.3 pass — and even then only as a labelled exploratory deployment variant. It never becomes the confirmatory primary.** If cell 30 fails (5y in-band events <10, or the band contains nobody near a pre-specified threshold **and** in-band ΔC/DCA later fail), **keep the locked primary alone** and retire Stage-B to an appendix that says the accessible-core grey-zone idea was tested and did not earn a care claim.
+
+Until those files exist, the clinically honest product is **CALON-G as frozen** (9 terms, `log_lpa` in the base). That is the model Cycle 2 already chose so that a 2026 FH-adjacent score would not silently omit Lp(a). Cycle-3 is a **lab-workflow** experiment: can we withhold two non-universal assays until the core score is intermediate? It is not a second shot at SAFEHEART.
+
+### 4.2 What a lipidologist should actually do
+
+| Setting | Score to use | Why |
+|---|---|---|
+| Lp(a) already measured (most lipid clinics that would read this paper) | **Locked CALON-G primary** | Confirmatory SPEC already includes `log_lpa`; do not drop it and re-introduce `log1p` only if the patient is “middle tertile” |
+| Routine lipids + clinical factors only | Stage-A, labelled reduced / accessible | Honest about missing assays |
+| Stage-A intermediate **and** both assays then obtained | Stage-A + Stage-B **if gates passed** | Reflex-test increment; not a new primary |
+| Wales / external | Frozen UKB coefficients; drop `log_lpa` / Stage-B if assays incomparable | Protocol already requires the reduced model to be named as such |
+
+Do not deploy a chimera (primary outside, adjunct inside). Do not tell a clinic that “CALON-G beat Montreal by 0.033, therefore order apoB in the grey zone.” The Montreal WIN is a **9-term primary, B=300, exploratory ÷2.15** result on 2,811/252; it says nothing about Stage-B.
+
+### 4.3 What a hostile reviewer opens on
+
+1. **You already put Lp(a) in the primary, then built a paper about leaving it out.** Answer: two products; confirmatory claim is the 9-term model; Cycle-3 is a pre-specified accessibility experiment.
+2. **Middle tertile ≠ clinical grey zone** at ~2% 10-year mean risk. Answer: named before fit; if census shows the tertile misses 5/7.5/10%, we do not claim care.
+3. **UKB carriers ≠ clinic HeFH** (PROBAST; +0.226 mmol/L untreated LDL excess is the locked phenotype). Title/abstract stay “LDLR-variant carriers.”
+4. **No Wales transport for Stage-B.** Answer: labelled UKB-only; no “universal winner.”
+5. **Pilot WIN/TIE used to justify the adjunct.** Answer: they are not. Primary ALL is TIE vs the two incident scores that carry Lp(a); that is the opposite of a mandate to add more lipid terms.
+6. **Comparator implementations still `verified_against_pdf = False`** in `comparator_provenance.csv`. Cycle-3 does not fix that. Head-to-head of the hybrid remains exploratory until the Cycle-2 PDF lock is actually closed.
+
+### 4.4 Publication shape
+
+- **One confirmatory results block:** CALON-G, SHA, correct horizon, B=2,000, centred PDF-faithful comparators, native Lp(a) policy, calibration + DCA, Wales reduced model if needed.
+- **One exploratory subsection or supplement:** Stage-A / locked tertile / Stage-B offset, census table, in-band ΔC and DCA, missingness. Sentence in the abstract only if §2.3 gates pass.
+- **Forbidden abstract:** “A grey-zone Lp(a)+apoB adjunct improved risk prediction / outperformed SAFEHEART.”
+- **Allowed abstract add-on, gates permitting:** “In a pre-specified intermediate tertile of an accessible 8-term core, adding log1p(Lp(a)) and log(apoB/untreated LDL) changed out-of-fold C by Δ (95% CI) and did / did not increase net benefit at [threshold]. This did not replace the 9-term primary.”
+
+Chasing WIN in every comparator direction is not a confirmatory goal. A TIE against SAFEHEART on the primary, or a null in-band ΔC for Stage-B, is a publishable result. Retuning the band until it is not is how this programme already burned Cycle 1.
+
+---
+
+## Artefacts
+
+Proposed only — not written in this turn:
+
+| Path | Role |
+|---|---|
+| `debate/evidence/julius-spec-kit/cycle3_grey/census.json` | OBJ-033 lock + in-band census; **gate for any Stage-B fit** |
+| `debate/evidence/julius-spec-kit/cycle3_grey/stageA_oof.csv` | Aggregate fold-level Stage-A C, λ, n (no row IDs) |
+| `debate/evidence/julius-spec-kit/cycle3_grey/stageB_offset.csv` | γ, SE, in-band n/events, OOF ΔC (B=300 smoke / B=2000 reportable) |
+| `debate/evidence/julius-spec-kit/cycle3_grey/hybrid_eval.csv` | In-band calibration, DCA, missingness |
+| `debate-teach/julius-cycle3-pack/30_grey_census.R` | Cell 30 |
+| `debate-teach/julius-cycle3-pack/31_stageB_offset.R` | Cell 31 (refuses missing census) |
+| `debate-teach/julius-cycle3-pack/32_hybrid_eval.R` | Cell 32 |
+| `debate-teach/julius-cycle3-pack/33_wales_transport.R` | Cell 33; reduced-model label mandatory |
+
+Quoted, not re-derived: `cycle2_r_pilot/calong_run_meta.json`, `calong_headtohead_full.csv`, `comparator_patient_set_audit.csv`; `calon_settlement_out/spec_frozen.json`, `obj002_factorial.json`; `spec_kit_execution_report.md`; `CALON_G_BIOSTAT_PROTOCOL.md`.

@@ -1,0 +1,489 @@
+I'll start by reading the full prompt, the relevant methodology skills, and the Julius evidence so CALON-G is specified from locked numbers rather than invented ones.I’ll now pull the frozen CALON-F spec, Lp(a) policy, comparator PDFs, and prior debate artefacts so the CALON-G formula is locked against those, not against the withdrawn tally.I have the locked Julius numbers. Next I’ll inspect CALON-F, the grey-zone lipid term, Lp(a) units, and the comparator PDFs so the primary formula is a pre-specification, not a post-hoc win hunt.I have the locked Julius numbers, the CALON-F defects (especially `sp50` and the invalid horizon mask), and the inventory column names. Drafting the Cycle-2 protocol next — one pre-specified formula, no win claim.# Step 004 · Round 1 · grok
+
+Cycle-2 lock for **one** pre-specified candidate, CALON-G. Every count below is quoted from `debate/evidence/julius-spec-kit/` (execution report, `spec_frozen.json`, `obj002_factorial.json`, `obj003_collinearity.json`, `comparator_provenance.csv`). The mechanical 68 TIE / 9 LOSS / 1 WIN tally is **withdrawn** and is not used to choose or drop a term. CALON-G has **not** been fitted. No WIN is claimed.
+
+**Estimand.** In UK Biobank *LDLR-variant carriers* (not clinic-ascertained HeFH) free of permitted atherosclerotic disease at baseline, estimate the association of a pre-specified baseline linear predictor with time to first incident permitted atherosclerotic event (`I21|I25|I63|I70|I73|G45`; I50 excluded), and compare discrimination of that predictor with PDF-locked SAFEHEART-RE, FH-Risk-Score and Montreal-FH-SCORE on comparator-specific complete cases drawn from the same frozen risk set.
+
+Frozen arithmetic that any fit must reproduce:
+
+| Step | n / events | Source |
+|---|---|---|
+| LDLR carriers | 3,540 | execution report |
+| Prevalent permitted ASCVD excluded | 207 | execution report |
+| Undated permitted ASCVD excluded | 124 | execution report |
+| Frozen risk set | **3,209** | `spec_frozen.json` |
+| Full-follow-up events | **289** | same |
+| 5-year events | **97** | same |
+| 10-year events (descriptive only) | 194 | same |
+| Cohort SHA-256 | `8c3a1e0598770c1beefe29db28d42fb7074f233f382c25c19eb0c843b59f49b2` | same |
+
+---
+
+## 1. Methodology
+
+### 1.1 What this design is allowed to do
+
+“Aim to be competitive” means: cover the clinical domains the published scores already use, add the one lipid-burden construct that is this programme’s identity, freeze the formula, then fit once. It does **not** mean: inspect the withdrawn subgroup matrix, add BMI where diabetics lost, or promote a grey-zone enhancer because `outputs/grey_zone_enhancers.json` looked interesting. Cycle-1 already did that with BMI (`code/15_CALON_FINAL.py` lines 85–96) and had to walk it back.
+
+### 1.2 Primary formula (one lipid-burden path)
+
+**CALON-G** is a **ridge Cox** model. The linear predictor, after in-fold centring/scaling of continuous terms, is:
+
+```text
+η = β1·age
+  + β2·I(age ≥ 55)
+  + β3·male
+  + β4·smoke_curr
+  + β5·htn_med
+  + β6·dm
+  + β7·log(TG / HDL)
+  + β8·log(untreated_nonHDL × age)
+  + β9·log(lpa_chem)
+```
+
+Column map (inventory names only; `debate/DATA-INVENTORY.md`):
+
+| Symbol | Construction | df |
+|---|---|---|
+| `age` | `age_exact_baseline` | 1 |
+| `age_ge55` | `I(age_exact_baseline ≥ 55)` | 1 |
+| `male` | `1 - sex_F` | 1 |
+| `smoke_curr` | `smoking_current` | 1 |
+| `htn_med` | BP medication: code `2` in `participant.p6153_i0` or `participant.p6177_i0` (instance 0 only) | 1 |
+| `dm` | `diabetes_combined` (inventory does not expose an E11-only flag; label as recorded diabetes, not “proven T2DM”) | 1 |
+| `log_tghdl` | `log(tg_chem / hdl_chem)` where ratio > 0 | 1 |
+| `cum_nonhdl` | `log(nonhdl_unt × age)` where product > 0; `nonhdl = tc_chem − hdl_chem` in (0.3, 20); `nonhdl_unt = nonhdl / 0.70` if `on_statin_self` else `nonhdl` | 1 |
+| `log_lpa` | `log(lpa_chem)` where `lpa_chem > 0`; **native UKB nmol/L; no conversion** | 1 |
+
+Nominal df = **9**. Events = 289. Crude EPV = 289/9 = **32.1**. Ridge will pull effective df below 9 (report the trace/EDF). This is enough for a pre-specified Cox; it is not enough for a forest, a stacked ensemble, or a second lipid-burden path.
+
+### 1.3 Stay / go for every investigator ingredient
+
+| Ingredient | Verdict | Why |
+|---|---|---|
+| Age with a spline/spike | **Stay, but not as CALON-F `sp50`** | All three comparators are age-dominated. Julius `obj003_collinearity.json` already shows age is *not* null once the partner term is honest: HR 1.055 alone, 1.033 with `cum_nonhdl`, 1.043 with cholesterol-years. The CALON-F hockey-stick `sp50 = max(age−50, 0)` is the pair OBJ-031 identified at r ≈ 0.96–0.99 in a 40–69 window. That is a near-duplicate, not a “transparent spike”. I replace it with a **pre-specified level shift at 55** (classical male premature-CAD threshold; not estimated from these 289 events). Point-biserial r(age, I(age≥55)) is a mid-split, not a clipped line. `sp18`/`sp30` stay out: in UKB they are exact linear copies of age and were already dropped by the 0.999 guard. |
+| Sex | **Stay** | Universal comparator domain; 1 df. |
+| Smoking | **Stay, as current** | SAFEHEART Table 3 and FH-RS use *active* smoking. Montreal uses ever. Our model follows the incident scores. Field: `smoking_current`. |
+| Hypertension medication | **Stay, as medication only** | Investigator’s wording, not CALON-F `htn_any` (meds **or** SBP≥140 **or** DBP≥90). Costs untreated hypertensives; that is a stated limitation, not a licence to widen the definition after seeing C-index. |
+| Type 2 diabetes | **Stay, via `diabetes_combined`** | SAFEHEART Table 3 had DM univariable HR 3.45 and then **dropped** it from the published equation. This is therefore a genuine increment, not a copy. Inventory has no locked E11-only column; do not invent one. |
+| log(TG/HDL) | **Stay** | Remnant / insulin-resistance axis. Montreal carries HDL as a separate term; we do not also put raw HDL in (CALON-F already removed it; TG/HDL already contains it). |
+| Cumulative non-HDL | **Stay — this is the one lipid-burden path** | Locked construction is `log(untreated non-HDL × age)` (`code/15_CALON_FINAL.py:249`, inventory derivations). Julius r(age, `cum_nonhdl`) = **0.5772**, r(age, chol-years) = **0.6055**, condition number 2.02, `would_trip_spec_rule_0_999 = false`. That is shared information, not a duplicate. Age HR remains 1.033 (1.013–1.054). I do **not** residualise the product on age: residualising would hide the shared component Julius told us to interpret. Ridge + reported VIF is the control. |
+| Grey-zone apoB/HDL | **Go from primary** | A 5–20% two-stage enhancer is a subgroup-conditional model. Promoting it after `grey_zone_enhancers.json` (“no gain”, delta C +0.015, CI crosses 0) would be Cycle-1 BMI again. Constraint 1 allows it only as the **single** sensitivity, and only as a **main-effect substitution**, not as a grey-zone procedure. |
+| Lp(a) | **Stay, native nmol/L only** | A 2026 FH-adjacent risk model that silently omits Lp(a) will be asked why. SAFEHEART Table 3 multivariable HR 1.52 for Lp(a)>50 mg/dL; FH-RS carries Lp(a)≥50 mg/dL. Prior “HR 1.033, no gain” is from the grey-zone script on n=3,333 with the old risk set — it is not a licence to drop a pre-specified causal marker after peeking. **Unit policy is frozen below.** Missingness is handled in-fold; it is not a reason to delete the term. |
+
+**Rejected (and why, so nobody adds them after a LOSS cell):**
+
+| Term | Why out |
+|---|---|
+| `sp50` / RCS-3 *plus* `cum_nonhdl` | Hockey-stick recreates OBJ-031. A 3-knot RCS *plus* `log(age)` inside `cum_nonhdl` double-counts chronology. One age form, one product, not both flexibly. |
+| BMI | Added in Cycle-1 *after* the diabetic SAFEHEART LOSS. STATUS.md already records the sequence. Out. |
+| Raw HDL, raw LDL, apoB in the primary | Constraint 1: one lipid-burden path. HDL is inside `log_tghdl`. LDL is the comparator’s job, not ours. |
+| Prior ASCVD | Cohort is incident-only (207+124 already excluded). Putting the SAFEHEART 1.42 term in would be circular. Score SAFEHEART with prior ASCVD **fixed at 0** and label it a restricted primary-prevention application (`comparator_provenance.csv`, COMP-06). |
+| Forest / GBM / stacking | 289 events. Constraint 4. A C-index chase is not a confirmatory model. |
+| Healthy-default comparator imputation (`hdl=1.35`, `lpa=0`, `bmi=27`) | OBJ-020. That is how local `comparators()` ceased to be the published scores. |
+
+### 1.4 The one sensitivity formula
+
+```text
+CALON-G-sens: identical to CALON-G, except
+  replace  log(untreated_nonHDL × age)
+  with      log(apob_chem / hdl_chem)     # measured, no ÷0.70
+```
+
+Same age step, same clinical binaries, same `log_tghdl`, same `log_lpa`, same ridge/CV/horizon/bootstrap. No second sensitivity. No Fine–Gray remodel, no MICE remodel, no “also try RCS”. Those can be named later as *exploratory* and must not share this protocol’s SHA.
+
+`log(apoB/HDL)` uses **on-treatment** measured values: it is a current particle-quality ratio, not a reconstructed untreated burden. Mixed units (UKB apoB g/L, HDL mmol/L) are absorbed by the in-fold centre; do not invent a conversion.
+
+### 1.5 Estimator, EDF, penalty — why ridge Cox
+
+`spec_frozen.json` still says `"estimator": "TODO: Cox vs ridge-logistic"`. The TODO is closed here.
+
+- **Cox, not logistic.** Primary horizon is *full follow-up* (289 events). A 5-year logit discards the 192 later events at the fitting stage and then pretends they inform a “full-follow-up” C. SAFEHEART is Cox; the comparison should share a likelihood class.
+- **Ridge (L2), not unpenalised, not elastic net.** Features are pre-specified; we are not selecting. What ridge *is* for: r(age, `cum_nonhdl`)=0.577, age + `age_ge55`, and a right-skewed `log_lpa` with missingness. Elastic net would be a back-door to dropping terms after seeing folds.
+- **EDF budget.** 9 nominal df, 289 events, EPV 32. After L2 the EDF (trace of the ridge hat matrix on the partial-likelihood) must be printed. Gate: **EDF ≤ 12**. If a coding bug expands the design matrix (dummy explosion, knot dump), the gate fails.
+- **Penalty learned in the training fold only.** Inner 5-fold grouped CV on the outer-training block. Grid on the `lifelines` `penalizer` scale: `{0.001, 0.003, 0.01, 0.03, 0.05, 0.1, 0.3, 1.0}`. Select by **integrated Brier at 5 years** (calibration-aware); Harrell C is the tie-break. Do **not** reuse CALON-F’s frozen `penalizer=0.05` with no tuning (OBJ-009).
+- **Published equation** = one refit on all 3,209 with λ = median of the outer-fold winners, LP centred at the full-sample mean. **Head-to-head C and deltas use out-of-fold LPs only.** Apparent C is labelled apparent. Loading “a previously fitted five-year pipeline” is how cell_13 became non-confirmatory; it is forbidden.
+
+### 1.6 Horizons and the withdrawn mask
+
+Primary evaluation: **full follow-up** and **5-year**. Ten-year (194 events) is descriptive, not a gate.
+
+Correct truncation (execution report; cells 09/13 withdrawn):
+
+```python
+t_h = np.minimum(time, H)
+e_h = (event.astype(bool) & (time <= H)).astype(int)
+```
+
+The withdrawn mask `(time <= H) | (event == 1)` produced a fake “five-year” set of **146** events rather than **97**. It must not appear in CALON-G code. A fail-loud assert `e_h.sum() == 97` at H=5 is part of the acceptance gate, not a comment.
+
+### 1.7 Comparators — same frozen people, PDF-locked functions, no healthy defaults
+
+| Score | Confirmatory form | If it cannot be scored |
+|---|---|---|
+| SAFEHEART-RE | Pérez de Isla *Circulation* 2017, **Table 3 + worked examples p.2139**: categorical LP, centre **5.4078**, `S0(5)=0.9532`, `S0(10)=0.9025`. Uncentred form is the 77% / slope 0.166 disaster (`obj002_factorial.json` `h5_uncentred`). Prior ASCVD = 0; label restricted primary-prevention. LDL in **mg/dL**. Lp(a) in **mg/dL**. | `NOT_EVALUABLE` |
+| FH-Risk-Score | ATVB 2021 points chart, native **age 18–65**. Age >65 → `NOT_EVALUABLE` (not an open top band). Lp(a) ≥50 **mg/dL**. | `NOT_EVALUABLE` |
+| Montreal-FH-SCORE | Paquette *J Clin Lipidol* 2017 **integer points chart**, fixed cut-points. **Ranking only** (COMP-08): C-index permitted; no calibration, Brier, DCA, or absolute risk. No target-sample z-scoring (that made the score a different function in every subgroup; OBJ-014/030). | `NOT_EVALUABLE` |
+
+`comparator_provenance.csv` still has `verified_against_pdf=False` for all three, and Montreal `source_pinpoint=UNOBTAINABLE` even though `MONTREAL_orig_JCL_2017_.txt` now exists. That is why I file OBJ-032. I will **not** transcribe a points table from memory.
+
+**Evaluable-set rule.** The frozen file stays n=3,209. Nobody is dropped because a comparator input is missing (the compact SAFEHEART experiment’s n=429 / 269-event trap: survivors without a death date were deleted; `02_obj001_dual_safeheart.py` is `PASS, INVALID DESIGN`). Each comparator is scored only on rows with every published input present and in native units. Paired delta is computed on that comparator’s intersection with a finite CALON-G OOF LP. Different comparators may have different n. Report n and events in every cell.
+
+**Lp(a) policy (frozen).**
+
+| Path | Rule |
+|---|---|
+| CALON-G | `lpa_chem` as nmol/L. `log_lpa = log(lpa_chem)`. No ÷2.15. No 105-nmol threshold dressed up as 50 mg/dL. |
+| Confirmatory comparator scoring | `LPA_POLICY = NOT_EVALUABLE`. SAFEHEART and FH-RS are not scored on a converted molar value. |
+| Exploratory matrix (separate file, separate SHA, never pooled into the confirmatory tally) | `lpa_mgdl := lpa_chem / 2.15`, labelled **EXPLORATORY** exactly as the execution report already did. This is not a fact about the assay. |
+
+### 1.8 Acceptance gates (a result is not “final” unless all pass)
+
+| # | Gate | Fail action |
+|---|---|---|
+| G1 | SHA-256 of the analysis table equals `8c3a1e0598770c1beefe29db28d42fb7074f233f382c25c19eb0c843b59f49b2` | abort |
+| G2 | n=3209, events=289, 5y=97, 10y=194 after permitted-component event definition | abort |
+| G3 | `e_h.sum()==97` at H=5 under `t_h=min(time,H)`, `e_h=event & (time<=H)` | abort |
+| G4 | Code contains no `(time<=H) \| (event==1)` risk-set | abort |
+| G5 | `verified_against_pdf=True` for all three scores, each with a page/table pinpoint that greps out of the on-disk extract | abort (OBJ-032) |
+| G6 | Confirmatory JSON has `LPA_POLICY=NOT_EVALUABLE`; any ÷2.15 object is in a file whose `label` is `EXPLORATORY` | abort |
+| G7 | B=**2,000** paired **cluster** bootstraps for every CI that supports a verdict. Pilot B=300 is not a final number. | abort |
+| G8 | Full matrix written: 13 strata × 3 comparators × 2 horizons. No cell omitted. `events < 10` → `verdict="<10, non-estimable"` and no C. | abort |
+| G9 | CALON-G LP used in deltas is the **OOF** vector from this run, not a file from an older five-year pipeline | abort |
+| G10 | SAFEHEART confirmatory scores use centre 5.4078; mean 5-year risk on a primary-prevention slice must not sit near 0.5–0.8 (`obj002` first-thing-to-read) | abort |
+| G11 | Ridge EDF ≤ 12; selected λ printed per outer fold | abort |
+| G12 | **Multiplicity warning written into the result JSON**, not only the paper: 13×3×2 = 78 dependent cells; every person sits in 7 of 13 strata; primary family is the **6 ALL cells**. A single-cell WIN is not a headline. | abort |
+| G13 | New spec SHA (not the CALON-F `dff51da99…`) recorded. Withdrawn 68/9/1 not quoted. | abort |
+
+**Primary confirmatory family (the only place a WIN/TIE/LOSS sentence may be written):**
+
+`ALL × {SAFEHEART-RE, FH-Risk-Score, Montreal-FH-SCORE} × {full, 5y}`
+
+Sign convention, unchanged: `delta = C(CALON-G) − C(comparator)`; WIN iff `lo > 0`; LOSS iff `hi < 0`; else TIE. If a comparator is `NOT_EVALUABLE` on the ALL row, that cell is `NOT_EVALUABLE`, not a TIE.
+
+I do not know whether CALON-G will win any of those six cells. That is the point of fitting it after the lock.
+
+---
+
+## 2. Implementation
+
+### 2.1 Preprocessing (every statistic from the training fold)
+
+| Step | Rule |
+|---|---|
+| Time zero | `date_baseline`. Time = years to `ascvd_first_date_dated` if incident permitted event, else years to death or 2023-12-31 (same `STUDY_END` convention as CALON-F). Time ≤ 0 dropped. |
+| Event | Permitted-component flag **required** (cell_06 original counted 351; patched cell_06 restored 289). |
+| Continuous imputation | Training-fold **median** of the already-transformed term (`log_tghdl`, `cum_nonhdl`, `log_lpa`, `age`). Never a healthy constant. Never the outcome. |
+| Binary imputation | Training-fold **mode**. UKB clinical flags are near-complete; if a flag is structurally missing, do not recode it to 0 as “healthy”. |
+| Scaling | Training-fold mean/SD for continuous terms only. Binaries unscaled. Apply the same map to the test fold. |
+| Age step | Threshold **55 is a constant**, not estimated. The indicator is computed after imputation of age. |
+| Splines | **None.** Do not emit `sp18/sp30/sp50`. |
+| Penalty | Inner CV on the outer-training block only (grid above). |
+| LP centring | Subtract the **training-fold** mean LP before writing OOF predictions (SAFEHEART lesson: omit 5.4078 and five-year mean risk becomes 77%). Full-sample equation stores its own centre as a named constant. |
+| Comparators | Pure functions. No imputation. Missing or wrong-unit input → NaN / `NOT_EVALUABLE`. No `fillna(1.35)`. |
+
+**Single missing-data sentence for the protocol (model vs comparators are not the same action, and pretending they are is how OBJ-020 happened):**
+
+> CALON-G uses training-fold median/mode imputation so a finite OOF LP exists for every member of the frozen 3,209. Each published comparator is scored only when every native-unit input is observed. Head-to-head n is the intersection. Survivors are never deleted.
+
+MICE is *not* in this protocol (the one sensitivity slot is the lipid-path swap).
+
+### 2.2 Fold structure and clustering
+
+- Outer: **5-fold × 5 repeats**, seed `20260815 + repeat`.
+- Split unit = `cluster`.
+- UKB inventory has **no** `FamilyNumber`. Do not invent one. **`cluster := eid`** unless the frozen table already carries a kinship/household/variant-component column — in which case use that column and document it. Variant-sharing among 3,540 carriers is a residual leak risk; it is accepted and named, not papered over with a fake family ID.
+- Whole cluster in one fold. Leak check: `set(train_ids) ∩ set(test_ids) == ∅` (and the same for `cluster`).
+- Inner penalty CV: 5-fold, same grouping, **inside** the outer-training block.
+- Wales / `FamilyNumber` is out of scope for this UKB lock. Transport is a later step; this protocol does not spend the confirmatory shot on a Wales refit (OBJ-006).
+
+### 2.3 Calibration (report, do not “fix” in the confirmatory path)
+
+On the OOF LP, full follow-up and truncated 5-year:
+
+- Calibration slope: Cox of `(t, e)` on `η` (or logit of predicted risk on the event at 5 years — **name which**, and use the same function for SAFEHEART). Additive centring must not be sold as a slope fix (OBJ-017).
+- CITL / calibration-in-the-large.
+- E:O at 5 years.
+- Brier at 5 years.
+- Plot: **4 groups** at 5 years (97 events; 5 groups is already noisy).
+- Decision-curve net benefit at 5%, 10%, 20% **exploratory**, and **forbidden for Montreal** (ranking instrument).
+
+Do **not** multiply the confirmatory LP by the estimated slope. Recalibration is a labelled extra, not CALON-G.
+
+Schoenfeld PH on the full-sample fit is reported. Age PH often fails over long follow-up; report it. Do not switch to `tt()` or a logit after seeing the p-value.
+
+Competing non-CV death: cause-specific Cox is primary (SAFEHEART’s class). CIF is a descriptive overlay, not a second model.
+
+### 2.4 Julius-ready fit-and-evaluate block
+
+This is the cell. It must fail loud. It must not drop survivors. It must not use the withdrawn mask.
+
+```python
+# calon_g_fit_eval.py — Cycle-2 confirmatory cell (pseudocode)
+# Inputs: frozen UKB table whose SHA-256 is the lock below.
+# Outputs: aggregate JSON/CSV only. No eid, no family id, no variant, no row dump.
+
+from pathlib import Path
+import hashlib, json
+import numpy as np
+import pandas as pd
+from lifelines import CoxPHFitter
+from lifelines.utils import concordance_index
+
+LOCK_SHA = "8c3a1e0598770c1beefe29db28d42fb7074f233f382c25c19eb0c843b59f49b2"
+N_LOCK, E_LOCK, E5_LOCK, E10_LOCK = 3209, 289, 97, 194
+B_FINAL, MIN_EVENTS = 2000, 10
+LAMBDA_GRID = (0.001, 0.003, 0.01, 0.03, 0.05, 0.1, 0.3, 1.0)
+H5, AGE_STEP = 5.0, 55.0
+LPA_POLICY = "NOT_EVALUABLE"          # confirmatory; ÷2.15 lives in a different cell
+PRIMARY = [
+    "age", "age_ge55", "male", "smoke_curr", "htn_med",
+    "dm", "log_tghdl", "cum_nonhdl", "log_lpa",
+]
+SENS = [t if t != "cum_nonhdl" else "log_apob_hdl" for t in PRIMARY]
+STRATA = (
+    "ALL", "male", "female", "age<median", "age>=median",
+    "on statin", "no statin", "diabetes", "no diabetes",
+    "hypertensive", "normotensive", "smoker", "non-smoker",
+)
+
+def sha256(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+def truncate(time, event, H):
+    """Corrected fixed-horizon risk set. Keeps every row."""
+    t_h = np.minimum(time.astype(float), H)
+    e_h = (event.astype(bool) & (time.astype(float) <= H)).astype(int)
+    return t_h, e_h
+
+def assert_cohort(df, time, event):
+    assert sha256(FROZEN_PATH) == LOCK_SHA, "cohort SHA mismatch — abort"
+    assert len(df) == N_LOCK and int(event.sum()) == E_LOCK
+    _, e5 = truncate(time, event, H5)
+    _, e10 = truncate(time, event, 10.0)
+    assert int(e5.sum()) == E5_LOCK, f"5y events {e5.sum()} != {E5_LOCK} — withdrawn mask still in play?"
+    assert int(e10.sum()) == E10_LOCK
+    # refuse the withdrawn constructor
+    withdrawn = (time <= H5) | (event.astype(bool))
+    assert not np.array_equal(e5.astype(bool), withdrawn.astype(bool))
+
+def design(df, train_idx, cols):
+    """Impute + scale using TRAIN rows only. Returns full-length matrix."""
+    X = df.reindex(columns=cols).astype(float).copy()
+    tr = X.iloc[train_idx]
+    for c in cols:
+        if X[c].nunique(dropna=True) <= 2:
+            mode = tr[c].mode(dropna=True)
+            fill = float(mode.iloc[0]) if len(mode) else 0.0
+            X[c] = X[c].fillna(fill)
+        else:
+            X[c] = X[c].fillna(tr[c].median())
+            mu, sd = tr[c].mean(), tr[c].std(ddof=0)
+            if sd > 1e-9:
+                X[c] = (X[c] - mu) / sd
+    return X
+
+def choose_lambda(Xtr, ttr, etr, grp_tr):
+    # inner 5-fold grouped CV; pick λ by 5-year integrated Brier (tie-break: Harrell C)
+    ...
+    return best_lam
+
+def oof_lp(df, cols, time, event, cluster, seed=20260815):
+    n = len(df)
+    acc, cnt = np.zeros(n), np.zeros(n)
+    chosen = []
+    for r in range(5):
+        rng = np.random.default_rng(seed + r)
+        u = pd.unique(cluster)
+        mp = dict(zip(u[rng.permutation(len(u))], range(len(u))))
+        fold = np.array([mp[g] % 5 for g in cluster])
+        for k in range(5):
+            tr, te = np.flatnonzero(fold != k), np.flatnonzero(fold == k)
+            if event[tr].sum() < MIN_EVENTS or len(te) == 0:
+                continue
+            X = design(df, tr, cols)
+            lam = choose_lambda(X.iloc[tr], time[tr], event[tr], cluster[tr])
+            chosen.append(lam)
+            m = CoxPHFitter(penalizer=lam, l1_ratio=0.0)
+            tmp = X.iloc[tr].copy()
+            tmp["T"], tmp["E"] = time[tr], event[tr]
+            m.fit(tmp, "T", "E")
+            eta = np.asarray(m.predict_log_partial_hazard(X.iloc[te]))
+            eta = eta - eta.mean()                      # train-fold centre on the *test* map? use train mean:
+            eta = eta - np.asarray(m.predict_log_partial_hazard(X.iloc[tr])).mean()
+            acc[te] += eta
+            cnt[te] += 1
+    if np.any(cnt == 0):
+        raise RuntimeError("empty OOF cells — do not zero-fill")
+    return acc / cnt, float(np.median(chosen)), chosen
+
+def paired_delta(eta_g, eta_c, time, event, cluster, B=B_FINAL, seed=20260815):
+    ok = np.isfinite(eta_g) & np.isfinite(eta_c)
+    # do NOT drop rows from the cohort file; just restrict this cell
+    if event[ok].sum() < MIN_EVENTS:
+        return dict(verdict="<10, non-estimable", n=int(ok.sum()), events=int(event[ok].sum()))
+    def c_pair(idx):
+        return (concordance_index(time[idx], eta_g[idx], event[idx]),
+                concordance_index(time[idx], eta_c[idx], event[idx]))
+    c_g, c_c = c_pair(np.flatnonzero(ok))
+    # cluster bootstrap of the OK set
+    ...
+    lo, hi = np.quantile(deltas, [0.025, 0.975])
+    verdict = "WIN" if lo > 0 else ("LOSS" if hi < 0 else "TIE")
+    return dict(n=int(ok.sum()), events=int(event[ok].sum()),
+                C_model=c_g, C_comparator=c_c, delta=c_g - c_c,
+                lo=lo, hi=hi, B_effective=B, verdict=verdict)
+
+# --- confirmatory path
+assert LPA_POLICY == "NOT_EVALUABLE"
+assert_pdf_verified()          # OBJ-032 gate; must see page/table pinpoints
+df = load_frozen()
+time, event = df["T"].to_numpy(), df["E"].to_numpy()
+assert_cohort(df, time, event)
+cluster = df["eid"].astype(str).to_numpy()     # unless a real cluster col exists
+
+eta_g, lam_hat, lam_dist = oof_lp(df, PRIMARY, time, event, cluster)
+eta_s, _, _ = oof_lp(df, SENS, time, event, cluster)   # sensitivity model; separate columns
+
+rows = []
+for horizon, (t_use, e_use) in {
+    "full": (time, event),
+    "5y": truncate(time, event, H5),
+}.items():
+    for comp_name, eta_c in pdf_locked_scores(df).items():   # NaN if NOT_EVALUABLE
+        for s in STRATA:
+            mask = stratum_mask(df, s)                      # ALL = everyone
+            # median age for age strata is the FROZEN-cohort median, pre-specified once
+            rows.append(dict(
+                comparator=comp_name, subgroup=s, horizon=horizon,
+                **paired_delta(eta_g[mask], eta_c[mask], t_use[mask], e_use[mask], cluster[mask]),
+            ))
+
+# write the FULL matrix; multiplicity banner is a field, not a footnote
+out = {
+    "model": "CALON-G",
+    "cohort_sha256": LOCK_SHA,
+    "n": N_LOCK, "events": E_LOCK, "events_5y": E5_LOCK,
+    "bootstrap_B": B_FINAL,
+    "lpa_policy": LPA_POLICY,
+    "lambda_median": lam_hat,
+    "lambda_outer": lam_dist,
+    "primary_family": "ALL × 3 comparators × {full,5y}",
+    "multiplicity_warning": "78 dependent cells; headline restricted to 6 ALL cells",
+    "cells": rows,
+}
+# never write participant rows
+```
+
+Comparator scorers are **not** `code/15_CALON_FINAL.py:comparators`. That function is the continuous invention OBJ-019/024 already killed. Confirmatory scorers are the Spec-Kit categorical/points functions, and only after `verified_against_pdf` flips.
+
+### 2.5 What would silently degrade (and the check that must be able to fail)
+
+| Landmine | Check that can fail |
+|---|---|
+| Event definition forgets the permitted-component flag | `event.sum()==289` |
+| Horizon mask regresses to `(t<=H)\|e` | `e5.sum()==97` **and** inequality vs the withdrawn mask |
+| SHA resolver picks a different file | content hash, not path precedence (OBJ-016) |
+| Zero-filled failed folds | `cnt==0` raises |
+| Mean-of-repeat C vs C-of-mean-LP (OBJ-028) | store **one** estimator: C of the averaged OOF LP; `delta == C_G − C_comp` to 1e-12 |
+| Comparator imputed healthy | any `fillna` inside a confirmatory scorer fails the unit test |
+| Uncentred SAFEHEART | mean 5-year risk gate |
+| Subgroup refit (OBJ-015) | after ALL OOF LP exists, subgroup cells **reuse** it; fit-count must not increase |
+| n_events < 10 still emits a C | verdict forced to `<10, non-estimable` |
+| B=300 leftover | `bootstrap_B == 2000` in the JSON |
+
+---
+
+## 3. Adversarial audit
+
+Assume CALON-G is the wrong model. The most likely ways that is true:
+
+**A. The receiving cohort is not the derivation world of the comparators.** Julius already locked +0.226 mmol/L untreated LDL excess and empty `variant_id`. These are population LDLR-flagged volunteers, not SAFEHEART’s molecularly defined clinic FH (2,404 adults, 5.5 y, 122 non-fatal events). A well-specified CALON-G can lose on full follow-up simply because SAFEHEART’s age bands and prior-ASCVD-trained weights still rank clinic-like risk better than a carrier equation. That would be a **result**, not a bug. The withdrawn ALL-full SAFEHEART cell (`C_comp=0.6949`, `C_model=0.6367`, LOSS) is not usable, but the *direction* is a live threat. Designing extra terms to cancel it is the universal-winner search we are forbidden to run.
+
+**B. Age is still in the model twice.** `cum_nonhdl = log(nonHDL) + log(age)`. I kept linear age + a step + the product. Julius says r=0.577 is acceptable. The failure mode is not r=0.999; it is **split, shrunk, uninterpretable age coefficients** under ridge, exactly the “null age HR” that started OBJ-003. Mitigation already in the protocol: report the three age-adjacent HRs (age, `age_ge55`, `cum_nonhdl`) with VIF, and the age HR from a *declared* refit that is **not** a second sensitivity model — it is a diagnostic printed into the QC JSON, not a competing candidate.
+
+**C. Lp(a) in the model, NOT_EVALUABLE on the comparators.** This is the sharpest fairness attack. CALON-G gets an imputed `log(lpa_chem)` on (almost) everyone. SAFEHEART/FH-RS, confirmatory path, cannot be scored. The ALL cells against those two become `NOT_EVALUABLE`, and the only remaining confirmatory discrimination comparison is Montreal — a **prevalent-CVD ranking chart**. Beating Montreal on incident ASCVD is the OBJ-010/030 hole. I am keeping Lp(a) anyway because dropping it does **not** make SAFEHEART evaluable (they still need mg/dL). What it would do is hide a pre-specified marker. The honest layout is: confirmatory ALL-SAFEHEART and ALL-FHRS may be `NOT_EVALUABLE`; the exploratory ÷2.15 matrix is published beside them and **never summed into a 78-cell trophy tally**.
+
+**D. 97 five-year events cannot carry 78 cells.** Several withdrawn 5-year rows were already in the 23–36 event band (smoker 25/23, diabetes 36/30). After correct truncation those event counts will **fall** (the fake 5-year set had 146 events). Many 5-year subgroup cells will trip `<10` or sit in 10–19 (descriptive). A WIN in `female × Montreal × 5y` was the only withdrawn WIN; it is the cell most likely to be a small-n artefact. Gate G8/G12 exist to stop that cell becoming a sentence.
+
+**E. OOF vs apparent.** If someone “simplifies” and scores the full-sample LP against frozen comparators, CALON-G gets an in-sample bonus the comparators do not. That is the cheapest fake WIN available. The fit-count test (OBJ-015) plus “OOF or it does not ship” is the counter.
+
+**F. I considered not filing an objection.** The PDFs and extracts are now on disk; a generic “verify the comparators” note would be theatre. The *specific* blocker is that the provenance file the confirmatory cell must read still says `verified_against_pdf=False`, and `cell_07.py` is `PASS, BLOCKED`. Fitting against that file reproduces cell_13.
+
+```objection
+id: OBJ-032
+step: 004
+raised_by: grok
+claim: CALON-G must not be fitted for confirmatory head-to-head while debate/evidence/julius-spec-kit/calon_settlement_out/comparator_provenance.csv still has verified_against_pdf=False for SAFEHEART-RE, FH-Risk-Score and Montreal-FH-SCORE (source_pinpoint is TODO or UNOBTAINABLE). cell_07.py is recorded as PASS, BLOCKED on that flag. In the same freeze, native UKB lpa_chem is nmol/L, so under the execution report's native NOT_EVALUABLE policy SAFEHEART and FH-Risk-Score cannot be scored; the only conversion on record (nmol/L ÷ 2.15) is labelled EXPLORATORY. Fitting now would recreate the withdrawn cell_13 mechanical tally (unverified candidates + exploratory conversion + B=300 + invalid horizon).
+settled_by: Add debate/steps/step-004/r1/code/gate_pdf_and_lpa.py that (i) reads comparator_provenance.csv and exits non-zero unless verified_against_pdf is True for all three rows and each source_pinpoint string is a non-TODO page/table locator that occurs in the matching extract under /Users/nader85/Downloads/CALON_FH_PROGRAMME_2026-08-09/04_papers/extracted_text/ (SAFEHEART_RE_Circulation_2017_.txt, FH_RS_ATVB_2021_.txt, MONTREAL_orig_JCL_2017_.txt); (ii) reads the confirmatory spec JSON and asserts LPA_POLICY==NOT_EVALUABLE and that any key containing 2.15 or convert lives only in an object with label EXPLORATORY; (iii) prints the three pinpoints and the policy and exits 0 only if both gates pass. The CALON-G fit cell is not run until that script exits 0.
+status: OPEN
+```
+
+What I checked and did **not** turn into an objection: cohort n/289/97/194 and the SHA are already locked and reproduced by patched `cell_06.py`; the horizon algebra is already named in the brief; r(age, `cum_nonhdl`)=0.5772 is already measured; uncentred SAFEHEART is already diagnosed. Those are inputs to the protocol, not new blockers.
+
+---
+
+## 4. Clinical and publication reality
+
+A lipidologist will accept this model only if the story is **lifetime non-HDL burden + remnant cholesterol + Lp(a) in LDLR-variant carriers**, not “we beat three FH scores.” The second sentence is not licensed yet, and may never be.
+
+**What the field will actually read.**
+
+- **Population.** Call them LDLR-variant carriers. “Genotype-confirmed HeFH” in UKB is the sentence OBJ-000/011 already killed (+0.226 mmol/L, not +3 to +4). A model that loses to SAFEHEART in that milder mix is epidemiologically unsurprising.
+- **Endpoint.** Coronary-weighted: date completeness I21 100, I25 100, I63 40.9, I70 64.3, I73 52.8, G45 37.0 (`spec_frozen.json`). Stroke and PAD are under-dated. Do not sell this as a symmetric ASCVD equation.
+- **Montreal.** Prevalent CVD, no LDL, ranking instrument. A C-index win against it on incident events is a Methods paragraph, not an abstract verb. Calibration claims against Montreal are prohibited.
+- **SAFEHEART.** Clinic FH, prior ASCVD 1.42, BMI bands, LDL mg/dL, Lp(a) mg/dL, centre 5.4078. Our application is restricted primary-prevention with a molar Lp(a) that the confirmatory path refuses to convert. Reviewer 2’s first question is “so you did not actually score SAFEHEART?” The answer must be the two-matrix layout (native `NOT_EVALUABLE` / exploratory ÷2.15), not a shrug.
+- **Lp(a) in CALON-G.** Native nmol/L, log, no 50 mg/dL cut. That is the defensible choice. Converting *our* term to match theirs would smuggle the exploratory factor into the primary equation.
+- **Hypertension as medication only.** Cleaner than `htn_any`, weaker than the scores’ “hypertension”. Untreated high BP is invisible. State it.
+- **Diabetes.** Present in CALON-G, absent from the published SAFEHEART equation. If the only ALL-cell WIN later sits in a diabetes-heavy slice, that is mechanism, not proof of general superiority.
+- **No practice change.** Internal OOF in a healthy-volunteer carrier cohort is TRIPOD Type 2a/2b at best. Wales transport is not in this lock. Clinical deployment language is prohibited.
+
+**Hostile-reviewer opening lines, and the pre-emption.**
+
+| Attack | Pre-emption |
+|---|---|
+| “You tuned the feature set on the 68/9/1 matrix.” | That matrix is withdrawn; BMI stays out; one sensitivity, pre-named. |
+| “Age and cholesterol-years are the same thing.” | r=0.5772, age HR 1.033 (1.013–1.054); printed, not dropped at 0.999. |
+| “C-index only.” | Slope, CITL, E:O, Brier, 4-group plot; Montreal excluded from those. |
+| “You won in all subgroups.” | Forbidden unless loss count is 0. Default sentence is the 6-cell primary family plus the full matrix. |
+| “78 tests.” | Banner in the JSON. Headline = 6 cells. |
+| “UKB is FH.” | It is not. Title and abstract use “LDLR variant carriers”. |
+| “B=300.” | Final CIs are B=2,000 or they are not final. |
+
+**Publication posture after the fit (written now, so it cannot change with the sign of delta).**
+
+- If the 6-cell family is mixed: report mixed. Partial superiority is publishable.
+- If CALON-G loses ALL-full vs centred, PDF-locked SAFEHEART: that is the paper’s honest result and still useful (a carrier equation does not beat a clinic equation).
+- If ALL cells vs SAFEHEART/FH-RS are `NOT_EVALUABLE`: the confirmatory discrimination claim shrinks to Montreal ranking plus calibration of CALON-G against observed incidence. Do not back-fill with the exploratory conversion to rescue a WIN count.
+
+I have not fitted CALON-G. I do not know the sign of any delta.
+
+---
+
+## Artefacts
+
+Proposed (not written this turn; orchestrator owns the tree):
+
+| Path | Role |
+|---|---|
+| `debate/steps/step-004/r1/code/calon_g_spec.json` | Frozen term list, constructions, `LPA_POLICY`, SHA, EPV, λ grid, 13 strata, 6-cell primary family |
+| `debate/steps/step-004/r1/code/calon_g_fit_eval.py` | The cell above, fail-loud gates G1–G13 |
+| `debate/steps/step-004/r1/code/gate_pdf_and_lpa.py` | OBJ-032 settlement: provenance flags + extract grep + policy assert |
+| `debate/steps/step-004/r1/code/test_horizon_mask.py` | Unit test: withdrawn mask ≠ truncated mask; synthetic 97-event assert |
+| `debate/steps/step-004/r1/code/test_no_healthy_default.py` | Confirmatory scorers raise or return NaN on missing HDL/Lp(a)/BMI/LDL |
+| `debate/evidence/julius-spec-kit/calon_settlement_out/comparator_provenance.csv` | Must be updated to `verified_against_pdf=True` with page/table pinpoints **before** the fit cell runs |
+
+Locked numbers this turn relied on (do not re-invent):
+
+- `debate/evidence/julius-spec-kit/spec_kit_execution_report.md`
+- `debate/evidence/julius-spec-kit/calon_settlement_out/spec_frozen.json`
+- `debate/evidence/julius-spec-kit/calon_settlement_out/obj002_factorial.json` (centred 5y mean risk 0.012222, slope 0.8714; uncentred mean 0.770363, slope 0.1656)
+- `debate/evidence/julius-spec-kit/calon_settlement_out/obj003_collinearity.json` (r=0.6055 / 0.5772)
+- `debate/evidence/julius-spec-kit/calon_settlement_out/comparator_provenance.csv` (`verified_against_pdf` still False)
+- `debate/DATA-INVENTORY.md` (column names)
+- `code/15_CALON_FINAL.py:249` (`cum_nonhdl` construction)
+- Extracts at `/Users/nader85/Downloads/CALON_FH_PROGRAMME_2026-08-09/04_papers/extracted_text/` (SAFEHEART Table 3 / p.2139 centre 5.4078 cited; Montreal/FH-RS charts **not** transcribed here)

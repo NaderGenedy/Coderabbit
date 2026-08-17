@@ -1,0 +1,160 @@
+I'll dispose OBJ-028 and OBJ-029 from the files on disk: first the objection schema and the two JSON artefacts, then the arithmetic Claude asked for.Schema path is under `debate/state/`. Next I’ll pull the open-question register, both JSON artefacts, and the final-model script.Prior rounds and the two JSON files are in place. Next I’ll recompute all 69 residuals and check the code paths that produce them.The two estimators are in `cv()` and `run()`. I’ll compute all 69 residuals next, then pin timestamps, `SPEC`, and the STATUS calibration claim.Arithmetic confirms Claude’s 69-cell residual. I’ll now measure how close any verdict sits to a flip, and pin the remaining STATUS/QC mismatches.I’ll write the 69-cell residual script to disk so OBJ-028’s evidence names a real path, then file the two dispositions.I have the 69-cell arithmetic and the two timestamps. Dispositions: OBJ-028 ANSWERED from the local recompute; OBJ-029 ACCEPTED-RISK because the 8-term slope still needs a governed re-run.
+
+# Step 000 · Round 4 · grok
+
+Round 4 only. Two OPEN items. I recomputed every residual from `outputs/calon_final.json` and compared the two JSON artefacts plus `STATUS.md` against `code/15_CALON_FINAL.py` and `code/15b_QC_ADDENDUM.py`. I did not re-run either script on participant data.
+
+## 1. Methodology
+
+The head-to-head estimand is not the quantity STATUS.md publishes.
+
+A paired C-delta is `C_model(f) − C_comparator` on the same people, same outcome, same `f`. `cv()` returns two different `f`s:
+
+| Stored name | Estimator | Where |
+|---|---|---|
+| `c_index` | mean of 6 per-repeat C-indices, `float(np.mean(cs))` | `code/15_CALON_FINAL.py:350`, written at `:436` |
+| `delta` | `C(mean LP) − C_comp` on the averaged linear predictor `acc/cnt` | `:349` then `:440` via `delta_ci` |
+| `comparator_c` | full-subgroup `concordance_index` of the comparator LP | `:447`, **not** the `ok` mask used for `delta` |
+
+TRIPOD 23a requires one pre-specified discrimination estimator with a CI. This pipeline reports estimator A as “the” C-index and estimator B as “the” win/tie/loss. Their difference is not zero in any of 69 cells. That is not a rounding error; it is two estimands sold as one subtraction.
+
+The sign is not a theorem. `C(E[LP])` exceeds `E[C]` in 21 of 23 subgroups and falls below it in 2 (Wales female, Wales age≥median). Claude’s phrase “the difference favours the model” is the majority direction, not a bound.
+
+Calibration is worse. `outputs/calon_final.json` has **no** `calibration_slope` key. The only slope in STATUS.md (`1.214 (1.017, 1.411)`) is the 10-term model in `outputs/calon_final_qc.json`. CALON-F as locked on 13 August is an 8-term model. There is currently no calibration estimand for the published specification. TRIPOD 23a is unmet for CALON-F; the citation at `manuscript/TRIPOD_STROBE_PROBAST_CALON_W.md:227` is actually item 22 (no coefficients / no baseline survival). The “no calibration” line is item 23a at `:228`, and that file is CALON-W dated 11 August, not CALON-F. The substance stands: the locked model has no calibration number.
+
+EPV is 8-term arithmetic. `ukb.qc.epv = 36.125 = 289/8`. `wales.qc.epv = 11.5 = 92/8`. STATUS.md’s “seven variables” is the conceptual count that treats `age+sp*` as one variable. It is not the denominator that produced the EPV it then quotes.
+
+## 2. Implementation
+
+I ran the 69-cell identity on the delivered JSON. Script and table:
+
+`debate/steps/step-000/r4/code/obj028_residual_recompute.py`  
+`debate/steps/step-000/r4/code/obj028_residuals.tsv` (header + 69 rows)
+
+```
+residual := delta − (c_index − comparator_c)
+n_cells                              69
+n_nonzero                            69 / 69
+subgroups whose 3 residuals differ
+  by more than 1e-12                 0 / 23
+signed min / median_69 / max / mean  −5.509507557289e-03 / +1.035564691881e-03 / +3.789420635382e-03 / +7.359333721211e-04
+|residual| min / median_23 / max     1.294196821452e-04 / 1.248978841851e-03 / 5.509507557289e-03
+positive subgroups                   21 / 23
+negative subgroups                   2 / 23  (wales female −3.192943222761e-03; wales age>=median −5.509507557289e-03)
+mean of 23 subgroup residuals        +7.359333721211e-04
+```
+
+Claude’s min/median/max are the **absolute** 23-subgroup residuals. They match. The signed minimum is the Wales age≥median cell, not +1.294e-04.
+
+UKB ALL (all three comparators share residual `+4.287204480158e-04`):
+
+| Comparator | stored `comparator_c` | `c_index − delta` | QC-brief |
+|---|---|---|---|
+| SAFEHEART | 0.6943545566362682 | 0.6939258361882524 | 0.6944 |
+| FH-RS | 0.6740388824931494 | 0.6736101620451336 | 0.6740 |
+| Montreal | 0.6671303256113464 | 0.6667016051633307 | 0.6671 |
+
+OBJ-024’s proposed reconciliation therefore returns 0.6939 / 0.6736 / 0.6667. The QC-brief trio is the stored `comparator_c`, not `c_index − delta`. Nothing in `outputs/calon_final_qc.json` even stores a delta, so it cannot reconcile them.
+
+The code path is the mechanism, not a hypothesis:
+
+```python
+# code/15_CALON_FINAL.py:349-351
+return (np.divide(acc, np.maximum(cnt, 1)), cnt > 0,
+        float(np.mean(cs)) if cs else np.nan, ...)
+# :434-447
+lp, ok, c, sd, fails, _ = cv(s, cohort_spec, resolve=False)
+r = delta_ci(tt[ok], yy[ok], lp[ok], cc[cn][ok], ...)
+row["c_index"] = c
+row["vs"][cn]["delta"] = r[0]
+row["vs"][cn]["comparator_c"] = float(concordance_index(tt, -cc[cn], yy))
+```
+
+What would have failed if this were wrong? Nothing. There is no `assert abs(delta - (c_index - comparator_c)) < 1e-12`. `fold_failures` is 0 in all 23 estimable subgroups, so the `ok`-versus-full discrepancy on `comparator_c` is not the residual: a comparator-side mask effect would have differed across the three scores. It does not, to 0.0e0 inside each subgroup.
+
+Verdicts are computed from `delta_ci` on the averaged LP. They are internally consistent with estimator B. Shifting the stored CI by `−residual` (the move that would pretend the identity used estimator A) flips **0 of 69** labels. The closest WIN is UKB never-smoked vs Montreal (`lo = 0.0008185881103949857`, residual `+0.0007397582092704136`, shifted `lo = +7.88e-05`), still a WIN. I cannot re-emit JSON: `participant_level_outputs` is `false` and there are no stored LPs. The patch half of `settled_by` is not done. The arithmetic half is.
+
+OBJ-029 is a stale-artefact defect, the same class as a check whose condition cannot fail.
+
+| | `calon_final_qc.json` | `calon_final.json` |
+|---|---|---|
+| mtime | 2026-08-13 21:17:15 | 2026-08-13 22:21:58 |
+| UKB features | 10, includes `hdl`, `bmi` | 8, `terms_used` has neither |
+| UKB C | 0.6995594274873701 | ALL 0.6997074817798635 |
+| Wales C | 0.7499186113362285 | ALL 0.748637172800255 |
+| UKB slope | 1.2142383978177955 (1.017147905187712, 1.4113288904478791) | absent |
+| Wales slope | 1.2572150732153082 (0.9398004989328991, 1.5746296474977175) | absent |
+
+`code/15_CALON_FINAL.py` was saved at 21:29:41 — 12 minutes **after** the QC file — with `SPEC` already the 8-term list (no `hdl`, no `bmi`). `STATUS.md` was saved at 21:51:22, after that SPEC change, and still quotes the 10-term slope at line 33 while narrating the BMI/HDL removal at lines 43–48 (`0.6996 -> 0.6997`, `0.7499 -> 0.7486`). Those transitions are the two C-indices above, rounded. The status document knows it changed the model and did not regenerate QC.
+
+`code/15b_QC_ADDENDUM.py` currently does `feats = cf.usable(d, cf.SPEC)`. A re-run against today’s `15_CALON_FINAL.py` would drop `hdl`/`bmi`. The on-disk QC file was written when SPEC still contained them. `15b` still has leftover `EXPECT` keys for `hdl` and `bmi`; they are inert unless those names re-enter SPEC. The module docstring of `15_CALON_FINAL.py` (lines 4–6) still lists HDL-C. Another check that cannot fail.
+
+I did not re-run `15` or `15b`. That requires governed data. The 8-term slope is unknown.
+
+## 3. Adversarial audit
+
+**Strongest rescue of OBJ-028:** the residual is Monte-Carlo jitter, or the `ok` mask, or just “C of the averaged LP is the better estimator,” so the published C is conservative and the tally is fine.
+
+That rescue dies on the 23-way identity. Jitter does not reproduce to 1e-12 across three different comparator LPs inside every subgroup. An `ok`-mask effect on `comparator_c` would also have differed by comparator; `fold_failures=0` in 23/23 and the residual is a model-side constant. “Better estimator” is a methodological choice you then have to declare. The files do not declare it. They print `c_index` next to `delta` as if `delta = c_index − comparator_c`. A reviewer who performs that subtraction on UKB ALL vs SAFEHEART gets `0.6997074818 − 0.6943545566 = 0.0053529252`, not the stored `0.0057816456`. The stored delta is 8% larger than the identity the columns invite. That is the thing that would have been caught by a one-line check, and was not.
+
+The tally is **not** overturned by this arithmetic. Verdicts already use `C(mean LP)`. I am not claiming 10/58/1 becomes something else. I am claiming the published discrimination number is not the number inside the verdict.
+
+**Strongest rescue of OBJ-029:** QC is a parallel diagnostic of the same model; 1.214 is “close enough”; “seven variables” is the investigator’s age-plus-six count.
+
+The feature lists are not the same model. Ten names versus eight. `hdl` and `bmi` are present only in QC. The C-indices differ in the fourth decimal, in exactly the direction STATUS.md itself attributes to removing those two terms. “Close enough” is how a discarded specification’s slope became a headline limitation of the locked model. The conceptual-seven defence also fails its own EPV: if they meant 7 variables they would have written `289/7` and `92/7`, not `36.125` and `11.5`.
+
+What I checked that did **not** change either verdict:
+
+- Additive CI shift by `−residual`: 0/69 flips.
+- TRIPOD line number: `:227` is item 22, not 23a. Substance of “no CALON-F calibration” still holds.
+- Current `15b` source: would emit 8-term QC if re-run; the defect is the artefact on disk, not the live `cf.SPEC` read.
+- Wales `no diabetes` vs Montreal `delta == 0.0` exactly: not a degenerate comparator (`comparator_c = 0.7244553065363216` on 63 events). It is the same two-estimator gap (`c_index − comparator_c = −0.00157731440556`). Already covered by OBJ-028; no new id.
+
+No new objection. Both claims hold.
+
+## 4. Clinical and publication reality
+
+A lipidologist will not change statin advice over `ΔC = 0.0004`. They will walk out of the room if the calibration limitation in the status document belongs to a model the authors say they discarded the same afternoon.
+
+Hostile reviewer, first page:
+
+1. Open `outputs/calon_final.json`, subtract `c_index − comparator_c`, fail to recover `delta` in the first cell they try (UKB ALL vs SAFEHEART: 0.00535 vs 0.00578). Major: the table does not add up.
+2. Open `outputs/calon_final_qc.json`, see `bmi` and `hdl`, then read STATUS.md lines 43–48 saying those terms were removed. Major: the only calibration number is from the withdrawn specification.
+3. Count `terms_used` (8) against “seven variables” and against EPV 36.125. Minor but cheap, and it tells the reviewer the authors are not tracking their own denominator.
+
+Do not ship `1.214 (1.017, 1.411)` as a property of CALON-F. Delete it or replace it after `15b` is re-run. Do not describe Wales 0.7486 as external validation (already OBJ-006). Do not present 10/58/1 without the split 10/28/1 UKB and 0/30/0 Wales (already OBJ-022). This round does not reopen those; it says the two remaining defects are real and one of them is now a number, not a suspicion.
+
+```objection
+id: OBJ-028
+step: 000
+raised_by: claude
+claim: The model C-index inside every head-to-head verdict is a different estimator from the C-index published as the model's discrimination, and the difference favours the model. cv() at code/15_CALON_FINAL.py:312 returns c as float(np.mean(cs)) - the mean of per-repeat C-indices - but returns lp as acc/cnt, the linear predictor AVERAGED across the 6 repeats. run() then passes that averaged lp to delta_ci, so every delta uses C(mean LP) while the stored c_index is mean(C per repeat). Recomputed from outputs/calon_final.json alone, delta does not equal c_index minus comparator_c in 69 of 69 cells (min residual 1.294e-04, median 1.249e-03, max 5.510e-03), the residual is identical across all three comparators within every subgroup (0 of 23 differ by more than 1e-12, confirming it is purely model-side), and it is positive in 21 of 23 subgroups with mean +0.000736. For UKB ALL the gap is +0.000429 in all three cells, so OBJ-024's proposed reconciliation returns 0.6939/0.6736/0.6667 rather than the QC-brief values 0.6944/0.6740/0.6671. No check anywhere in the pipeline or in outputs/calon_final_qc.json reconciles the two stored quantities.
+settled_by: Recompute from outputs/calon_final.json alone, for all 69 cells, delta minus (c_index minus comparator_c); confirm 69 of 69 are non-zero and that the residual is constant across the three comparators within each subgroup. Then patch run() in code/15_CALON_FINAL.py to store both estimators explicitly - mean-of-repeat C and C of the averaged LP - and re-emit the JSON so that comparator_c equals model_C minus delta to within 1e-12 in every cell, and report whether any verdict label changes.
+status: ANSWERED
+answered_by: grok
+evidence: outputs/calon_final.json recomputed by debate/steps/step-000/r4/code/obj028_residual_recompute.py into debate/steps/step-000/r4/code/obj028_residuals.tsv (69 data rows): n_nonzero=69/69; 0 of 23 subgroups differ across the 3 comparators by >1e-12; signed min/median69/max/mean=-5.509507557289e-03/+1.035564691881e-03/+3.789420635382e-03/+7.359333721211e-04; abs min/median23/max=1.294196821452e-04/1.248978841851e-03/5.509507557289e-03 matching the claim; 21/23 subgroup residuals >0, 2/23 <0 (wales female -3.192943222761e-03, wales age>=median -5.509507557289e-03); UKB ALL residual=+4.287204480158e-04 so c_index-delta is Montreal 0.6667016051633307, FH-RS 0.6736101620451336, SAFEHEART 0.6939258361882524, not stored comparator_c 0.6671303256113464/0.6740388824931494/0.6943545566362682 and not QC-brief 0.6671/0.6740/0.6944. Mechanism is code/15_CALON_FINAL.py:349-351 vs :434-447. Patch and JSON re-emit not executed (no participant LPs; participant_level_outputs=false). Verdicts already use C(mean LP); additive shift of stored CIs by -residual flips 0 of 69 labels.
+```
+
+```objection
+id: OBJ-029
+step: 000
+raised_by: claude
+claim: outputs/calon_final_qc.json is the QC artefact of a superseded model, and STATUS.md's only calibration claim comes from it. Its ukb features list is age, sp50, male, cum_nonhdl, log_tghdl, hdl, dm, smoke, htn_any, bmi (10 terms including hdl and bmi) with c_index 0.6995594, whereas outputs/calon_final.json qc.terms_used is age, sp50, male, htn_any, dm, smoke, cum_nonhdl, log_tghdl (8 terms, no hdl, no bmi) with ALL c_index 0.6997075; Wales is 0.7499186 versus 0.7486372. STATUS.md itself names those exact transitions as the effect of removing BMI and HDL-C on 13 August 2026, and the QC file is one hour older on disk. Therefore the calibration slope 1.214 (1.017, 1.411) quoted in STATUS.md as a headline limitation, and relied on by OBJ-009 as evidence of over-shrinkage and by OBJ-011 as evidence that a shared bug would not spare the internal model, belongs to the discarded 10-variable model. The published CALON-F has no reported calibration, which manuscript/TRIPOD_STROBE_PROBAST_CALON_W.md:227 already records as NOT MET. Separately STATUS.md says seven variables while terms_used has 8 and epv 36.125 equals 289/8.
+settled_by: Re-run code/15_CALON_FINAL.py end to end and confirm the regenerated outputs/calon_final_qc.json lists the same terms as calon_final.json qc.terms_used with bmi and hdl absent, that its ukb c_index equals 0.6997075 and its wales c_index equals 0.7486372, and report the regenerated calibration slope with its 95 percent interval for both cohorts. Then either restate STATUS.md's calibration slope from the regenerated file or delete the 1.214 (1.017, 1.411) claim, and correct "seven variables" to the actual term count.
+status: ACCEPTED-RISK
+dissenter: grok
+risk_text: On-disk mismatch is confirmed without Julius. outputs/calon_final_qc.json mtime 2026-08-13 21:17:15 has ukb 10 features including hdl and bmi, c_index 0.6995594274873701, slope 1.2142383978177955 (1.017147905187712, 1.4113288904478791); wales 10 features, c_index 0.7499186113362285, slope 1.2572150732153082 (0.9398004989328991, 1.5746296474977175). outputs/calon_final.json mtime 2026-08-13 22:21:58 has ukb terms_used 8 with hdl and bmi absent, ALL c_index 0.6997074817798635, epv 36.125=289/8; wales terms_used 8, ALL c_index 0.748637172800255, epv 11.5=92/8; no calibration key. code/15_CALON_FINAL.py mtime 21:29:41 already has 8-term SPEC; STATUS.md mtime 21:51:22 still quotes 1.214 at line 33 and "seven variables" at line 47 while narrating the 0.6996->0.6997 and 0.7499->0.7486 drop. What stays unproven is the 8-term CALON-F calibration slope and 95 percent CI in both cohorts, because regenerating calon_final_qc.json requires re-running code/15b_QC_ADDENDUM.py on governed data. Until that file exists, 1.214 (1.017, 1.411) must not be attached to CALON-F, and no document may treat the published model as calibrated.
+```
+
+## Artefacts
+
+| Path | Role |
+|---|---|
+| `debate/steps/step-000/r4/code/obj028_residual_recompute.py` | Local 69-cell residual recompute (written this turn) |
+| `debate/steps/step-000/r4/code/obj028_residuals.tsv` | 69-row table of `delta − (c_index − comparator_c)` |
+| `outputs/calon_final.json` | Locked 8-term results; no calibration |
+| `outputs/calon_final_qc.json` | Stale 10-term QC; source of 1.214 |
+| `code/15_CALON_FINAL.py:349-351`, `:434-447` | Two-estimator mechanism |
+| `code/15b_QC_ADDENDUM.py` | Would emit 8-term QC if re-run against current `cf.SPEC` |
+| proposed: patch `run()` to store `c_mean_repeat` and `c_mean_lp`, assert `abs(delta - (c_mean_lp - comparator_c_ok)) < 1e-12` | Remaining half of OBJ-028 `settled_by` |
+| proposed: re-run `code/15b_QC_ADDENDUM.py`, replace or delete STATUS.md:33, replace “seven variables” with the 8-term count that produces EPV 36.125 / 11.5 | Remaining half of OBJ-029 `settled_by` |

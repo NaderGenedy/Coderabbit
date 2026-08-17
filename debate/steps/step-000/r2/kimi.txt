@@ -1,0 +1,127 @@
+• I'll verify key Round-1 claims against the actual files on disk before engaging — PDFs, the JSON artefacts, and the disputed code lines.
+
+• Two material findings already: no comparator PDFs on disk, and no `CALON_JULIUS_SPECKIT/` in this tree. Verifying the remaining claims.
+
+• The exact-zero cell is worse than reported in Round 1 — the stored values contradict each other within one JSON cell. Two more checks to be airtight.
+
+• All verification done. Writing the Round-2 exchange turn.
+
+  # Step 000 · Round 2 · Kimi
+
+  Round 1 was excerpt-bounded for all four of us. This round I read the full files on disk: `code/15_CALON_FINAL.py` (all 494 lines), `outputs/calon_final.json` (all 938 lines), the manuscript tree, and a full filesystem search. Three findings are new and material; several Round-1 claims are now confirmed or weakened by code none of us had been shown.
+
+  **Verified this round (all with `include_ignored` filesystem search):**
+
+  | Claim from Round 1 | Verdict against disk |
+  |---|---|
+  | Comparator block, guard, tally lines as quoted (all four agents) | Accurate — `code/15_CALON_FINAL.py:256-280, 300, 425-454` verbatim |
+  | Codex: subgroups may be refit | **Confirmed by code** — see §2 |
+  | Claude: `participant_level_outputs` governance flag | **Benign** — it is the boolean `false` (`outputs/calon_final.json:15`). Checked; no objection filed |
+  | Kimi/Claude: exact-zero Welsh delta | **Worse than reported** — the cell contradicts itself internally (§2) |
+  | All four: "PDFs on disk, if located" | **No comparator source PDF exists anywhere in this repository** — only rendered manuscript/figure PDFs |
+  | All four: diff against `CALON_JULIUS_SPECKIT/scripts/comparators.py` | **That file does not exist on disk.** The Spec Kit implementation survives only as excerpts pasted into debate packs |
+
+  ## 1. Methodology
+
+  **The convergence map, and what it is worth.** Four blind agents independently found: the dual comparator implementations, the 3,333-vs-3,209 risk-set conflict, the name-gated collinearity guard, the exact-zero Welsh cell, the all-wins-are-UKB tally split, and the −0.062/−0.064 STATUS inconsistency. That is meaningful — but I state plainly in §3 why this convergence is narrower than it looks.
+
+  **Claude, §1b (Wales is a refit, not transport) — I agree, and the full code confirms it harder than the excerpts could.** `cv()` (`code/15_CALON_FINAL.py:312-351`) fits `CoxPHFitter(penalizer=0.05)` fresh on whatever dataframe it is handed, and it is handed each cohort separately and each subgroup separately (line 434). There is no frozen coefficient vector anywhere in the file. One scoping correction: Claude wrote "no transported model anywhere in this pipeline" — true for CALON-F, but the repo does contain transport artefacts (`outputs/candidate_reciprocal_transport.csv`, `figures/candidate_transport_auc.pdf`); I checked, and they belong to the CALON-N DRAGON↔UKB chapter (424/890 participants), not to CALON-F. The claim stands; the scope should be stated so a reviewer cannot "refute" it by pointing at the wrong file.
+
+  **Codex, OBJ-006 (subgroup refits) — confirmed, and upgraded from "appears contradicted" to "contradicted, line-cited."** The docstring at lines 420-421 says "subgroups never re-resolve, so no subgroup is fitted with its own model." That sentence conflates the *feature list* (frozen, via `resolve=False`) with the *coefficients* (refit on every subgroup's own rows, lines 337-341). Every one of the 13 subgroup rows in `calon_final.json` is a separately fitted, cross-validated model. This is the mandate's signature failure shape verbatim: a comment asserting a property the code does not have.
+
+  **Claude, §1e/OBJ-012 (no UPHELD status) — I agree, and sharpen it.** The register header presents OBJ-000 as "the worked example — what a resolved objection looks like." Its evidence (+0.226 mmol/L against a +3 to +4 benchmark) refutes the "genotype-confirmed HeFH" label that `STATUS.md` still carries. The exemplar of closure in this debate's constitution is a mis-closure. Grok's OBJ-006 (the closing numbers belong to the pipeline under QC) compounds it. I leave both objections untouched and endorse both.
+
+  **Codex, OBJ-008 (centring does not move a calibration slope) — I adopt this, and it subsumes and corrects part of my Round-1 turn.** My Round-1 mechanism (cohort z-standardization of the LP) is *multiplicative* — it does move a slope. Codex's point is that OBJ-002's `settled_by` as written tests the *additive* axis (centring constant, baseline-survival horizon), which moves the intercept only. So the existing settlement grid could return four identical slopes and "clear" a wrong-scale LP. The settlement must be rewritten to the multiplicative axis; I file this as OBJ-006 below, crediting Codex's analysis.
+
+  **Claude, §1f (the model's slope of 1.214 as the control that "a shared bug would not spare") — I weaken this, with new evidence.** Line 340 discloses what no supplied document did: `CoxPHFitter(penalizer=0.05)`, a fixed ridge penalty with no visible tuning. A penalized fit yields out-of-fold linear predictors that are mechanically too compressed, i.e. a CV calibration slope above 1 by construction. The model-versus-comparator slope contrast (1.214 vs 0.52-0.57) is therefore confounded by the penalty and cannot serve as the clean direction check Claude's phenotype argument needs. The phenotype hypothesis itself is untouched; this specific evidentiary leg is not load-bearing.
+
+  **Claude, §2c ("affine transform harmless — checked and holds") — one refinement.** True within a cell for a rank-based C-index. False across cells: because `comparators(s)` receives each subgroup (line 435), the z-anchors at lines 272-274 are refit per subgroup, so "Montreal" is a different affine rescaling in every row of the JSON and the 26 Montreal cells are not evaluations of one fixed score. Codex's batch-invariance test is the correct instrument for exactly this.
+
+  ## 2. Implementation
+
+  New discrepancies established by reading what the Round-1 packs omitted:
+
+  1. **The exact-zero cell is internally inconsistent, not merely improbable.** `outputs/calon_final.json:770-785`, Welsh "no diabetes" vs Montreal: model `c_index` 0.7228779921307611, `comparator_c` 0.7244553065363216 — yet stored `delta` is exactly `0.0`. The naive difference is **−0.00158**, so the stored delta disagrees with the two C-values stored *in the same cell*, including sign direction. The structural cause is visible at `code/15_CALON_FINAL.py:440` vs `:447`: `delta_ci` is computed on the `ok` mask, `comparator_c` on the full subgroup. That explains why the numbers can differ; it does not explain bit-exact 0.0, which still requires the two C-indices on `ok` rows to be identical to the last bit. Filed as OBJ-004.
+  2. **`cv()` can silently shrink the analysis rows.** Lines 328-329: a fold whose training partition holds <10 events is `continue`d, leaving that fold's test rows at `lp = NaN`; line 343 swallows fit exceptions into a counter. The `ok` mask therefore varies by cell in a way stored nowhere except `fold_failures` — which is 0 in the cell above, so the exact zero there has no disclosed explanation.
+  3. **Asymmetric imputation confirmed and sharpened (Claude §2c, my R1-OBJ-005).** The *model* imputes fold-internally (`X.iloc[tr].median()`, line 331 — correct practice); the *comparators* impute on the whole scored subgroup (lines 258-262). Claude's direction-of-bias claim holds in code.
+  4. **Constants now disclosed:** `SEED = 20260813` (single), `REPEATS = 6`, `BOOT = 1200`, `MIN_EVENTS = 10` (lines 64-67). This answers part of Claude's OBJ-009: 1200 bootstrap draws with a ≥200-valid-draw floor (line 372) — the CI machinery is adequate; the single-seed CV/tally concern stands.
+  5. **The defect has a written precedent inside the repo.** `manuscript/TRIPOD_STROBE_PROBAST_CALON_W.md:76` (R11) already ruled a cohort-anchored z-Montreal "Not an implementation of the published model," and R9 (line 74) already ruled win/tie/loss labels seed-unstable — in the CALON-W chapter. Both defects recur in the locked final pipeline. The project caught this exact shape in writing and shipped it again in the next chapter.
+  6. **The reference comparator implementation is not in this repository.** No `comparators.py` exists on disk (filesystem search, ignored paths included). Every Round-1 diff against the Spec Kit — mine included — was a diff against a pasted excerpt. Claude's OBJ-004 `settled_by` ("substitute the Spec Kit and re-run") is not executable from this tree, and OBJ-001's `settled_by` ("coefficients printed in the source PDFs on disk") names files that are not here. Filed as OBJ-005.
+
+  Where I checked and found no problem: all four agents' quoted line numbers are accurate; the sign convention `concordance_index(t, -lp, y)` is used consistently in `delta_ci` and in `comparator_c`; cluster-aware fold permutation per repeat (lines 322-324) is correctly implemented; model-side imputation is fold-internal. `participant_level_outputs` is a boolean flag, not data.
+
+  ## 3. Adversarial audit
+
+  **Attack the exchange itself.** Assume the four-agent convergence is misleading. The most likely way it is misleading: we were four blind readers of *the same excerpts*. Everything we converged on was visible inside the shared excerpt windows; everything requiring the omitted bodies — `cv()`, `delta_ci()`, `build_ukb()` — was unchecked by four agents instead of one. This round proves the point: ten minutes with the full file confirmed Codex's subgroup-refit objection outright, disclosed the ridge penalty behind Claude's slope puzzle, and turned the exact-zero cell from "improbable" to "self-contradictory." Four blind audits with identical blind spots are one audit with four voices outside the windows. Codex's OBJ-004 (hash-manifest the packet against the resources) is the correct fix and I endorse it without re-filing.
+
+  **Attack the strongest Round-1 claim — Claude's rank-order table (§2a).** It is the best discriminating evidence produced in Round 1: under "Julius understates the comparators," no proposed mechanism orders the C-gaps by published age granularity (−0.066/−0.023/−0.003); under "local implementations are inflated continuous surrogates," the ordering is predicted. I accept the direction. But its anchor is the categorical Spec Kit forms being approximately the published ones — and that implementation is now verified absent from disk, with no PDF behind it. The likelihood-ratio argument survives; the conclusion it points at cannot be acted on until OBJ-005 below is settled. Both legs of every comparator comparison in this project are currently unverified against any source.
+
+  **Correct my own Round-1 OBJ-007.** Its `settled_by` (grep the manuscript for the pooled tally) currently *passes*: "10 wins / 58 ties" appears nowhere under `manuscript/` — that tree documents the CALON-N chapter. The pooled-tally exposure today is `STATUS.md` being read as a results document, not the manuscript. The objection stands narrowed; the per-cohort split is still required wherever the tally does appear.
+
+  **What would have failed if the convergence were wrong?** The on-disk line checks — they did not fail. What remains unfalsified: everything requiring execution (the disposition of the 124 undated cases; Welsh comparator slopes; the seed distribution of the tally). **The single most decisive computation available today** is not the PDF scoring — impossible, no PDFs on disk — but the per-cell reconciliation of stored `delta` against stored `c_index` and `comparator_c` over identical row sets. It runs on artefacts already in the repo, and it impeaches or vindicates every tally cell individually. Snippet under Artefacts.
+
+  ## 4. Clinical and publication reality
+
+  **Grok's "Which SAFEHEART?" is now the whole question.** There is no comparator source document in this repository at all. The supplement's provenance table cannot be produced from local artefacts; a reviewer's first request — the equations beside the papers — ends the review on day one. Claude and Grok said this conditionally; the filesystem search makes it unconditional.
+
+  **The programme's two chapters hold different epistemic standards, and a hostile reviewer will quote one against the other.** `manuscript/MANUSCRIPT.md:244` already concedes "adapted FH-Risk-Score and SAFEHEART implementations" and withdrew the decision-curve analysis because comparators were not on a common probability scale (line 143); the TRIPOD audit withdrew the entire UKB arm of that chapter. Meanwhile the CALON-F pipeline asserts "Published equations, scored not fitted" under a continuous SAFEHEART with round-decimal weights. The manuscript's candour is the standard; the pipeline does not meet it.
+
+  **Where I converge with all three agents on the clinical floor:** phenotype (+0.226 mmol/L vs +3-4), external parity (Wales 0 WIN / 30 tie / 0 LOSS, verified in the JSON), the model weakest where triage bites (UKB diabetes C = 0.5593, the single LOSS at −0.0644/64 events; Welsh hypertensive C = 0.5585; grey-zone AUC 0.489), and a coronary-weighted endpoint sold as ASCVD. Nothing in Round 1 or in my disk checks this round moves any of those.
+
+  **What is publishable today** is unchanged from my Round-1 statement and is now four-way convergent: internal discrimination C ≈ 0.70/0.75 in a carrier/registry cohort, external parity with published scores, one pre-specified loss conceded, no superiority claim, and the UKB comparator columns held back until OBJ-001/OBJ-005 settle. `STATUS.md` currently says more than that.
+
+  ```objection
+  id: OBJ-004
+  step: 000
+  raised_by: kimi
+  claim: outputs/calon_final.json:770-785 (Wales, "no diabetes" vs Montreal) is internally inconsistent: stored delta is exactly 0.0 while the same cell stores c_index 0.7228779921307611 and comparator_c 0.7244553065363216, a naive difference of -0.00158 opposite in sign to a tie-at-zero. The structural cause is visible at code/15_CALON_FINAL.py:440 (delta_ci computed on the ok mask) versus line 447 (comparator_c computed on the full subgroup), so the two headline quantities in every one of the 78 cells are computed over potentially different row sets; the ok mask varies by cell via the fold-skip rule at lines 328-329 and the exception swallow at line 343, and fold_failures is 0 in this cell, leaving the bit-exact zero unexplained.
+  settled_by: Recompute delta and comparator_c on identical rows for every cell and publish the 78-row reconciliation table (ok.sum() vs len(s), both C-indices to 6 decimal places, delta recomputed, and the absolute gap against the stored delta). Any cell where |stored delta - (c_index - comparator_c)| exceeds 0.001 on the same rows must be flagged; the Welsh no-diabetes cell must be explained bit-for-bit or the tally recomputed.
+  status: OPEN
+  ```
+
+  ```objection
+  id: OBJ-005
+  step: 000
+  raised_by: kimi
+  claim: OBJ-001's settled_by is not runnable: no comparator source PDF exists anywhere in this repository (filesystem search including ignored paths returns only rendered manuscript, supplement and figure PDFs), and CALON_JULIUS_SPECKIT/scripts/comparators.py also does not exist on disk - the reference implementation that all four Round-1 audits diffed against survives only as excerpts pasted into debate packs. Every comparator provenance statement in this debate, including Claude's rank-order analysis and my own Round-1 OBJ-004, is currently anchored to an unverifiable transcription, and Claude's proposed re-run substituting the Spec Kit cannot be executed from this tree.
+  settled_by: Commit the three comparator source PDFs and the Spec Kit comparator tree into the repository with SHA-256 entries added to SHA256SUMS.txt (or a stated acquisition source with hashes on receipt), then re-run the filesystem manifest check showing both are present and hashed. Until that check passes, no step may treat either on-disk or excerpted implementation as the reference form of any comparator.
+  status: OPEN
+  ```
+
+  ```objection
+  id: OBJ-006
+  step: 000
+  raised_by: kimi
+  claim: OBJ-002's settled_by is non-diagnostic as written (adopting codex's Round-1 OBJ-008 analysis): under the standard calibration-slope definition, additive centring (the 5.4078 constant) and changing baseline survival between 5 and 10 years move the calibration intercept, not the slope, so the proposed centred/uncentred x 5y/10y grid can return four identical slopes even when the comparator LP is on the wrong scale. Only multiplicative transforms move the slope - unit errors, cohort z-standardization of the LP as implemented at code/15_CALON_FINAL.py:272-274, or a genuinely over-dispersed index - and those are exactly the candidate mechanisms the grid was meant to distinguish.
+  settled_by: Run an affine-invariance unit test on the declared calibration-slope function at one fixed horizon: adding a constant to the LP and changing only baseline survival must leave the slope unchanged within 1e-6, while multiplying the LP by 0.5 and 2.0 must produce the reciprocal slope change. Then report all four comparator slopes recomputed on the raw, unstandardized LP scale in both cohorts, alongside the analysis code path that produced the 0.52-0.57 cluster.
+  status: OPEN
+  ```
+
+  *Id note: Round-1 proposals from all four agents (claude OBJ-004…012, codex OBJ-004…009, kimi OBJ-004…008, grok OBJ-004…007) were text-only and colliding; per this round's instruction I number from OBJ-004 and leave renumbering on merge to the orchestrator.*
+
+  ## Artefacts
+
+  - **Cell-reconciliation check (runnable today, settles OBJ-004's first half):** proposed path `debate/steps/step-000/r2/code/reconcile_cells.py`
+
+  ```python
+  import json
+  d = json.load(open("outputs/calon_final.json"))
+  for cohort in ("ukb", "wales"):
+      for label, row in d[cohort]["subgroups"].items():
+          for comp, cell in row["vs"].items():
+              naive = row["c_index"] - cell["comparator_c"]
+              gap = abs(cell["delta"] - naive)
+              if gap > 1e-9:
+                  print(f"{cohort:6s} {label:16s} {comp:10s} "
+                        f"stored_delta={cell['delta']:+.6f} naive={naive:+.6f} gap={gap:.6f}")
+  ```
+
+  - **Resource-absence manifest (runnable today, settles OBJ-005's check):**
+
+  ```bash
+  find . -iname '*.pdf' -not -path './.git/*' ; \
+  find . -name 'comparators.py' -not -path './.git/*' ; \
+  shasum -a 256 code/15_CALON_FINAL.py outputs/calon_final.json
+  ```
+
+  - **Penalizer disclosure (one line, settles the slope confound in §1):** `code/15_CALON_FINAL.py:340` — `CoxPHFitter(penalizer=0.05)`; any calibration-slope comparison between model and comparators must state this fixed, untuned penalty alongside the model's 1.214.

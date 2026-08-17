@@ -1,0 +1,48 @@
+{
+  "outDir": "debate/steps/step-005/r1",
+  "model_pin": {
+    "claude": "opus/max",
+    "codex": "gpt-5.6-sol/ultra",
+    "kimi": "kimi-code/k3",
+    "grok": "grok-4.6/xhigh"
+  },
+  "prompt_chars": 51216,
+  "results": [
+    {
+      "name": "claude",
+      "provider": "Anthropic · Claude · opus/max",
+      "ok": true,
+      "code": 0,
+      "ms": 296521,
+      "error": "",
+      "response_chars": 21505
+    },
+    {
+      "name": "codex",
+      "provider": "OpenAI · Codex · gpt-5.6-sol/ultra",
+      "ok": true,
+      "code": 0,
+      "ms": 735106,
+      "error": "",
+      "response_chars": 17060
+    },
+    {
+      "name": "kimi",
+      "provider": "Moonshot · Kimi · k3/max",
+      "ok": true,
+      "code": 0,
+      "ms": 282467,
+      "error": "",
+      "response_chars": 15248
+    },
+    {
+      "name": "grok",
+      "provider": "xAI · Grok · 4.6/xhigh",
+      "ok": true,
+      "code": 0,
+      "ms": 302013,
+      "error": "",
+      "response_chars": 26663
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "diagnostics": {
+    "age_vs_chol_years": 0.6055,
+    "age_vs_cum_nonhdl": 0.5772,
+    "age_vs_tc_unt": 0.171,
+    "condition_number_age_cholyears": 2.02,
+    "would_trip_spec_rule_0_999": false,
+    "note_on_drop_rule": "A 0.999 threshold catches only exact linear duplicates. Report the correlation whatever it is; do not treat 'did not trip' as 'no collinearity'."
+  },
+  "fits": {
+    "A_age_plus_chol_years": {
+      "HR": 1.043,
+      "lo": 1.023,
+      "hi": 1.064
+    },
+    "B_age_plus_untreated_TC": {
+      "HR": 1.052,
+      "lo": 1.034,
+      "hi": 1.07
+    },
+    "C_age_plus_cum_nonhdl": {
+      "HR": 1.033,
+      "lo": 1.013,
+      "hi": 1.054
+    },
+    "D_age_alone": {
+      "HR": 1.055,
+      "lo": 1.037,
+      "hi": 1.072
+    }
+  }
+}

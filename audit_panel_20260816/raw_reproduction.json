@@ -1,0 +1,200 @@
+{
+  "audit": "CALON-C independent raw gate reproduction",
+  "governance": "aggregate-only; no participant rows, identifiers, family labels, dates of birth, or predictions emitted",
+  "source_files": {
+    "ukb_master": {
+      "path": "/Users/nader85/Library/CloudStorage/GoogleDrive-nadergenedy1@gmail.com/My Drive/Projects/SHARED_MASTER_DATA/UKB/ukb_master.csv",
+      "exists": true,
+      "sha256": "702a0c159d2ae01266c5a74ffcec2d52feca8cca9089145939f2d49dcb434587"
+    },
+    "ukb_outcomes": {
+      "path": "/Users/nader85/Library/CloudStorage/GoogleDrive-nadergenedy1@gmail.com/My Drive/Projects/CALON_AlphaFold_Rebuild/data_corrected/corrected_ascvd_outcomes.csv",
+      "exists": true,
+      "sha256": "9b3179da0af7ef0bb139cb1617f054f9ab156c055eac8aeae2970163d4fcc3d3"
+    },
+    "ukb_bp_meds": {
+      "path": "/Users/nader85/Library/CloudStorage/GoogleDrive-nadergenedy1@gmail.com/My Drive/Projects/CALON_AlphaFold_Rebuild/New folder/04a_meds_touch.csv",
+      "exists": true,
+      "sha256": "5280b783a0c13c53fd312242299f4907a49cf0d0ccebe814a48963010e3d09a4"
+    },
+    "wales": {
+      "path": "/Users/nader85/Downloads/WALES_FH_CLEANED.csv",
+      "exists": true,
+      "sha256": "b819becc4761c77a203395dbf8768de613bffb4764673eed75dda2ed46695884"
+    }
+  },
+  "ukb_gate_checks": {
+    "carriers": {
+      "expected": 3540,
+      "observed": 3540,
+      "status": "PASS"
+    },
+    "prevalent_excluded": {
+      "expected": 207,
+      "observed": 207,
+      "status": "PASS"
+    },
+    "undated_excluded": {
+      "expected": 124,
+      "observed": 124,
+      "status": "PASS"
+    },
+    "risk_set": {
+      "expected": 3209,
+      "observed": 3209,
+      "status": "PASS"
+    },
+    "events_full": {
+      "expected": 289,
+      "observed": 289,
+      "status": "PASS"
+    },
+    "events_5y": {
+      "expected": 97,
+      "observed": 97,
+      "status": "PASS"
+    },
+    "events_10y": {
+      "expected": 194,
+      "observed": 194,
+      "status": "PASS"
+    }
+  },
+  "wales_gate_checks": {
+    "risk_set": {
+      "expected": 1159,
+      "observed": 1159,
+      "status": "PASS"
+    },
+    "events_full": {
+      "expected": 92,
+      "observed": 92,
+      "status": "PASS"
+    },
+    "events_5y": {
+      "expected": 44,
+      "observed": 44,
+      "status": "PASS"
+    },
+    "events_10y": {
+      "expected": 66,
+      "observed": 66,
+      "status": "PASS"
+    }
+  },
+  "declared_ledgers": {
+    "ukb": {
+      "carriers": 3540,
+      "prevalent_excluded": 207,
+      "undated_excluded": 124,
+      "risk_set": 3209,
+      "events_full": 289,
+      "events_5y": 97,
+      "events_10y": 194,
+      "events_unambiguous_date": 147
+    },
+    "wales": {
+      "Positive1_total": 2405,
+      "exclusion_flow": {
+        "genotype_positive_start": 2405,
+        "excluded_missing_baseline": 344,
+        "excluded_prevalent_ascvd": 185,
+        "excluded_outcome_positive_without_event_age": 58,
+        "excluded_without_positive_operational_followup": 659,
+        "dated_incident_events_excluded_by_followup_rule": 10
+      },
+      "risk_set": 1159,
+      "events_full": 92,
+      "events_5y": 44,
+      "events_10y": 66
+    }
+  },
+  "raw_ledgers": {
+    "ukb": {
+      "carriers": 3540,
+      "prevalent_excluded": 207,
+      "undated_excluded": 124,
+      "risk_set": 3209,
+      "events_full": 289,
+      "events_5y": 97,
+      "events_10y": 194,
+      "events_unambiguous_date": 147
+    },
+    "wales": {
+      "Positive1_total": 2405,
+      "exclusion_flow": {
+        "genotype_positive_start": 2405,
+        "excluded_missing_baseline": 344,
+        "excluded_prevalent_ascvd": 185,
+        "excluded_outcome_positive_without_event_age": 58,
+        "excluded_without_positive_operational_followup": 659,
+        "dated_incident_events_excluded_by_followup_rule": 10
+      },
+      "risk_set": 1159,
+      "events_full": 92,
+      "events_5y": 44,
+      "events_10y": 66
+    }
+  },
+  "comparator_worked_example": {
+    "c1_5": 0.00021477707508188448,
+    "c1_10": 0.00045963496861634034,
+    "c2_5": 0.38067233212040297,
+    "c2_10": 0.6413724556759397
+  },
+  "lp_a_policy": {
+    "model_terms": "absent",
+    "UKB_source_unit": "nmol/L",
+    "comparator_conversion": "nmol/L divided by 2.15, comparator thresholds only",
+    "Wales_source": "DRAGON Lpa nmol/L; native WALES Lpa fields excluded as mixed unit"
+  },
+  "feature_correlations": {
+    "UKB": {
+      "cum_nonhdl__remnant_unt": 0.6915885511883422,
+      "tg_filter__remnant_unt": -0.4052330247767224,
+      "cum_nonhdl__tg_filter": 0.020694036482669244
+    },
+    "Wales": {
+      "cum_nonhdl__remnant_unt": 0.34066912404506167,
+      "tg_filter__remnant_unt": -0.6476008892379187,
+      "cum_nonhdl__tg_filter": 0.07934690916137653
+    }
+  },
+  "ph_assumptions": {
+    "UKB_primary": {
+      "n": 3209,
+      "events": 289,
+      "term_p_values": {
+        "age": 0.9665314438115504,
+        "cum_nonhdl": 0.6767927539548533,
+        "dm": 0.27511608957843625,
+        "htn": 0.49326975467278844,
+        "male": 0.9786411835722901,
+        "remnant_unt": 0.7396197548083834,
+        "smoke": 0.9733029061989328,
+        "sp50": 0.5499901118284274,
+        "tg_filter": 0.5986845836062815
+      },
+      "terms_p_lt_0_05": []
+    },
+    "Wales_primary": {
+      "n": 1159,
+      "events": 92,
+      "term_p_values": {
+        "age": 0.37366952033679557,
+        "cum_nonhdl": 0.4655103852857765,
+        "htn": 0.6496624560919124,
+        "male": 0.13771053131226926,
+        "remnant_unt": 0.38736276445401674,
+        "sp50": 0.10043953790979052,
+        "tg_filter": 0.5668929670969038
+      },
+      "terms_p_lt_0_05": []
+    }
+  },
+  "summary": {
+    "ukb_gates_passed": "7/7",
+    "wales_gates_passed": "4/4",
+    "safeheart_worked_example_status": "PASS"
+  }
+}

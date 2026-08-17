@@ -1,0 +1,80 @@
+I'll read the consensus rules, the open-questions record, and Claude's turn that closed the three objections.I'll check how step 001 was actually closed and whether any other agent filed a usable turn.R3 has other agent files on disk. I'll read those plus the mandates and the neutrality-audit brief.Confirming the script's exit code and the step-001 round count.# Step 001 · Round 3 · grok-neutrality
+
+**VERDICT: NOT SUPPORTED**
+
+A single-agent disposition of another agent's objection is illegitimate here. Disagreement was parked, not settled.
+
+## 1. Methodology
+
+Step 001 asks whether OBJ-001/002/003 were answered or honestly parked. Neither happened. `PROMPT_R3_SETTLEMENT.md` allows `ACCEPTED-RISK` only for defects **agreed** and **Julius-blocked**. That predicate fails.
+
+| id | raiser | r3 voice | `settled_by` run? |
+|---|---|---|---|
+| OBJ-001 | kimi | not invoked | no |
+| OBJ-002 | grok | 961-char scrap | no |
+| OBJ-003 | codex | ERROR | no |
+
+OBJ-002 is not agreed. Codex's OBJ-017 still says the factorial is non-diagnostic. Claude's own `risk_text` records that fight, then parks the parent anyway.
+
+## 2. Implementation
+
+`consensus.mjs --step 001` exits 0. That is schema, not debate.
+
+```json
+{"verdict":"CLOSEABLE","rounds":0,"max_rounds":4,
+ "by_status":{"ACCEPTED-RISK":3},
+ "agents_engaged":["kimi","grok","codex"]}
+```
+
+The self-closure ban hits only `ANSWERED`. `ACCEPTED-RISK` needs a name and ten characters. Claude supplied both, on objections he did not raise. Round count reads `steps/step-001/rN` — none exist — so DEADLOCK cannot fire. `agents_engaged` is the seed, not r3.
+
+`r3/panel.json`: claude 67 785 chars; grok 961 thinking tokens; codex fail; kimi absent.
+
+## 3. Adversarial audit
+
+Assume CLOSEABLE is honest. Then three absent raisers accepted parking tests they wrote. The files show the opposite.
+
+AGENT.md: leave another agent's objection OPEN or answer it with an artefact. Do not soften it. `ACCEPTED-RISK` is neither.
+
+Claude's OBJ-001 `risk_text` admits PDF extraction is **local** (`SAFEHEART_2017.pdf` sha `2859d29d7b8e93ba`). OBJ-017's unit test needs no participant data. Calling both Julius-blocked is a skip.
+
+The register: manufacturing agreement to avoid deadlock is the unforgivable move. Here they manufactured CLOSEABLE on a step whose deadlock valve cannot fire (OBJ-012). Claude as sole `dissenter` on all three is a rubber stamp.
+
+## 4. Clinical and publication reality
+
+Exit 0 lets the orchestrator write `locked-decisions.md`. Unproven WINs, an untested 0.52–0.57 slope cluster, and a null age HR would then sit as closed risks. A reviewer still wants the three named tests. Parking is not publication.
+
+```objection
+id: OBJ-001
+step: 001
+raised_by: kimi
+status: ACCEPTED-RISK
+dissenter: claude
+```
+
+```objection
+id: OBJ-002
+step: 001
+raised_by: grok
+status: ACCEPTED-RISK
+dissenter: claude
+```
+
+```objection
+id: OBJ-003
+step: 001
+raised_by: codex
+status: ACCEPTED-RISK
+dissenter: claude
+```
+
+## Artefacts
+
+| path | role |
+|---|---|
+| `debate/state/open-questions.md` | flipped blocks |
+| `debate/steps/step-000/r3/claude.md` | sole disposer |
+| `debate/steps/step-000/r3/panel.json` | 1 usable turn |
+| `debate/bin/consensus.mjs` | letter-of-law CLOSEABLE, rounds 0 |
+| `debate/steps/step-000/PROMPT_R3_SETTLEMENT.md` | “agreed but blocked” failed |
+| `debate/mandates/AGENT.md` | no-soften rule |

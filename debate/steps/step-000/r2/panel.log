@@ -1,0 +1,7 @@
+PANEL (3/4 responded) → debate/steps/step-000/r2
+  OK   claude  Anthropic · Claude · opus/max 486947ms · 36593 chars
+  FAIL codex   OpenAI · Codex · gpt-5.6-sol/ultra 900025ms · 2026-08-15T21:22:31.068785Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+  OK   kimi    Moonshot · Kimi · k3/max 557188ms · 18836 chars
+  OK   grok    xAI · Grok · 4.6/xhigh 185656ms · 996 chars
+
+Human Markdown: debate/steps/step-000/r2/<name>.md   |   raw: debate/steps/step-000/r2/<name>.txt   |   structured: debate/steps/step-000/r2/panel.json

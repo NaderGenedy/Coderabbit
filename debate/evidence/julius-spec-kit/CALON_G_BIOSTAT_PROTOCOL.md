@@ -1,0 +1,309 @@
+# Validation / development protocol — CALON-G (Cycle 2)
+
+**Personas:** biostatistician + cardiometabolic methodologist  
+**Date:** 15 August 2026  
+**Status:** design lock for Julius fitting — **no fitted WIN claim yet**
+
+---
+
+## Scope & data-access statement
+
+Row-level UK Biobank / Welsh registry data are **not** available in this chat
+environment (DUA). All cohort counts below are taken from the Julius Spec-kit
+dump already on disk (`debate/evidence/julius-spec-kit/`), not recomputed here.
+
+| Quantity | Source | Status |
+|---|---|---|
+| Frozen n=3,209; 289 / 97 / 194 events | `spec_frozen.json` + execution report | ◐ from Julius aggregate |
+| Cohort SHA `8c3a1e05…` | same | ◐ |
+| Age×chol-years r=0.606; age HRs ~1.03–1.05 | `obj003_collinearity.json` | ◐ |
+| Centred vs uncentred SAFEHEART slopes | execution report | ◐ |
+| Head-to-head 68/9/1 tally | `spec_kit_confirmatory_tally.csv` | ✗ **withdrawn** (invalid horizon mask) |
+
+Anything not in those files is **⚠ unverified** until Julius reprints it under
+this protocol.
+
+---
+
+## Estimand (one sentence)
+
+In UK Biobank LDLR-variant carriers free of prevalent permitted atherosclerotic
+disease at baseline, estimate the **association of a pre-specified baseline
+risk score (CALON-G) with time to first incident permitted atherosclerotic
+event**, with discrimination and calibration assessed internally (optimism-
+corrected) and externally in the All-Wales genotype-confirmed cohort, against
+PDF-faithful SAFEHEART-RE, FH-Risk-Score and Montreal-FH-SCORE on a common
+evaluable set.
+
+This is a **prediction / risk-stratification** estimand. The model **predicts /
+is associated with** risk; it does not cause events.
+
+---
+
+## What “reverse engineer a winner” is allowed to mean
+
+**Allowed (literature reverse-engineering):** map every published comparator
+onto clinical domains, then ensure CALON-G covers those domains **plus** the
+programme’s novel lipid-burden / Lp(a) terms, and freeze the formula **before**
+any head-to-head fit.
+
+| Domain | SAFEHEART-RE | FH-RS | Montreal | CALON-G primary |
+|---|---|---|---|---|
+| Age | bands | bands | continuous / z | age + one retained spike (`sp50`) |
+| Sex | yes | yes | yes | `male` |
+| BP / HTN | yes | yes | yes | **`bpmed`** (medication — investigator choice) |
+| Smoking | yes | yes | yes | current smoke (align to Spec-kit definition) |
+| Diabetes | (indirect) | varies | — | `dm` |
+| Atherogenic burden | LDL bands | untreated LDL | — | **`cum_nonhdl`** (primary) |
+| TG/HDL axis | — | — | HDL | **`log_tghdl`** |
+| Lp(a) | threshold | chart | — | **`log_lpa`** (UKB assay; unit locked) |
+| Prior ASCVD | yes (1.42) | — | ranking use | **excluded by design** (incident-only cohort) |
+
+**Forbidden (result reverse-engineering):** adding BMI, interactions, or extra
+lipid terms **after** seeing which subgroup cells are LOSS. That path is
+already on the Cycle‑1 record as outcome-informed selection.
+
+“Aim to win” = choose a clinically complete, well-specified model that *can*
+compete. It does **not** license search-until-every-cell-wins.
+
+---
+
+## Endpoint: atherosclerotic primary; MACE only as labelled sensitivity
+
+### Primary (locked — preserves Julius SHA)
+
+Permitted incident atherosclerotic components only:
+
+`I21 | I25 | I63 | I70 | I73 | G45`
+
+**I50 (heart failure) excluded.** Julius already showed the unfiltered
+definition produced 351 events; the permitted-component filter restores 289.
+Changing the primary endpoint invalidates SHA `8c3a1e05…` and must start a new
+freeze.
+
+### MACE sensitivity (optional, separate SHA)
+
+If the investigator wants MACE, define it **in writing before fitting**, e.g.:
+
+- CV death **or** non-fatal MI (I21) **or** ischaemic stroke (I63)  
+  ± coronary revascularisation if OPCS lists are locked,
+
+and run it as **CALON-G-MACE** with its own cohort flow and event counts.
+Do **not** relabel the current atherosclerotic SHA as MACE.
+
+---
+
+## Missing data: MCAR is **not** the default assumption
+
+| Claim | Verdict |
+|---|---|
+| “Use MACE if MCAR is acceptable” | Endpoint choice ≠ missingness mechanism. |
+| MCAR for UKB lipids / Lp(a) / meds | **Not assumed.** Missing Lp(a) and incomplete Welsh lipids are typically MAR/MNAR-ish (assay offer, clinical severity). |
+
+**Locked missing-data rule for Cycle 2 (identical for model and comparators):**
+
+1. **Primary analysis:** fold-wise median imputation for continuous predictors
+   inside each training fold only; binary predictors use training-fold mode.
+   No healthy-default constants for comparators.
+2. **If a comparator predictor is wholly unavailable** → that score is
+   `NOT_EVALUABLE` for that participant; common evaluable set is the
+   intersection of finite scores (no survivor drop).
+3. **Sensitivity:** MICE under MAR (m≥20) for UKB continuous labs, outcome not
+   imputed; Rubin’s rules for coefficients; C-index via stacked or MICEafter
+   protocol stated in the Julius cell.
+4. **MCAR complete-case** only as a *named* sensitivity if Little’s MCAR test
+   (or equivalent) is printed and does not reject — never as the primary.
+
+---
+
+## CALON-G primary specification (frozen)
+
+```text
+CALON-G primary LP terms:
+  age, sp50, male, bpmed, dm, smoke_curr, cum_nonhdl, log_tghdl, log_lpa
+```
+
+| Term | Why in |
+|---|---|
+| `age`, `sp50` | Age domain shared by all comparators; one knot after mid-life. `sp18`/`sp30` enter the pool but are dropped if out-of-range / exact-collinear with age |
+| `male` | Universal comparator domain |
+| `bpmed` | Investigator: HTN **medication** (not broad `htn_any`) |
+| `dm`, `smoke_curr` | Clinical risk factors in FH scores |
+| `cum_nonhdl` | Programme lipid-burden construct; r(age,·)=0.577 — report, do not drop at 0.999 |
+| `log_tghdl` | Remnant / TG–HDL axis (Montreal carries HDL information differently) |
+| `log_lpa` | Comparator domain + grey-zone enhancer promoted to base for Cycle 2 (disclose as Cycle‑2 re-spec) |
+
+**Single sensitivity model (only one):**
+
+```text
+CALON-G-grey: replace cum_nonhdl with log(apoB/HDL)
+```
+
+Do not put both lipid-burden terms in the primary LP.
+
+**Estimator:** Ridge Cox (or Cox with L2 penalty on continuous terms), penalty
+chosen by nested CV on training folds only. With 289 events and ~8–9 effective
+terms, EPV is borderline; ridge is mandatory, not optional.
+
+**Horizon:** primary = full follow-up; sensitivity = 5-year with correct
+truncation:
+
+```python
+t_h = np.minimum(time, H)
+e_h = (event == 1) & (time <= H)   # must yield 97 events at H=5
+```
+
+**Internal validation:** repeated 5-fold CV (cluster/family-aware if family ID
+exists), out-of-fold LP for all discrimination claims. Apparent C is labelled
+apparent.
+
+**Calibration:** slope + intercept at 5y and 10y from OOF risks; plot required.
+Decision-curve net benefit at pre-specified thresholds (e.g. 5%, 7.5%, 10%
+10-year) — TRIPOD+AI expectation beyond C-index alone.
+
+**Bootstrap:** B=2,000 paired cluster bootstrap for ΔC vs each comparator.
+
+---
+
+## External validation (Wales) — TRIPOD+AI type 3/4
+
+| Item | Rule |
+|---|---|
+| Development | UKB frozen SHA only |
+| Validation | All-Wales genotype-confirmed (Positive1 start n=2,405 from Julius ledger — filters still incomplete; finish ledger before quoting Welsh C) |
+| Transport | UKB coefficients **frozen**; do not refit on Wales for the confirmatory external claim |
+| Lp(a) | If Welsh assay incomparable → omit `log_lpa` and report **recalibrated reduced model** as sensitivity, not as the same model |
+| Family clustering | Cluster-robust SE / fold by family where `FamilyNumber` exists |
+| Reporting | State “external geographical validation” explicitly |
+
+A Wales-**refitted** C-index is internal to Wales, not external validation of
+CALON-G (Cycle‑1 OBJ-006 lesson).
+
+---
+
+## Reporting-standard audit (design stage)
+
+### TRIPOD+AI — must-meet before any WIN claim
+
+| Item | Cycle-2 requirement |
+|---|---|
+| Title/abstract identify prediction model + AI/stats method | Ridge Cox, not “AI” unless ML used |
+| Objective / estimand | Section above |
+| Source of data / participants | UKB carriers; Wales registry |
+| Outcome definition | Permitted ASCVD list; I50 out |
+| Predictors | Frozen list; measurement timing = baseline |
+| Sample size / EPV | 289 events; justify df |
+| Missing data | MAR-primary rule above |
+| Analytical methods | CV, penalty, bootstrap B |
+| Internal validation | OOF / optimism |
+| External validation | Wales transport |
+| Discrimination **and** calibration | Both |
+| Fairness / subgroup | Full matrix; multiplicity warning |
+| Availability | Code + SHA + PDF provenance table |
+
+### STROBE (observational cohort framing)
+
+| Item | Requirement |
+|---|---|
+| Setting / eligibility | Carrier flag; exclusions 207+124 |
+| Variables | Predictor + endpoint definitions |
+| Bias | Selection (mild UKB phenotype), missing data, comparator indication mismatch |
+| Study size | Flow diagram matching Julius counts |
+| Statistical methods | Survival; PH check (Schoenfeld) |
+| Participants flow | 3540→3209 |
+| Outcome data | Event counts by component |
+| Main results | HR/C with CI; absolute risks |
+| Limitations | Not clinical FH; Lp(a) conversion exploratory if used; multiplicity |
+
+### PROBAST risk flags to pre-empt
+
+- Participants: UKB carriers ≠ clinic HeFH → state in title/abstract.
+- Predictors: no post-baseline labs.
+- Outcome: I50 contamination already corrected — keep it corrected.
+- Analysis: no outcome-informed predictor add after matrix seen.
+
+---
+
+## Acceptance gates (Julius fail-loud)
+
+A run may quote competitive performance **only if all** pass:
+
+1. Cohort SHA = `8c3a1e0598770c1beefe29db28d42fb7074f233f382c25c19eb0c843b59f49b2`
+2. Five-year events under truncated definition = **97** (not 146)
+3. Every comparator row cites PDF page/table **or** is labelled `CANDIDATE`
+4. SAFEHEART uses centring constant **5.4078** (or PDF-verified equivalent)
+5. B=2,000 on confirmatory cells
+6. Full head-to-head CSV published; no selective WIN narrative
+7. Multiplicity + optimism warnings printed beside any tally
+8. Wales transport uses frozen UKB coefficients (or explicitly labelled refit)
+
+If any gate fails → exploratory only.
+
+---
+
+## Findings & required fixes (ranked)
+
+### Blockers
+1. Invalid horizon mask in old cells 09/13 — withdrawn; replace before any 5y claim.
+2. PDF provenance for all three scores incomplete in the Julius pilot — complete from `CALON-DeepResearch/papers/` + text extracts.
+3. Welsh ledger filters still placeholders — finish before external C.
+
+### Material
+4. Primary missingness must not assume MCAR.
+5. MACE must not overwrite the atherosclerotic SHA; separate sensitivity only.
+6. Do not chase universal WIN after seeing the matrix.
+
+### Cosmetic
+7. Update `spec_frozen.json` comparator note: Montreal PDF **does** exist on the Mac outside the discordance tree.
+
+---
+
+## Reproduce-it-yourself (custodian / Julius)
+
+1. Load frozen cohort builder that enforces permitted ASCVD components.
+2. Assert SHA and 289 / 97 / 194.
+3. Fit CALON-G primary with fold-wise preprocessing + ridge CV.
+4. Score PDF-faithful centred comparators on the common finite set.
+5. Truncate horizons correctly; B=2,000 paired ΔC.
+6. Transport frozen coefficients to completed Welsh risk set.
+7. Emit TRIPOD+AI checklist table + STROBE flow beside results.
+
+Cycle-2 panel (Claude/Codex/Grok) pressure-tested this lock; fitting cells live
+under `debate-teach/julius-cycle2-pack/` and `julius-cycle2-pack-R/`.
+
+---
+
+## Cycle-3 addendum — grey-zone adjunct (16 Aug 2026)
+
+**Panel:** Step-005 R1 (Claude + Codex + Kimi + Grok, 4/4). Synthesis:
+`debate/steps/step-005/CYCLE3_SYNTHESIS.md`.
+
+### Decision
+
+- Confirmatory primary **unchanged** (includes `log_lpa`).
+- Lp(a) + `log(apoB/untreated_LDL)` as a **grey-zone enhancer** is **exploratory
+  only** (assay-economy / deployability question).
+- If the adjunct fails event/census/calibration/DCA gates, or cannot transport
+  to Wales → **keep the primary**. Do not outcome-tune the band or chase
+  comparator WINs with the adjunct.
+
+### Pre-specified exploratory design
+
+```text
+Stage A: age, sp50, male, bpmed, dm, smoke_curr, cum_nonhdl, log_tghdl
+Band:    middle tertile of Stage-A OOF risk (sensitivity: middle quintile)
+Stage B: offset on Stage-A LP + log1p(Lp(a)_nmol) + log(apoB/untreated_LDL)
+         in-band only when both assays present
+```
+
+### Adjunct gates (exploratory label)
+
+1. SHA + 289/97/194  
+2. Band census; stop if in-band events &lt; 10  
+3. Nested OOF; training-fold band cutoffs; Stage-B as offset  
+4. B=2,000 for reported ΔC / net benefit  
+5. In-band calibration + DCA at pre-specified thresholds  
+6. Full dump + multiplicity warning; no Stage-B “universal winner” language  
+
+Primary adjunct contrast = **in-band hybrid vs Stage-A** (not a second
+comparator trophy matrix). Details: `debate-teach/step-005/GREYZONE_IMPLEMENTATION.md`.

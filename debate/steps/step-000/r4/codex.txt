@@ -1,0 +1,74 @@
+# Step 000 · Round 4 · codex
+
+## 1. Methodology
+
+OBJ-028 is upheld. The headline discrimination uses mean C across repeats, while comparator deltas use C of the averaged linear predictor. These are different estimands and cannot be presented interchangeably.
+
+OBJ-029 is also upheld. The current eight-term model has newly reproduced calibration estimates, but the delivered QC and status artefacts still describe the superseded ten-term model.
+
+## 2. Implementation
+
+| OBJ-028 recomputation | Actual result |
+|---|---:|
+| Cells checked | 69/69 |
+| Non-zero residuals | 69/69 |
+| Absolute residual, min / median / max | 0.00012941968214519317 / 0.001248978841851378 / 0.005509507557289073 |
+| Signed residual range | −0.005509507557289073 to +0.0037894206353821236 |
+| Positive / negative subgroups | 21 / 2 |
+| Mean signed residual | +0.000735933372121136 |
+| Subgroups differing across comparators by >1e-12 | 0/23 |
+| Maximum within-subgroup spread | 0 |
+| UKB ALL residual | +0.0004287204480157847 |
+
+For UKB ALL, mean-repeat C is `0.6997074817798635`, whereas C of the averaged LP is `0.7001362022278793`. The locally reconstructed estimator reconciles all 69 cells with maximum error `0`. Merely exposing that estimator changes 0/69 stored verdicts; the tally remains 10 WIN, 58 tie, 1 LOSS. Changing the comparison estimand and re-bootstraping it cannot be evaluated from the aggregate JSON because the necessary predictions and bootstrap draws are absent.
+
+The current-spec calibration path was also rerun aggregate-only:
+
+| Cohort | Terms | C-index | Calibration slope (95% CI) |
+|---|---:|---:|---:|
+| UK Biobank | 8 | 0.6997074817798635 | 1.2435089707779163 (1.0406710550281077, 1.446346886527725) |
+| Wales | 8 | 0.748637172800255 | 1.3107258959808379 (0.9764654884002137, 1.644986303561462) |
+
+Those C-indices exactly match `outputs/calon_final.json`. However, `code/15_CALON_FINAL.py` writes only `calon_final.json`; `calon_final_qc.json` is separately written by `code/15b_QC_ADDENDUM.py`. The stored QC and `STATUS.md` remain unchanged, so OBJ-029 is accepted risk rather than falsely described as repaired.
+
+```objection
+id: OBJ-028
+step: 000
+raised_by: claude
+claim: The model C-index inside every head-to-head verdict is a different estimator from the C-index published as the model's discrimination, and the difference favours the model. cv() at code/15_CALON_FINAL.py:312 returns c as float(np.mean(cs)) - the mean of per-repeat C-indices - but returns lp as acc/cnt, the linear predictor AVERAGED across the 6 repeats. run() then passes that averaged lp to delta_ci, so every delta uses C(mean LP) while the stored c_index is mean(C per repeat). Recomputed from outputs/calon_final.json alone, delta does not equal c_index minus comparator_c in 69 of 69 cells (min residual 1.294e-04, median 1.249e-03, max 5.510e-03), the residual is identical across all three comparators within every subgroup (0 of 23 differ by more than 1e-12, confirming it is purely model-side), and it is positive in 21 of 23 subgroups with mean +0.000736. For UKB ALL the gap is +0.000429 in all three cells, so OBJ-024's proposed reconciliation returns 0.6939/0.6736/0.6667 rather than the QC-brief values 0.6944/0.6740/0.6671. No check anywhere in the pipeline or in outputs/calon_final_qc.json reconciles the two stored quantities.
+settled_by: Recompute from outputs/calon_final.json alone, for all 69 cells, delta minus (c_index minus comparator_c); confirm 69 of 69 are non-zero and that the residual is constant across the three comparators within each subgroup. Then patch run() in code/15_CALON_FINAL.py to store both estimators explicitly - mean-of-repeat C and C of the averaged LP - and re-emit the JSON so that comparator_c equals model_C minus delta to within 1e-12 in every cell, and report whether any verdict label changes.
+status: ANSWERED
+answered_by: codex
+evidence: outputs/calon_final.json, SHA-256 30449b58005abf53ae62cf47c0b28c6b803abb670bca4e89c36430751fabd492; 69/69 residuals were non-zero, absolute min/median/max were 0.00012941968214519317/0.001248978841851378/0.005509507557289073, 0/23 subgroup spreads exceeded 1e-12, maximum spread was exactly 0, UKB ALL residual was 0.0004287204480157847, explicit C(mean LP) reconciliation had maximum error 0, and 0/69 existing verdict labels changed under that metadata reconciliation.
+```
+
+```objection
+id: OBJ-029
+step: 000
+raised_by: claude
+claim: outputs/calon_final_qc.json is the QC artefact of a superseded model, and STATUS.md's only calibration claim comes from it. Its ukb features list is age, sp50, male, cum_nonhdl, log_tghdl, hdl, dm, smoke, htn_any, bmi (10 terms including hdl and bmi) with c_index 0.6995594, whereas outputs/calon_final.json qc.terms_used is age, sp50, male, htn_any, dm, smoke, cum_nonhdl, log_tghdl (8 terms, no hdl, no bmi) with ALL c_index 0.6997075; Wales is 0.7499186 versus 0.7486372. STATUS.md itself names those exact transitions as the effect of removing BMI and HDL-C on 13 August 2026, and the QC file is one hour older on disk. Therefore the calibration slope 1.214 (1.017, 1.411) quoted in STATUS.md as a headline limitation, and relied on by OBJ-009 as evidence of over-shrinkage and by OBJ-011 as evidence that a shared bug would not spare the internal model, belongs to the discarded 10-variable model. The published CALON-F has no reported calibration, which manuscript/TRIPOD_STROBE_PROBAST_CALON_W.md:227 already records as NOT MET. Separately STATUS.md says seven variables while terms_used has 8 and epv 36.125 equals 289/8.
+settled_by: Re-run code/15_CALON_FINAL.py end to end and confirm the regenerated outputs/calon_final_qc.json lists the same terms as calon_final.json qc.terms_used with bmi and hdl absent, that its ukb c_index equals 0.6997075 and its wales c_index equals 0.7486372, and report the regenerated calibration slope with its 95 percent interval for both cohorts. Then either restate STATUS.md's calibration slope from the regenerated file or delete the 1.214 (1.017, 1.411) claim, and correct "seven variables" to the actual term count.
+status: ACCEPTED-RISK
+dissenter: codex
+risk_text: The current eight-term aggregate rerun produced UKB C 0.6997074817798635 and slope 1.2435089707779163 (1.0406710550281077, 1.446346886527725), and Wales C 0.748637172800255 and slope 1.3107258959808379 (0.9764654884002137, 1.644986303561462). Nevertheless outputs/calon_final_qc.json and STATUS.md remain unchanged on disk, so the delivered QC is still the superseded ten-term artefact and the published 1.214 claim remains unsynchronised.
+```
+
+## 3. Adversarial audit
+
+The strongest contrary interpretation is that this is harmless because the estimator discrepancy averages only `0.000735933372121136`. That fails: the problem is not its magnitude but that no published number identified which estimator generated the comparison. Nothing previously failed when the two diverged.
+
+The new UKB calibration result preserves the qualitative “compressed predictions” interpretation, but that does not rescue the stale provenance. Wales’ interval includes 1. No alternative verdict bootstrap can be reconstructed from the aggregate JSON, so no claim is made about labels under a changed estimand.
+
+## 4. Clinical and publication reality
+
+Neither finding supports practice change. A lipidologist cannot apply a model whose discrimination and comparison tables silently use different estimators, and a calibration slope alone is not full calibration at a declared prediction horizon.
+
+`STATUS.md` should say “seven clinical predictors represented by eight fitted terms,” not simply “eight variables.” Before publication, it must use the regenerated slopes above or delete its calibration claim.
+
+## Artefacts
+
+- Verified: `outputs/calon_final.json`, SHA-256 `30449b58005abf53ae62cf47c0b28c6b803abb670bca4e89c36430751fabd492`.
+- Required patch: `code/15_CALON_FINAL.py` should emit `mean_repeat_c` and `c_of_mean_lp`.
+- Required regeneration: run `code/15b_QC_ADDENDUM.py` to replace `outputs/calon_final_qc.json`, then synchronize `STATUS.md`.
+- Proposed, not written: `debate/steps/step-000/r4/code/verify_obj028_estimators.mjs`.
+- No repository file was modified in this read-only turn.

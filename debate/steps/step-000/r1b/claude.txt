@@ -1,0 +1,349 @@
+# Step 000, Round 1 — Claude, independent and blind
+
+---
+
+## Preamble: what I actually received
+
+The brief at `debate/steps/step-000` permits sixteen resources. **Nine were supplied to me; seven were not.** I will not pretend otherwise, because a resource audit conducted on an unstated subset is the exact failure shape this panel exists to catch.
+
+| Permitted resource | Supplied? |
+|---|---|
+| `debate/DATA-INVENTORY.md` | Yes — **first 120 lines only** |
+| `debate/mandates/AGENT.md`, `ROLES.md` | Yes |
+| `debate/mandates/ORCHESTRATOR.md` | **No** |
+| `debate/state/open-questions.md` | Yes |
+| `debate/state/transcript.md`, `locked-decisions.md` | **No** |
+| `debate/bin/panel.mjs`, `consensus.mjs` | **No** |
+| `debate/steps/step-002-QC-BRIEF.md` | Yes |
+| `code/15_CALON_FINAL.py` | Yes — **excerpts only** (lines 70–122, 256–308, 426–467) |
+| `STATUS.md` | Yes — truncated mid-section |
+| `README.md`, `outputs/calon_final_qc.json` | **No** |
+| `CALON_JULIUS_SPECKIT/scripts/comparators.py` | Yes — **truncated inside `fhrs_chart_points`** |
+| `tests/test_comparators.py`, `research.md`, `checklists/comparator-fidelity.md` | **No** |
+| Comparator source PDFs | **No** — not located, not read, not cited below |
+
+The single most consequential omission is `checklists/comparator-fidelity.md`. That file's name asserts it is the artefact that would settle OBJ-001, and it was not in the round-1 pack. **No coefficient, C-index or publication figure below is recalled from memory.** Every number I quote is traceable to a supplied path.
+
+---
+
+# 1. METHODOLOGY
+
+## 1a. Resource ledger — what each source establishes, and what it does not
+
+| Source | Establishes | Does **not** establish |
+|---|---|---|
+| `outputs/calon_final.json` | The tally arithmetic is internally exact: UKB 10+28+1 = 39 = 13 subgroups × 3 comparators, 0 non-estimable; Wales 0+30+0+9 = 39, i.e. 10 reported subgroups × 3 plus 3 subgroups skipped whole (`tally["non_estimable"] += 3`, line 432); `combined_tally` 10/58/1/9 = 78 = 2 × 13 × 3. Headline C-indices 0.6997 / 0.7486 and event counts 289 / 92 match `STATUS.md` exactly. | That any cell is *correct*. Internal arithmetic consistency is not validity. |
+| `code/15_CALON_FINAL.py:256–280` | The exact functional form of the three scores that generate every WIN/tie/LOSS in the published tally. | That these are the published equations, despite the docstring at line 257 asserting "Published equations, scored not fitted." |
+| `CALON_JULIUS_SPECKIT/scripts/comparators.py` | A second, structurally different implementation of the same three scores, with explicit indication limits in its docstrings. | Which of the two is faithful — the PDFs were not supplied. |
+| `STATUS.md` | The retraction record, the BMI/HDL removal rationale, and the two pre-specified drop rules. | The provenance of the comparator weights, or that Wales is an external validation. |
+| `DATA-INVENTORY.md` (120 lines) | Column names, ten named traps, cohort shapes. | The variant-curation rule behind `ldlr_carrier`. |
+| `debate/state/open-questions.md` | OBJ-001/002/003 as live; OBJ-000 as ANSWERED. | That OBJ-000 was correctly closed — see §1e. |
+
+## 1b. The estimand is not what the headline says it is
+
+`STATUS.md` presents CALON-F as a **"Two-cohort incident ASCVD model"** with "UK Biobank n=3,333 / 289 events, C=0.6997; All-Wales n=1,159 / 92 events, C=0.7486". A reader — and a reviewer — will read that as development plus external validation.
+
+It is not. `15_CALON_FINAL.py:434` calls `cv(s, cohort_spec, resolve=False)`, and `cohort_spec` is resolved **per cohort** by `usable()` (line 284), whose own docstring says the rule is "Applied ONCE to the full cohort". `STATUS.md` confirms the two specs differ: the spline rule "fires on `sp18`, `sp30` in UK Biobank only", the minimum-information rule "fires on `dm`, `smoke` in Wales only". So the UK Biobank model is fitted on 8 terms (10 − `sp18` − `sp30`) and the Welsh model on a **different** 8 terms (10 − `dm` − `smoke`). `STATUS.md`'s own EPV arithmetic corroborates this: 92 / 8 = 11.5, exactly the "Welsh EPV to 11.5" it reports.
+
+**Two cohorts, two specifications, two internal cross-validations. There is no transported model anywhere in this pipeline.** C = 0.7486 in Wales is the apparent-minus-optimism performance of a Wales-refit model, not evidence that the UK Biobank model works in Wales. TRIPOD requires that distinction stated explicitly and it is absent from `STATUS.md`.
+
+This also reframes the step-002 Table B row "Model C, Wales 0.7486 vs 0.698/0.700/0.713". If Julius **transported** the model (step-002 §D.4 describes "median imputation fitted in UK Biobank folds then applied to Welsh predictors", which is transport) whilst the local pipeline **refits**, then the two figures are not competing estimates of one quantity and the "−0.04 to −0.05" gap is not a discrepancy to adjudicate. It is the expected penalty for transport. The step-002 brief treats it as a disagreement; it may be a category error.
+
+## 1c. Two of the three comparators are being scored outside their stated indication
+
+This does not require the PDFs. It is stated in the project's own Spec Kit:
+
+- `CALON_JULIUS_SPECKIT/scripts/comparators.py`, `montreal_fh_score` docstring: **"Original Montreal-FH-SCORE points; ranking/prevalent-CVD use only."**
+- Same file, `combined_fh_score`: **"ranking/prevalent-CVD use only."**
+- Same file, `fhrs_chart_points`: **"Published FH-Risk-Score chart points for adults aged 18-65."**
+
+The local pipeline scores Montreal against **incident** ASCVD in every one of its 26 Montreal cells, and `ab()` at `15_CALON_FINAL.py:265–266` has an open top band (`else 2.256`) with no upper eligibility limit, applied to a cohort whose UK Biobank arm recruits to age 69 and whose median follow-up is 14.55 years (`ukb.qc.median_followup`).
+
+The deltas in `calon_final.json` show where this bites. The Montreal column carries the largest deltas in the file — ALL +0.033, age<median +0.059, male +0.041, smoker +0.042 — whilst the SAFEHEART column is near-null throughout (ALL +0.0058, no-statin +0.0018, age<median +0.00032). **The wins are concentrated against the comparator that the project's own code says is not an incident-risk model.** A win over a score used outside its indication is not a win; it is a demonstration that a prevalent-CVD ranking instrument does not predict incident events, which nobody disputed.
+
+## 1d. Whether the UK Biobank arm is FH at all is unresolved, and everything rests on it
+
+`STATUS.md` describes CALON-F as a model in **"genotype-confirmed HeFH"**. Three supplied sources bear on that and they do not agree:
+
+1. `DATA-INVENTORY.md`: `ldlr_carrier` = 1 in **3,540 of 501,936** = 0.705%.
+2. `CLAUDE.md` project instructions, describing the other UK Biobank extract: `is_fh_genetic` = **1,623** of 426,732 = 0.380%, of which **LDLR 1,321**.
+3. `open-questions.md`, OBJ-000 evidence: untreated LDL-C excess in flagged carriers **+0.226 mmol/L [0.185–0.268]**, with **2.1%** above 6.5 mmol/L, and `variant_id` empty in all 501,936 rows.
+
+1,321 versus 3,540 LDLR carriers in the same biobank is a 2.7× difference with no documented reconciliation in any supplied resource. And +0.226 mmol/L is not a heterozygous-FH phenotype — OBJ-000's own settlement condition named "+3 to +4 mmol/L expected for heterozygous FH" as the benchmark.
+
+There is an internal number in `calon_final.json` that corroborates this independently. Crude incidence:
+
+- UK Biobank: 289 / 45,850.03 person-years = **0.630 per 100 py**
+- Wales: 92 / 6,841.37 person-years = **1.345 per 100 py**
+
+The Welsh registry cohort has **2.1× the event rate** of the UK Biobank "FH" arm — and the Welsh cohort is the younger one (median follow-up 4.01 years, and the Welsh data include childhood-onset ascertainment; the spline knots at ages 18 and 30 survive the collinearity guard in Wales and not in UK Biobank, which only happens if the Welsh age range extends well below 40). A younger cohort with double the atherosclerotic event rate is the signature of a genuinely higher-risk phenotype. The honest reading is that Wales is FH and the UK Biobank arm is a population-ascertained carrier cohort with a mild phenotype.
+
+I record the fair alternative: Welsh events are registry-ascertained and UK Biobank events are linkage-ascertained, so ascertainment intensity could contribute. That is testable and is in my settlement condition below.
+
+## 1e. The objection register has no state for "objection upheld", and that has already produced a wrong outcome
+
+`open-questions.md` permits four statuses: `OPEN`, `ANSWERED`, `ACCEPTED-RISK`, `WITHDRAWN`. There is no state meaning *the test was run and the objection was correct*.
+
+OBJ-000 claimed the carrier flag may not identify FH. Its `settled_by` named a specific comparison against +3 to +4 mmol/L. The test was run. The result was **+0.226 mmol/L** — a twentieth of the benchmark. The objection is marked **`status: ANSWERED`**.
+
+The evidence field confirms the claim and the status field retires it. Whatever `consensus.mjs` does with an ANSWERED block, it is not "hold this step open" — and so the single most consequential question in the project has been recorded as disposed of by the measurement that established it. This is a defect in the debate's own instrument, which is exactly what step 000 is for.
+
+## 1f. The three live settlement conditions are each necessary but not sufficient
+
+- **OBJ-001** (kimi). The proposed test — score all three from the PDF coefficients on one frozen extract — is right. But the claim's framing treats the local values (SAFEHEART 0.6944, FH-RS 0.6740) as the reference against which Julius is deviating. `15_CALON_FINAL.py:256–280` and `CALON_JULIUS_SPECKIT/scripts/comparators.py` are structurally incompatible implementations of the same three scores (§2a), so the local values are not established as the reference. The substitution arithmetic in the claim ("+0.079 → +0.013") is therefore conditional on an unestablished premise. **Add to the settlement: a per-comparator statement of which of the two on-disk implementations the PDF supports, plus the eligibility counts (participants >65 for FH-RS; the indication statement for Montreal) and the units basis for LDL-C and Lp(a).**
+- **OBJ-002** (grok). The centred/uncentred × 5y/10y grid is the right first move. But it cannot distinguish an implementation bug from genuine uniform attenuation, and there is a strong attenuation candidate: if the UK Biobank arm is a milder phenotype than the clinic-ascertained cohorts all three scores were derived in (§1d), every externally-weighted LP is over-scaled by roughly the same factor and every slope lands near the same value below 1. Note the direction check that supports this: `STATUS.md` reports the **model's** UK Biobank slope as **1.214 (1.017, 1.411)** — above 1 — whilst all four comparators sit at 0.52–0.57. A shared arithmetic bug in a common scoring pathway would not spare the internally fitted model. External weights being too large for this cohort would. **Add to the settlement: the analysis cohort's age range and SD against each derivation cohort's published age range, and the slope recomputed in the Welsh registry cohort. If the slopes move toward 1 in Wales, it is phenotype, not code.**
+- **OBJ-003** (codex). The correlation and the refit are correct and must be run. But a null age HR has a second candidate cause that the proposed test will not separate: **outcome misclassification**. Step-002 §A lists 124 undated atherosclerotic cases excluded — `STATUS.md` reports n = 3,333, which is 3,540 − 207 and does **not** subtract them (§2d). 124 people with known atherosclerotic disease sitting in the risk set labelled event-free would attenuate every coefficient in the model, age included. **Add to the settlement: state the n actually analysed and the disposition of the 124, and refit with them excluded.**
+
+---
+
+# 2. IMPLEMENTATION
+
+## 2a. Discrepancy ledger — the two comparator implementations are not the same functions
+
+| Score | `code/15_CALON_FINAL.py:256–280` | `CALON_JULIUS_SPECKIT/scripts/comparators.py` |
+|---|---|---|
+| **Montreal** | Continuous, z-scored: `0.75·z(age) − 0.27·z(hdl) + 0.25·male + 0.19·htn + 0.12·smoke` | Integer points: age 0/4/8/12/16/20/24/28 by 7-year band; HDL 12/9/6/3/0 by band; `+2·htn +1·smoke +3·male` |
+| **FH-RS** | 8 age bands (`ab`), 5 LDL bands (`lb`), 4 HDL bands (`hb`), `+0.721·male +0.644·htn +0.625·smoke +0.434·lpa_hi`; no eligibility limit | `fhrs_chart_points`, LDL in **mmol/L**, restricted to **ages 18–65** |
+| **SAFEHEART** | Continuous linear: `0.045·age + 0.6·male + 0.4·htn + 0.3·smoke + 0.02·bmi + 0.15·ldl + 0.25·lpa_hi`; no prior-ASCVD term | Categorical: `0.70·male + 1.07·(30≤age<60) + 1.45·(age≥60) + 0.69·htn + 1.42·prior_ascvd + 0.48·smoke + 0.88/0.98·BMI bands + 0.92/1.57·LDL bands (**mg/dL**) + 0.42·(Lp(a)>50 mg/dL)`; baselines S₅=0.9532, S₁₀=0.9025; centring constant 5.4078 |
+
+These cannot both be the published equation. Line 257's docstring — **"Published equations, scored not fitted"** — is a provenance claim, and `ROLES.md` warns in terms that "this project has already shipped comparator functions carrying invented weights while their docstrings claimed published provenance." The local SAFEHEART weights are 0.6, 0.4, 0.3, 0.25, 0.15, 0.02 and 0.045. Published Cox coefficients do not arrive as a set of round decimals across an entire model. The Spec Kit values (1.07, 1.45, 0.69, 1.42, 0.48, 0.88, 0.98, 0.92, 1.57, 0.42) have the irregular two-decimal texture of a transcribed table.
+
+**This mechanism also predicts OBJ-001's asymmetry, in the right rank order.** Coarsening a continuous predictor into bands mechanically lowers a C-index. Ranking the three comparators by how much age granularity the local implementation retains relative to the published categorical form:
+
+| Comparator | Local age handling | Published age handling | Predicted C gap | Observed gap (step-002 §B) |
+|---|---|---|---|---|
+| SAFEHEART | continuous `0.045·age` | **3 bands** — effectively one 60-year cutpoint within a 40–69 cohort | largest | **−0.066** |
+| FH-RS | 8 bands (5-year) | chart bands | intermediate | **−0.023** |
+| Montreal | continuous z-score | 7-year bands, monotone, age-dominant | smallest | **−0.003** |
+
+The ordering is exact. OBJ-001 concludes "the asymmetry is not random" and it is right — but the asymmetry is equally consistent with the **local** comparators being unfairly strong continuous surrogates, not only with Julius understating them. Both directions must be tested; neither is currently established.
+
+Two further fidelity breaks, both from the Spec Kit's own module docstring, which states these functions "do not impute, convert Lp(a) mass to molar units, extrapolate outside native eligibility":
+- `15_CALON_FINAL.py:261` performs exactly the molar conversion the Spec Kit refuses (`lpa >= 105`, against the published 50 mg/dL threshold).
+- `15_CALON_FINAL.py:279` applies `0.15 * ldl` where `ldl` is mmol/L, against published bands defined in mg/dL.
+
+Two files in one repository take opposite positions on comparator fidelity and neither references the other.
+
+## 2b. The collinearity guard is name-gated so that it cannot fire on the variable most likely to trip it
+
+`15_CALON_FINAL.py:300`:
+
+```python
+if f.startswith("sp") and abs(np.corrcoef(df.age, df[f])[0, 1]) >= 0.999:
+    continue                                    # exact linear duplicate of age
+```
+
+The specification at line 70 is `["age", "sp18", "sp30", "sp50", "male", "htn_any", "dm", "smoke", "cum_nonhdl", "log_tghdl"]`. `cum_nonhdl` is **cumulative** non-HDL-C — a lifetime-exposure construct, which is a function of age and a lipid level, structurally identical to the `age × untreated total cholesterol` term that OBJ-003 flags in the Julius model.
+
+The guard tests correlation with age. `cum_nonhdl` does not begin with `sp`. **The guard is therefore incapable of firing on it, by construction.** The threshold compounds it: at ρ ≥ 0.999 the guard catches only exact linear duplicates, as its own inline comment concedes.
+
+`STATUS.md` presents this as a substantive safeguard — "Two pre-specified rules govern which terms enter in each cohort. A spline term is dropped where its correlation with age reaches 0.999". It reads as collinearity control. It is a spline-basis housekeeping rule that removes knots outside a cohort's age range, and nothing more. **This is a check that cannot fail on the case that matters.** Age enters the UK Biobank model through `age`, `sp50` and `cum_nonhdl` — three routes — with no correlation reported between any pair.
+
+## 2c. Comparator inputs are imputed asymmetrically against the model, using out-of-fold statistics
+
+Lines 258–262:
+
+```python
+a, hdl, ml = d.age, d.hdl.fillna(1.35), d.male
+ht, sk = d.htn_any.fillna(0), d.smoke.fillna(0)
+ldl = pd.Series(d.ldl_unt, ...).fillna(np.nanmedian(d.ldl_unt))
+lpa_hi = (d.lpa.fillna(0) >= 105).astype(float)
+bmi = d.bmi.fillna(d.bmi.median() if d.bmi.notna().any() else 27.0)
+```
+
+Three separate problems:
+
+1. **Missing risk factors are imputed to absent.** `htn_any.fillna(0)`, `smoke.fillna(0)`, `lpa.fillna(0)`. Every participant with unknown Lp(a) is scored as not-high. Step-002 §D.7 lists "FH-RS assigning Lp(a)=0 to the 22.5% missing" as a *Julius* deviation. Line 261 shows the local pipeline does the same thing. This is not a point of difference between the two analyses; it is a shared weakness that step-002's framing attributes to one side.
+2. **The imputation statistics are computed on the scoring set.** `cc = comparators(s)` at line 435 passes the subgroup itself, so `np.nanmedian(d.ldl_unt)`, `d.bmi.median()`, `a.mean()`, `a.std()`, `hdl.mean()`, `hdl.std()` are all fitted on the same rows being scored, outside any fold structure. For a rank-based C-index a positive affine transform is harmless — I checked this and it holds — but it means "Montreal" is rescaled to each of the 26 subgroups it is evaluated in and is not a fixed score in any calibration sense.
+3. **The asymmetry favours the model.** If `cv()` imputes within folds whilst comparators are constant-filled, the comparator is handicapped by design. Every WIN in `calon_final.json` was produced under this asymmetry.
+
+## 2d. `STATUS.md` n = 3,333 contradicts the step-002 "agreed" risk set of 3,209
+
+Step-002 §A lists under **"Numbers that AGREE across both analyses"**: carriers 3,540; prevalent ASCVD excluded 207; undated atherosclerotic cases excluded 124; **risk set after both exclusions 3,209**.
+
+3,540 − 207 = **3,333**. 3,333 − 124 = **3,209**.
+
+`STATUS.md` reports **"UK Biobank n=3,333 / 289 events"**. That is carriers minus prevalent only. The local pipeline's own status document says the second exclusion was not applied. So a number listed as *agreed between both analyses* is contradicted by one of them. The agreement was asserted, not demonstrated — a check that cannot fail, presented as a check that passed.
+
+This is material, not clerical: the 124 are people with atherosclerotic disease of unknown date. Retained as non-cases they attenuate every coefficient, which is a live alternative explanation for OBJ-003's null age HR.
+
+## 2e. An exact `0.0` where an exact zero should be impossible
+
+`calon_final.json`: `wales.subgroups."no diabetes".vs.Montreal.delta: 0.0`.
+
+Every other delta in the file is an irrational-looking float, including neighbours that are near-zero but not zero — `wales.male.vs.SAFEHEART: 9.775171065484756e-05`, `ukb."age<median".vs.SAFEHEART: 0.00031926881181920663`. A difference of two C-indices over 63 events, from two continuous scores, landing on exact binary zero to full double precision is a computational event, not a statistical one.
+
+There is a specific candidate at line 258. Montreal contains `(hdl - hdl.mean()) / hdl.std()`. `DATA-INVENTORY.md` lists no HDL completeness figure for Wales, and `hdl.fillna(1.35)` replaces missing HDL with a **constant**. If HDL is wholly missing in that Welsh subgroup, `hdl` becomes constant, `hdl.std()` becomes 0, and the term becomes 0/0 → NaN across the whole vector. What `delta_ci` then returns is not visible in the excerpts I hold, but a degenerate path is the leading hypothesis and it is cheap to test.
+
+## 2f. `comparator_c` and the delta are computed on different risk sets
+
+Lines 440 and 447:
+
+```python
+r = delta_ci(tt[ok], yy[ok], lp[ok], cc[cn][ok], s["cluster"].to_numpy()[ok])
+...
+"comparator_c": float(concordance_index(tt, -cc[cn], yy))
+```
+
+The delta uses the `ok` mask; `comparator_c` uses the full subgroup. `ok` comes from `cv(...)` alongside `fails` (fold failures), so it is not guaranteed to be all-True. Any reader comparing a stored `comparator_c` against the stored `c_index` — which step-002 Table B does, quoting "local pipeline SAFEHEART 0.6944" — is comparing across two different denominators. The −0.06 gap that OBJ-001 is built on may be partly an artefact of which rows each figure was computed over.
+
+The sign convention itself is correct: `concordance_index(tt, -cc[cn], yy)` negates the risk score so higher predicted survival aligns with longer time. I checked that and it holds.
+
+## 2g. One seed, in a project with a documented seed-favourable retraction
+
+`calon_final.json` top-level keys: `['seed', 'spec', 'participant_level_outputs', 'ukb', 'wales', 'combined_tally']` — a single seed.
+
+`STATUS.md` records the precedent in its own retraction section: "the same audit found **AUC 0.7605 to be seed-favourable**: across ten cross-validation seeds the QC obtained 0.7497–0.7596, so the reported point estimate sat above the entire distribution."
+
+A WIN verdict is a threshold crossing — `v = "WIN" if lo > 0` at line 444 — and several deltas sit within 3×10⁻⁴ of zero. A tally of 10/58/1 from one seed, in a pipeline with this exact documented failure mode, has not been shown to be stable. `repeat_sd` is stored per subgroup, so partial repeat structure exists; the tally itself has not been repeated.
+
+Related, and worth one line: a **cross-validated** calibration slope of 1.214 (`STATUS.md`) is above 1, whereas CV slopes normally fall below 1 through optimism. Above 1 is the signature of over-shrinkage. If `cv()` is penalised, the penalty and its tuning are undisclosed in every resource I hold.
+
+## 2h. A governance flag on the output artefact
+
+`calon_final.json` contains a top-level key literally named **`participant_level_outputs`**. I do not know its contents and will not guess. Under UK Biobank Application 1002450 the standing rule is absolute — no participant-level rows or identifiers to disk. A key asserting participant-level output in a committed artefact must be established as benign before this repository is shared, and it takes one command.
+
+---
+
+# 3. ADVERSARIAL AUDIT
+
+**Assume the headline is wrong. Assume CALON-F does not outperform published FH risk scores, and that 10/58/1 is manufactured.**
+
+The most likely mechanism, in order of probability:
+
+**First — the comparators are handicapped, not beaten.** Three independent handicaps stack in the same direction, all in `comparators()`:
+- risk factors imputed to absent (`htn_any.fillna(0)`, `smoke.fillna(0)`, `lpa.fillna(0)`), whilst the model's missingness is handled inside `cv()`;
+- Montreal scored against incident events despite its own Spec Kit docstring restricting it to prevalent-CVD ranking;
+- FH-RS extrapolated past its published 18–65 eligibility into a cohort recruiting to 69.
+
+Every one of these degrades the comparator only. None degrades the model. The wins concentrate exactly where the handicap is heaviest — the Montreal column carries the largest deltas in `calon_final.json` and Montreal is the score used furthest outside its indication.
+
+**Second — the cohort is not FH, so no FH score should work in it.** UK Biobank carrier event rate is 0.630 per 100 py against 1.345 in Wales; untreated LDL-C excess is +0.226 mmol/L against the +3–4 that defines the phenotype; the carrier fraction is 0.705% against 0.380% in the project's other extract. If the UK Biobank arm is a mild population carrier cohort, then all three published scores — derived in clinic-ascertained FH — are attenuated there, uniformly, which is precisely OBJ-002's 0.52–0.57 cluster. On this reading CALON-F does not beat the comparators; it beats *transported* comparators in a population they were not built for, and would not beat them in real FH. Note the Welsh column, where a genuine FH registry is available: **0 WIN, 0 LOSS, 30 tie**. In the only cohort that is unambiguously FH, the model wins nothing.
+
+**Third — the age signal is broken and nobody has looked.** The guard at line 300 cannot fire on `cum_nonhdl`; the 124 undated atherosclerotic cases appear to sit in the risk set as non-cases (§2d); and OBJ-003 reports age null at HR 1.20 [0.91–1.60]. Any one of these degrades the model's own age handling — which would make a *stronger* case that the model is under-performing than that it is over-performing, and is the one branch of this audit that could exonerate the tally.
+
+**What would have failed if the conclusion were right?**
+
+If CALON-F genuinely beat these scores, the Welsh column would not be 30/30 ties in the one true FH cohort; the wins would not be concentrated in the comparator with the worst indication fit; the comparator slopes would not cluster uniformly below 1 whilst the model's sits above 1; and the tally would survive a re-seed. **None of those four has been tested.** Every one of them is cheap.
+
+**The single computation that settles the most.** Re-score all three comparators from the Spec Kit implementations — `CALON_JULIUS_SPECKIT/scripts/comparators.py`, which already exists on disk and already encodes the categorical forms and eligibility limits — on the identical frozen extract that produced `calon_final.json`, with **identical** missing-data handling for model and comparator, and re-run the tally over ten seeds. That one run tests OBJ-001's asymmetry, §2a's fidelity break, §2c's asymmetric imputation and §2g's seed stability simultaneously, and it needs no PDF and no new data.
+
+---
+
+# 4. CLINICAL AND PUBLICATION REALITY
+
+**Would a lipidologist believe it?** Not as written, and the first thing they will check is the phenotype. A specialist reading "genotype-confirmed HeFH" (`STATUS.md`) and then finding an untreated LDL-C excess of +0.226 mmol/L with 2.1% above 6.5 mmol/L will conclude the UK Biobank arm is not their patients. Untreated LDL-C in clinic HeFH does not overlap the population distribution to that degree. The 2.1× event-rate gap against the Welsh registry says the same thing in outcome terms. A cohort labelled FH that behaves epidemiologically like the general population will not survive specialist review, and everything downstream — comparator performance, calibration slopes, the tally — inherits that.
+
+**Does it change practice?** No, and the file says so. Step-002 §D.3: grey-zone AUC **0.489** on n = 234 / 22 events in the 5–10% band. `STATUS.md` on `code/17_grey_zone_enhancers.py`: log(apoB/LDL-C) HR 1.154 (1.027, 1.295) per SD but ΔC **+0.0146 (−0.0050, +0.0330)** — interval covers zero. And in `calon_final.json`, the subgroups where a clinician most needs help are where the model is weakest: `on statin` C = **0.612** (131 events), `diabetes` C = **0.559** (64 events), Welsh `hypertensive` C = **0.558** (52 events). A score at 0.56 in diabetics is not usable for triage. This is a marker, not a tool — `CLAUDE.md` §3 already uses exactly that phrase about the discordance chapter, and it applies here.
+
+**Where does a hostile reviewer open?** In this order:
+
+1. **"Show me the comparator provenance table."** There isn't one — step-002 §E lists it as specified-but-not-delivered — and when they diff `15_CALON_FINAL.py:256–280` against `CALON_JULIUS_SPECKIT/scripts/comparators.py` they will find two irreconcilable implementations under a docstring claiming published provenance. This ends the review.
+2. **"Wales is a refit."** Once §1b is visible, the paper has no external validation and the 0.7486 headline goes.
+3. **"Your tally counts the same patients seven times."** The 13 UK Biobank subgroups are ALL plus six complementary pairs, so every participant appears in 7 of 13 rows and the 39 cells are heavily dependent. There is no multiplicity control anywhere in `15_CALON_FINAL.py:426–454`. Under 39 correlated tests at 95%, a handful of WINs is the null expectation. "10 wins, 58 ties, 1 loss" is a headline the design cannot support.
+4. **"Wales won nothing."** 0 WIN / 0 LOSS / 30 tie. `STATUS.md` blends this into a combined "10 wins, 58 ties, 1 loss" without stating that **all ten wins are UK Biobank** and the Welsh comparison is powerless at 92 events.
+5. **Endpoint composition.** Step-002 §A: event-date completeness I21 100%, I25 100%, **I63 40.9%, I70 64.3%, I73 52.8%, G45 37.0%**. The endpoint is coronary-weighted by ascertainment, so "ASCVD" overstates what was measured. `STATUS.md` states the I50 exclusion correction but not the differential dating completeness.
+6. **Two numbers for one cell in one document.** `STATUS.md` reports the single loss as **−0.062** in one paragraph and **−0.064** in another. `calon_final.json` gives `ukb.subgroups.diabetes.vs.SAFEHEART.delta: −0.0643716927371053`. The −0.062 is wrong. Trivial in itself; a reviewer reads it as numbers being typed from memory rather than read from artefacts, and then audits everything else.
+
+**What can honestly be claimed today?** That in a cohort of UK Biobank LDLR variant carriers and an All-Wales FH registry, a pre-specified seven-variable model achieves cross-validated C of 0.70 and 0.75 respectively, with performance falling to 0.56–0.61 in treated and diabetic strata and no discrimination in the 5–10% grey zone; and that it was **not distinguishable** from three published FH scores in the Welsh registry across all 30 estimable cells. The UK Biobank comparator results should be held back entirely until §2a is resolved. `STATUS.md`'s own standing rule — "Concede the weak link first" (`CLAUDE.md` §4) — points the same way.
+
+**On self-consistency, where I checked and found no problem:** the tally arithmetic reconciles exactly (78 = 2 × 13 × 3); C-indices and event counts in `STATUS.md` match `calon_final.json` to the digit; the EPV arithmetic (92/8 = 11.5) confirms the stated Welsh spec; the endpoint-correction narrative (62 of 351 heart-failure-only) matches `DATA-INVENTORY.md` trap 3; and `STATUS.md`'s reading of calibration slope 1.214 as "predictions somewhat too compressed" is directionally correct. The arithmetic is sound. The provenance is not.
+
+---
+
+# Evidence still required before OBJ-001, OBJ-002 and OBJ-003 can close
+
+| Objection | Present settlement condition | What must be added before it can close |
+|---|---|---|
+| **OBJ-001** | Score all three from PDF coefficients on one frozen extract; publish provenance table | (a) Which of the two on-disk implementations the PDF supports, per comparator; (b) count of participants aged >65 (FH-RS eligibility); (c) statement of Montreal's indication against an incident endpoint; (d) units basis for LDL-C and Lp(a) in each; (e) identical missing-data handling for model and comparators; (f) `ok.sum()` vs `len(s)` per subgroup, since `comparator_c` and the delta currently use different risk sets |
+| **OBJ-002** | Recompute one comparator centred/uncentred × 5y/10y baseline | (a) Cohort age range and SD against each derivation cohort's published range; (b) the same slopes recomputed in the Welsh registry — if they move toward 1 there, it is phenotype not code; (c) confirmation of whether the slope was computed on the published categorical LP or a continuous surrogate |
+| **OBJ-003** | Pearson r(age, cholesterol-years); refit with untreated TC alone | (a) The same correlation for `cum_nonhdl` in the local model, since the guard at `15_CALON_FINAL.py:300` cannot fire on it; (b) the n actually analysed and the disposition of the 124 undated atherosclerotic cases — retained as non-cases they attenuate age independently of any collinearity; (c) age's HR refit after excluding them |
+
+**None of the three can close on the resources supplied to round 1.** The PDFs were not located, and `checklists/comparator-fidelity.md` — the artefact whose name says it settles OBJ-001 — was not in the pack.
+
+---
+
+# Proposed objection blocks
+
+Text only, not written to file. **Numbering collision warning:** round 1 is blind and parallel, so four agents will independently propose `OBJ-004`. The register requires globally unique ids and nothing in the supplied materials allocates ranges. The orchestrator must renumber on merge; I have kept the schema form rather than namespacing, because a namespaced id may not parse.
+
+```objection
+id: OBJ-004
+step: 000
+raised_by: claude
+claim: The comparator functions at code/15_CALON_FINAL.py:256-280 are structurally different functions from those at CALON_JULIUS_SPECKIT/scripts/comparators.py for all three scores, yet line 257 asserts "Published equations, scored not fitted". Local SAFEHEART is continuous linear (0.045*age + 0.6*male + 0.4*htn + 0.3*smoke + 0.02*bmi + 0.15*ldl + 0.25*lpa_hi, LDL in mmol/L, no prior-ASCVD term); Spec Kit SAFEHEART is categorical with 3 age bands, 3 BMI bands, 3 LDL bands in mg/dL, a 1.42 prior-ASCVD term and baseline survivals 0.9532/0.9025. Local Montreal is a z-scored continuous LP; Spec Kit Montreal is an integer points chart. These cannot both be the published equation. Every WIN, tie and LOSS in outputs/calon_final.json was generated by the local version. The degree of age coarsening in the published forms predicts the OBJ-001 gaps in exact rank order (SAFEHEART 3 bands, gap -0.066; FH-RS chart bands, -0.023; Montreal 7-year bands, -0.003), so the local values may be inflated surrogates rather than Julius understating.
+settled_by: For each of Montreal, FH-RS and SAFEHEART, state which on-disk implementation the source PDF supports, citing page and table. Then re-run code/15_CALON_FINAL.py substituting CALON_JULIUS_SPECKIT/scripts/comparators.py and report the revised combined_tally against the current 10/58/1.
+status: OPEN
+```
+
+```objection
+id: OBJ-005
+step: 000
+raised_by: claude
+claim: The collinearity guard at code/15_CALON_FINAL.py:300 is gated on f.startswith("sp"), so it cannot fire on cum_nonhdl, which as a cumulative age-by-lipid exposure is the term most likely to be collinear with age - structurally the same construct as the cholesterol-years term in OBJ-003. The threshold of 0.999 catches only exact linear duplicates, as the inline comment concedes. STATUS.md presents this as one of two pre-specified rules governing which terms enter, which reads as collinearity control; it is spline-basis housekeeping that removes knots outside a cohort's age range. Age enters the UK Biobank model through age, sp50 and cum_nonhdl with no pairwise correlation ever reported.
+settled_by: Report Pearson r(age, cum_nonhdl) in both cohorts. Refit CALON-F with cum_nonhdl replaced by non-HDL-C alone and report the age coefficient, its 95% CI, and the ALL C-index in each cohort against the current 0.6997 and 0.7486.
+status: OPEN
+```
+
+```objection
+id: OBJ-006
+step: 000
+raised_by: claude
+claim: The Welsh C-index of 0.7486 is internal cross-validation of a Wales-refitted model, not external validation. code/15_CALON_FINAL.py:434 calls cv(s, cohort_spec) with cohort_spec resolved per cohort by usable(), and STATUS.md confirms the specs differ (spline rule fires in UK Biobank only, minimum-information rule in Wales only), giving 8 different terms in each cohort - corroborated by STATUS.md's own Welsh EPV of 11.5 = 92/8. No transported model exists anywhere in this pipeline, so CALON-F has no demonstrated transportability. This also means the step-002 Table B row "Model C, Wales 0.7486 vs 0.698/0.700/0.713" may not be a discrepancy at all: if Julius transported UK Biobank coefficients (step-002 section D.4 describes UK-Biobank-fitted imputation applied to Welsh predictors) whilst the local pipeline refits, the two figures estimate different quantities and the gap is the expected transport penalty.
+settled_by: Freeze the UK Biobank coefficient vector, apply it unchanged to the Welsh cohort with no refitting, and report Welsh C-index, calibration slope and calibration-in-the-large. Report the two cohort specifications side by side, naming every term in each.
+status: OPEN
+```
+
+```objection
+id: OBJ-007
+step: 000
+raised_by: claude
+claim: STATUS.md reports the UK Biobank analysis as n=3,333, which equals 3,540 carriers minus 207 prevalent ASCVD and does not subtract the 124 undated atherosclerotic cases. Step-002 section A lists "Risk set after both exclusions 3,209" under numbers that AGREE across both analyses. 3,540-207=3,333 and 3,333-124=3,209, so a figure recorded as agreed is contradicted by the local pipeline's own status document. This is material, not clerical: 124 participants with atherosclerotic disease of unknown date retained as non-cases attenuate every coefficient, and are an untested alternative explanation for the null age HR in OBJ-003 that the OBJ-003 refit will not distinguish from collinearity.
+settled_by: Print the analysis n actually used by code/15_CALON_FINAL.py after all exclusions and state the disposition of the 124 undated cases. If retained, refit with them excluded and report the age HR with 95% CI and the ALL C-index against the current 0.6997.
+status: OPEN
+```
+
+```objection
+id: OBJ-008
+step: 000
+raised_by: claude
+claim: outputs/calon_final.json records wales.subgroups."no diabetes".vs.Montreal.delta as exactly 0.0 whilst every neighbouring cell is an irrational-looking float, including near-zero ones (wales male vs SAFEHEART 9.775171065484756e-05; ukb age<median vs SAFEHEART 0.00031926881181920663). A difference of two C-indices over 63 events from two continuous scores cannot land on exact binary zero by chance. The leading candidate is code/15_CALON_FINAL.py:258, where d.hdl.fillna(1.35) replaces missing HDL with a constant: if HDL is wholly missing in that Welsh subgroup, hdl.std() is 0, the Montreal z-term becomes 0/0 = NaN across the vector, and the comparator is degenerate. Separately, line 447 computes comparator_c on the full subgroup (tt, yy) whilst line 440 computes the delta on the ok mask, so the two stored quantities use different risk sets - and step-002 Table B quotes the stored local comparator C-indices as the reference for OBJ-001.
+settled_by: For the Welsh no-diabetes subgroup, print HDL non-missing count, hdl.std() after fillna, and the model and Montreal C-indices to six decimal places. Separately print ok.sum() against len(s) and fold_failures for every subgroup in both cohorts, and recompute comparator_c restricted to ok.
+status: OPEN
+```
+
+```objection
+id: OBJ-009
+step: 000
+raised_by: claude
+claim: The 10/58/1 tally rests on a single seed (outputs/calon_final.json top-level key "seed"), in a project where STATUS.md documents this exact failure mode: AUC 0.7605 was found seed-favourable, with ten cross-validation seeds giving 0.7497-0.7596 so that the reported point estimate sat above the entire distribution. A verdict is a threshold crossing (code/15_CALON_FINAL.py:444, v = "WIN" if lo > 0) and several deltas sit within 3e-04 of zero. Additionally, the 13 UK Biobank subgroups are ALL plus six complementary pairs, so every participant appears in 7 of 13 rows and the 39 cells are heavily dependent, with no multiplicity control anywhere in lines 426-454. Separately, a cross-validated calibration slope of 1.214 is above 1 where CV optimism normally puts it below 1, which is the signature of over-shrinkage; no penalty or tuning procedure is disclosed in any supplied resource.
+settled_by: Re-run code/15_CALON_FINAL.py over at least ten seeds and report the distribution of combined_tally WIN, tie and LOSS counts, plus the seed-to-seed range of the ALL C-index in each cohort. Report the number of bootstrap replicates used by delta_ci, and the penalty type and tuning procedure used by cv().
+status: OPEN
+```
+
+```objection
+id: OBJ-010
+step: 000
+raised_by: claude
+claim: Two of the three comparators are scored outside the indication stated by the project's own code. CALON_JULIUS_SPECKIT/scripts/comparators.py documents montreal_fh_score as "ranking/prevalent-CVD use only" and fhrs_chart_points as "for adults aged 18-65", and its module docstring states these functions do not impute, convert Lp(a) mass to molar units, or extrapolate outside native eligibility. code/15_CALON_FINAL.py scores Montreal against incident ASCVD in all 26 Montreal cells; its ab() function at lines 265-266 has an open top band applied to a cohort recruiting to age 69; line 261 performs the molar Lp(a) conversion the Spec Kit refuses; line 279 applies a per-mmol/L LDL coefficient against published mg/dL bands. The Montreal column carries the largest deltas in outputs/calon_final.json (ALL +0.033, age<median +0.059, male +0.041, smoker +0.042) whilst SAFEHEART is near-null throughout (ALL +0.0058), so the wins concentrate where the indication mismatch is worst. Beating a prevalent-CVD ranking score on an incident endpoint is not evidence of superiority.
+settled_by: Count UK Biobank analysis participants aged over 65 at baseline and report what fraction of FH-RS cells that represents. State each comparator's published endpoint, horizon and derivation cohort in a provenance table. Re-run the tally excluding cells where a comparator is applied outside its published indication and report the revised combined_tally.
+status: OPEN
+```
+
+```objection
+id: OBJ-011
+step: 000
+raised_by: claude
+claim: The UK Biobank arm may not be familial hypercholesterolaemia, and STATUS.md's description of CALON-F as a model in "genotype-confirmed HeFH" may be false for that cohort. Three supplied sources conflict: DATA-INVENTORY.md gives ldlr_carrier = 3,540 of 501,936 (0.705%); CLAUDE.md gives is_fh_genetic = 1,623 of 426,732 (0.380%) of which LDLR 1,321 - a 2.7-fold difference in LDLR count for the same biobank with no documented reconciliation and no variant-curation rule stated anywhere. Two independent internal measurements support the milder reading: untreated LDL-C excess of +0.226 mmol/L against the +3 to +4 that defines the phenotype, and crude incidence computed from outputs/calon_final.json of 0.630 per 100 person-years in UK Biobank (289/45,850.03) against 1.345 in the Welsh registry (92/6,841.37) - a 2.1-fold higher rate in the younger cohort. If UK Biobank carriers are a mild population cohort rather than clinic-ascertained FH, then all three externally weighted comparators are uniformly attenuated there, which is a single non-bug explanation for the 0.52-0.57 slope cluster in OBJ-002; note that the internally fitted model's slope is 1.214, above 1, which a shared arithmetic bug in a common scoring pathway would not spare.
+settled_by: Publish the variant-curation rule behind ldlr_carrier - filter criteria, ACMG classes included, and counts by class - and reconcile 3,540 against the 1,321 in CLAUDE.md. Report age-standardised incidence in both cohorts to test whether the 2.1-fold rate gap survives age adjustment, and report each cohort's ascertainment route for events. Recompute all four comparator calibration slopes in the Welsh cohort: if they move from 0.52-0.57 toward 1.0 there, the cause is phenotype, not implementation.
+status: OPEN
+```
+
+```objection
+id: OBJ-012
+step: 000
+raised_by: claude
+claim: The objection register has no status meaning "tested and upheld", and this has already produced a wrong disposition. OBJ-000 claimed the carrier flag may not identify FH; its settled_by named a comparison against the +3 to +4 mmol/L expected for heterozygous FH; the measurement returned +0.226 mmol/L [0.185-0.268] with 2.1% above 6.5 mmol/L and variant_id empty in all 501,936 rows. That result confirms the claim. The block is marked status: ANSWERED, which retires it. The permitted statuses are OPEN, ANSWERED, ACCEPTED-RISK and WITHDRAWN, so an objection proven correct has nowhere to go except ACCEPTED-RISK with a named dissenter. Separately, the schema requires globally unique OBJ-NNN ids whilst round 1 is blind and parallel across four agents, guaranteeing id collisions on merge with no documented allocation rule.
+settled_by: Run bin/consensus.mjs against the current register and report whether OBJ-000 in its ANSWERED state permits or blocks closure of any step. Add a status meaning UPHELD, or reclassify OBJ-000 as ACCEPTED-RISK with a named dissenter and risk text, then re-run and report the change in closure decisions. Publish the id-allocation rule for blind parallel rounds and confirm bin/panel.mjs enforces it.
+status: OPEN
+```

@@ -1,0 +1,663 @@
+2026-08-15T22:54:03.831212Z ERROR codex_models_manager::cache: failed to load models cache: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:54:18.645147Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:54:28.577608Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:54:39.335880Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:54:46.118064Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:54:55.434171Z ERROR codex_models_manager::manager: failed to renew cache TTL: cache not found
+2026-08-15T22:55:05.436380Z ERROR codex_models_manager::manager: failed to renew cache TTL: cache not found
+2026-08-15T22:55:17.463620Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:55:46.438056Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:55:49.583194Z ERROR codex_models_manager::cache: failed to load models cache: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:56:51.350861Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:56:54.157057Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:56:54.555419Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:56:56.901092Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:56:58.686336Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:57:00.047148Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:57:03.174915Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:57:16.978358Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:57:18.931432Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:57:21.266221Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:57:31.739236Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:57:32.468249Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:57:38.604385Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:57:46.062242Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:57:48.429257Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:57:51.399586Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:57:54.692667Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:57:56.753196Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:57:59.643782Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:58:03.126755Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:58:10.668860Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 94 column 5
+2026-08-15T22:58:11.239794Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 94 column 5
+2026-08-15T22:58:17.827759Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:58:42.734787Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:58:53.942459Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:59:03.880285Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:59:06.254027Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:59:09.664322Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:59:11.398547Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:59:13.165980Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:59:15.662820Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:59:17.807460Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:59:20.966251Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:59:24.126576Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T22:59:54.705466Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:00:23.291318Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:00:42.894255Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:00:54.180562Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:00:58.381256Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:01:52.440075Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:02:01.574150Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:02:27.152779Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:03:36.641444Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:07:44.894662Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:11:19.231860Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:13:30.133789Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:16:20.786036Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:17:46.641802Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:18:35.804225Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:19:54.888107Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:20:57.062186Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:22:21.661353Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:22:41.561126Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:22:59.414421Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:23:56.140404Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:24:00.233194Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:24:29.341785Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:24:40.487984Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:24:46.599027Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:24:58.566216Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:25:07.497621Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:25:42.794386Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:25:50.283032Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:27:24.018325Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:27:36.152976Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:27:50.131696Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:27:54.493525Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:28:17.944043Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 94 column 5
+2026-08-15T23:28:42.239826Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:29:08.096184Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:29:25.380285Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:29:42.771871Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:29:45.560017Z ERROR codex_models_manager::cache: failed to load models cache: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:29:52.837517Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:29:55.222587Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:29:55.798884Z ERROR codex_models_manager::cache: failed to load models cache: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:30:20.805737Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:30:25.464683Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:30:26.851967Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:30:28.381752Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:30:28.480719Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:30:29.272985Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:30:30.275966Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:30:32.638392Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:30:32.639415Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:30:33.330473Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:30:33.363488Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:30:36.036246Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:30:36.373323Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:30:36.737426Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:30:39.252937Z ERROR codex_core::tools::router: error=timeout_ms must be at least 10000
+2026-08-15T23:30:39.367158Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:30:39.901921Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:30:44.606633Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:30:44.806635Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:30:49.760050Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:30:51.816947Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:30:53.597976Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:30:53.600041Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:30:59.969116Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:31:00.335557Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:31:05.994810Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:31:08.716021Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:31:10.298072Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:31:14.826089Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 94 column 5
+2026-08-15T23:31:14.923544Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 94 column 5
+2026-08-15T23:31:22.778336Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:31:23.651644Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:31:25.782230Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:31:28.330169Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:31:31.847144Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:31:32.395354Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:31:36.450008Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:31:40.175299Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:31:42.077276Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:31:46.843583Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:31:52.910498Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:31:56.473498Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:31:58.501404Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:32:15.946299Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:32:19.178979Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:32:27.800184Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:32:31.498191Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:32:34.736022Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:32:50.024532Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:33:06.098741Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:33:22.582318Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:33:25.464011Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:33:31.885876Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:33:43.322260Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:33:43.359937Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:33:52.964770Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:33:54.045809Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:34:03.334869Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:34:09.979612Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:34:11.579787Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:34:14.349662Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 94 column 5
+2026-08-15T23:34:18.331693Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 94 column 5
+2026-08-15T23:34:39.987959Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:34:47.054369Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:34:49.763491Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:34:56.351901Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:35:00.600800Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:35:02.301824Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:35:08.507294Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:35:11.938949Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:35:14.299928Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:35:18.177931Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:35:27.226325Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:35:30.090116Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:35:34.408505Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:35:41.986820Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:35:47.624744Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:52:10.322565Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:52:10.424169Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:52:10.448703Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:52:10.552875Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:52:33.528353Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:52:34.640755Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:52:38.447710Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:52:39.115542Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:52:56.923117Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:52:59.925717Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:53:04.325234Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:53:08.866826Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:53:16.579640Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:53:17.419816Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:53:20.588033Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:53:22.252423Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:53:44.958529Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:54:00.096292Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:54:01.631609Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:54:08.659557Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:54:18.379493Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:54:24.670817Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:54:33.634280Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:54:34.079174Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-15T23:54:48.740883Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:11:51.457825Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:11:52.730617Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:12:04.602218Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:12:10.470149Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:12:10.749545Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:12:13.439794Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:12:15.821114Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:12:16.498469Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:12:21.361961Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:12:21.458414Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:30:10.864720Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:30:10.865854Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:30:11.024827Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:30:11.026762Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:30:20.859270Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:30:22.831601Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:30:24.127329Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:30:27.809121Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:30:28.430273Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:45:40.977544Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:46:02.653948Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:46:02.729804Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:46:02.731558Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:46:04.563532Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:46:07.626291Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:46:08.077797Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:46:11.814083Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:46:13.472187Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:46:17.265545Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:46:19.063800Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T00:46:24.365054Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:03:20.514612Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:03:31.271252Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:20:40.223858Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:20:40.261402Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:20:40.285385Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:20:40.311716Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:20:47.432074Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:20:54.152352Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:20:57.530281Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:20:57.688774Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:20:58.147419Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:21:10.586474Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:21:11.287275Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:21:14.172016Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:21:15.322936Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:31:32.563399Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:31:33.149181Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:31:36.218967Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:31:52.888502Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:31:52.948923Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:32:01.724897Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:32:01.753586Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:32:05.489131Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:32:06.962449Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:32:09.369232Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:32:09.503028Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:32:10.700902Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:32:15.633659Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:32:17.031084Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:32:17.197364Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:49:44.323479Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:49:45.521242Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:49:51.635601Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:49:51.670643Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:49:51.797003Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:49:51.810399Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:49:56.745718Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:50:02.397076Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:50:04.738472Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:50:07.325534Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:50:12.347190Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:50:17.713055Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:50:18.877410Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:50:26.669552Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:50:27.863810Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T01:50:30.218487Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:06:23.654718Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:06:32.874657Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:06:32.875672Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:06:32.876660Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:06:52.439141Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:06:56.526507Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:06:58.399241Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:23:35.009043Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:23:35.021558Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:23:35.029342Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:23:35.039437Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:23:40.794796Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:23:41.198960Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:23:41.664821Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:23:46.638590Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:23:49.083157Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:23:50.835609Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:23:51.515809Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:23:55.536351Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:24:01.422963Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:24:01.516524Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:24:02.576512Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 94 column 5
+2026-08-16T02:24:06.845916Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 94 column 5
+2026-08-16T02:32:33.217638Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:32:40.283842Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:33:06.801960Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:33:14.755142Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:49:13.948915Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:49:14.027694Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:49:14.076362Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:49:14.085620Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:49:19.350687Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:49:21.073455Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:49:21.254901Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:49:24.531890Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:49:25.287978Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:49:26.926533Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:49:31.898709Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:49:32.629264Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:49:35.893438Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:49:40.701257Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:49:43.979678Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:49:48.071435Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:49:49.669560Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T02:49:52.161763Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:05:07.194860Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:05:13.997461Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:05:32.841981Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:05:36.811185Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:05:39.674138Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:05:40.698367Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:05:43.468497Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:05:47.719541Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:05:53.400525Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:06:01.189120Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:06:02.561107Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:06:07.446928Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:06:07.980839Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:23:27.186362Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:23:32.737171Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:23:38.736638Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:23:43.001720Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 94 column 5
+2026-08-16T03:23:48.977061Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:23:57.140452Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:23:57.916689Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:23:57.920231Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:24:03.527478Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:24:05.148067Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:24:07.994324Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:24:11.951273Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:33:57.265062Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:50:40.732585Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:50:44.562955Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:50:50.975399Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:50:56.731700Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T03:51:02.767728Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:14:00.223481Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:14:00.327037Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:14:00.333303Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:14:07.077258Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:14:09.488958Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:14:14.780950Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:14:26.033009Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:30:28.571062Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:30:29.308861Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:30:39.857657Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:30:41.947250Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:30:41.982729Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:30:47.973675Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:30:48.238146Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:30:52.019167Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:30:55.373287Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:31:05.785759Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:31:08.025696Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:31:09.886496Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:31:13.164463Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:31:13.230938Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:34:32.285774Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:34:33.132771Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:34:44.333981Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:34:53.785764Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:35:11.835628Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:35:18.175669Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:52:28.587144Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:52:28.742543Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:52:28.743530Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:52:32.312183Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:52:39.494652Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T04:52:43.176943Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 94 column 5
+2026-08-16T05:08:37.535703Z ERROR codex_models_manager::cache: failed to load models cache: missing field `base_instructions` at line 94 column 5
+2026-08-16T05:09:13.365320Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T05:09:13.573685Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T05:09:13.871668Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T05:09:19.013464Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T05:09:25.353224Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T05:09:26.331416Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T05:09:33.421689Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T05:09:39.811783Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T05:26:16.936959Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T05:26:34.650470Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T05:38:10.631341Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T05:38:15.454357Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T05:55:53.348318Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T05:55:53.511285Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T05:55:53.836078Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T05:56:05.054932Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T05:56:09.479571Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T05:56:11.622527Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T05:56:15.291369Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T05:56:25.311754Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T05:56:29.082554Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:11:45.659177Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:12:03.611825Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:23:27.475660Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:23:27.503158Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:23:27.568515Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:23:28.589839Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:23:33.887698Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:23:34.434575Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:23:39.619973Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:23:40.592336Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:23:46.405938Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:23:51.056013Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:23:52.302587Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:23:55.326264Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:23:56.556493Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:23:59.820372Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:36:33.305770Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:36:40.250059Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 94 column 5
+2026-08-16T06:36:42.934722Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 94 column 5
+2026-08-16T06:36:46.680791Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:36:53.935727Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:36:56.795422Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:36:56.938365Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:37:01.118120Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:37:02.220924Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:37:03.702593Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:37:06.867449Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:37:11.085156Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:37:12.056551Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:37:13.288861Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:37:15.924654Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:37:17.208874Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:37:17.623976Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:52:28.520531Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:52:36.925116Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:52:37.045521Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:52:37.177188Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:52:43.080616Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:52:43.392793Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:52:44.631520Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:52:49.006552Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:52:52.985370Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:52:54.500791Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:53:03.283870Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T06:53:03.295149Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:10:02.669847Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:10:34.836681Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:28:35.400265Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:28:38.347356Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:28:38.429733Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:28:38.488745Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:28:42.822930Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:28:44.493236Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:28:50.535691Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:28:50.610796Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:28:57.996334Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:29:02.436139Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 94 column 5
+2026-08-16T07:29:04.031799Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 94 column 5
+2026-08-16T07:29:09.615373Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:29:13.499877Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:29:14.799270Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:29:16.519347Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:37:33.898732Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:37:40.095554Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:37:45.787651Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:37:47.899472Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:37:49.527634Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:37:57.127108Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:38:00.190283Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:38:05.166023Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:38:07.195220Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:38:13.952735Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:54:50.440236Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:54:57.208463Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T07:55:03.237077Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:11:28.639022Z ERROR codex_models_manager::manager: failed to refresh available models: timeout waiting for child process to exit
+2026-08-16T08:11:33.403961Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:11:33.501875Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:11:33.556378Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:11:41.737542Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:11:48.927430Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:11:49.917921Z ERROR codex_core::tools::router: error=exec_command failed for `/bin/zsh -lc "set -e
+rm -rf /private/tmp/calon_cycle2_pycache_acceptance
+PYTHONPYCACHEPREFIX=/private/tmp/calon_cycle2_pycache_acceptance python3 -m py_compile \\
+  julius-cycle2-pack/00_findings_lock.py \\
+  julius-cycle2-pack/01_horizon_prove.py \\
+  julius-cycle2-pack/02_calong_fit.py \\
+  julius-cycle2-pack/03_comparators_pdf_faithful.py \\
+  julius-cycle2-pack/04_headtohead_tripod.py \\
+  julius-cycle2-pack/05_wales_transport.py \\
+  julius-cycle2-pack/06_calibration_dca.py \\
+  code/16_CALON_G_CYCLE2.py
+python3 code/16_CALON_G_CYCLE2.py --self-test > /private/tmp/calon_cycle2_selftest.txt
+if rg -n \"time <= .*)\\s*\\|\\s*\\(.*(event\" julius-cycle2-pack/ code/16_CALON_G_CYCLE2.py > /private/tmp/calon_cycle2_bad_masks.txt; then
+  echo INVALID_MASK_MATCH_FOUND
+  sed -n '1,120p' /private/tmp/calon_cycle2_bad_masks.txt
+  exit 1
+fi
+diff -u code/16_CALON_G_CYCLE2.py julius-cycle2-pack/00_findings_lock.py > /private/tmp/calon_cycle2_engine.diff || true
+python3 - <<'PY'
+from pathlib import Path
+p = Path('/private/tmp/calon_cycle2_engine.diff').read_text()
+if p.count('@@') "'!= 2 or '"'CYCLE-2 ENGINE LOADED' not in p or 'CYCLE2_RESULTS = run_cycle2' not in p:
+    raise SystemExit('unexpected pack/local engine divergence')
+print('PACK_LOCAL_PARITY=PASS_EXPECTED_TAIL_ONLY')
+PY
+printf 'PY_COMPILE=PASS\\nMASK_RG=PASS_ZERO\\n'
+cat /private/tmp/calon_cycle2_selftest.txt
+printf 'README_ORDER_SHA_MATCHES=' 
+rg -c \"00_findings_lock.py|01_horizon_prove.py|02_calong_fit.py|03_comparators_pdf_faithful.py|04_headtohead_tripod.py|05_wales_transport.py|06_calibration_dca.py|8c3a1e0598770c1beefe29db28d42fb7074f233f382c25c19eb0c843b59f49b2\" julius-cycle2-pack/README.md
+printf 'PROVENANCE_MODEL_HEADINGS=' 
+rg -c \""'^## (SAFEHEART-RE|FH-Risk-Score|Montreal-FH-SCORE)$" julius-cycle2-pack/PROVENANCE_TABLE.md
+printf '"'PROVENANCE_NOT_IN_PDF=' 
+rg -c \"NOT-IN-PDF\" julius-cycle2-pack/PROVENANCE_TABLE.md
+printf 'DOCSTRING_LOCK=' 
+rg -c \"Aggregates only; no eid prints; primary ASCVD endpoint \\(I50 out\\); MACE is NOT primary; missing data is train-fold impute NOT MCAR; B=2000; corrected horizon\\.\" code/16_CALON_G_CYCLE2.py"`: CreateProcess { message: "Rejected(\"`/bin/zsh -lc \\\"set -e\\nrm -rf /private/tmp/calon_cycle2_pycache_acceptance\\nPYTHONPYCACHEPREFIX=/private/tmp/calon_cycle2_pycache_acceptance python3 -m py_compile \\\\\\\\\\n  julius-cycle2-pack/00_findings_lock.py \\\\\\\\\\n  julius-cycle2-pack/01_horizon_prove.py \\\\\\\\\\n  julius-cycle2-pack/02_calong_fit.py \\\\\\\\\\n  julius-cycle2-pack/03_comparators_pdf_faithful.py \\\\\\\\\\n  julius-cycle2-pack/04_headtohead_tripod.py \\\\\\\\\\n  julius-cycle2-pack/05_wales_transport.py \\\\\\\\\\n  julius-cycle2-pack/06_calibration_dca.py \\\\\\\\\\n  code/16_CALON_G_CYCLE2.py\\npython3 code/16_CALON_G_CYCLE2.py --self-test > /private/tmp/calon_cycle2_selftest.txt\\nif rg -n \\\\\\\"time <= .*)\\\\\\\\s*\\\\\\\\|\\\\\\\\s*\\\\\\\\(.*(event\\\\\\\" julius-cycle2-pack/ code/16_CALON_G_CYCLE2.py > /private/tmp/calon_cycle2_bad_masks.txt; then\\n  echo INVALID_MASK_MATCH_FOUND\\n  sed -n '1,120p' /private/tmp/calon_cycle2_bad_masks.txt\\n  exit 1\\nfi\\ndiff -u code/16_CALON_G_CYCLE2.py julius-cycle2-pack/00_findings_lock.py > /private/tmp/calon_cycle2_engine.diff || true\\npython3 - <<'PY'\\nfrom pathlib import Path\\np = Path('/private/tmp/calon_cycle2_engine.diff').read_text()\\nif p.count('@@') \\\"'!= 2 or '\\\"'CYCLE-2 ENGINE LOADED' not in p or 'CYCLE2_RESULTS = run_cycle2' not in p:\\n    raise SystemExit('unexpected pack/local engine divergence')\\nprint('PACK_LOCAL_PARITY=PASS_EXPECTED_TAIL_ONLY')\\nPY\\nprintf 'PY_COMPILE=PASS\\\\\\\\nMASK_RG=PASS_ZERO\\\\\\\\n'\\ncat /private/tmp/calon_cycle2_selftest.txt\\nprintf 'README_ORDER_SHA_MATCHES=' \\nrg -c \\\\\\\"00_findings_lock.py|01_horizon_prove.py|02_calong_fit.py|03_comparators_pdf_faithful.py|04_headtohead_tripod.py|05_wales_transport.py|06_calibration_dca.py|8c3a1e0598770c1beefe29db28d42fb7074f233f382c25c19eb0c843b59f49b2\\\\\\\" julius-cycle2-pack/README.md\\nprintf 'PROVENANCE_MODEL_HEADINGS=' \\nrg -c \\\\\\\"\\\"'^## (SAFEHEART-RE|FH-Risk-Score|Montreal-FH-SCORE)$\\\" julius-cycle2-pack/PROVENANCE_TABLE.md\\nprintf '\\\"'PROVENANCE_NOT_IN_PDF=' \\nrg -c \\\\\\\"NOT-IN-PDF\\\\\\\" julius-cycle2-pack/PROVENANCE_TABLE.md\\nprintf 'DOCSTRING_LOCK=' \\nrg -c \\\\\\\"Aggregates only; no eid prints; primary ASCVD endpoint \\\\\\\\(I50 out\\\\\\\\); MACE is NOT primary; missing data is train-fold impute NOT MCAR; B=2000; corrected horizon\\\\\\\\.\\\\\\\" code/16_CALON_G_CYCLE2.py\\\"` rejected: rm -f style commands are not permitted. Use a safer approach\")" }
+2026-08-16T08:11:49.945443Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:11:55.037956Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:11:57.463387Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:12:02.251579Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:12:04.611170Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:12:09.334301Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:12:13.090043Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:22:33.582831Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:22:34.713344Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 94 column 5
+2026-08-16T08:22:45.663257Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:22:53.671177Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:23:00.838684Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:23:14.905059Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:23:20.029648Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:23:34.278273Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:23:39.856530Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:24:03.139414Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:24:31.319445Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:24:45.113748Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:24:51.603137Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:24:55.077674Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:24:58.413763Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:25:02.668135Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:25:10.210279Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:25:34.800034Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:25:38.637809Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 94 column 5
+2026-08-16T08:25:45.817995Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:25:52.371900Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:25:52.623726Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:25:57.551254Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:26:00.234594Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:26:03.098654Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:26:07.232268Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:26:12.956761Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:26:20.695300Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:26:27.490020Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:26:48.822219Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:26:55.224541Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:27:03.176095Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:27:08.674707Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:27:17.523997Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:27:34.236343Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:27:50.356988Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:27:56.806623Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:28:09.365385Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:28:11.665530Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:28:26.210418Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:28:34.997408Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:29:09.211172Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:29:13.675108Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:29:22.910962Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:29:31.108982Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:29:35.239262Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:29:40.265536Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:29:51.143295Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:30:04.464449Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:30:14.540206Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:30:26.995347Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:30:50.612749Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+2026-08-16T08:31:17.794216Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5
+
+relay: completed (exit 0)  ·  codex codex-cli 0.145.0
+thread id (resume with: codex exec resume 01a007a1-df97-7a83-b882-b7e05fbe3e52): 01a007a1-df97-7a83-b882-b7e05fbe3e52
+touched files: 55
+  A  .gitignore
+  AM code/01_calon_disc_analysis.py
+  A  code/02_from_scratch_model.py
+  A  code/03_sensitivity_qc.py
+  A  code/04_finalize_package.py
+  A  code/05_selected_figures.py
+  A  code/06_consolidated_qc.py
+  A  code/07_fh_vs_nonfh.py
+  AM code/08_fh_vs_nonfh_robustness.py
+  A  code/09_ratio_effect_modification.py
+  A  code/10_recalibration.py
+  A  code/11_simple_model.py
+  A  code/12_welsh_prospective_model.py
+  AM code/13_survivable_model.py
+  AM code/14_ukb_incident_corrected.py
+  A  code/apply_calon_n.py
+  A  code/audit_2026_08_10/01_incident_feasibility.py
+  A  code/audit_2026_08_10/02_union_definition.py
+  A  code/audit_2026_08_10/03_locked_reproduction.py
+  A  code/audit_2026_08_10/04_build_report.py
+  A  code/audit_2026_08_10/05_verify_timeline_delta.py
+  A  code/audit_2026_08_10/06_build_forward_plan.py
+  A  code/audit_2026_08_10/07_verify_welsh_prospective.py
+  A  code/audit_2026_08_10/08_open_model_search.py
+  A  code/audit_2026_08_10/audit_common.py
+  A  code/audit_2026_08_10/verify_delta2_ratio_qc.py
+  A  code/audit_2026_08_10/verify_delta3_comparison_tally.py
+  A  code/audit_2026_08_10/verify_delta3_ldl_qc.py
+  A  code/build_docx.py
+  ?? .specify/
+  ?? AUDIT_PLAN_2026-08-10.md
+  ?? FINAL_REPORT.md
+  ?? MANIFEST.json
+  ?? MANUSCRIPT_SPEC_CLAUDE.md
+  ?? MODEL_CARD.md
+  ?? PROTOCOL_LOCK.md
+  ?? README.md
+  ?? SKELETON_CLAUDE.md
+  ?? STATUS.md
+  ?? code/15_CALON_FINAL.py
+  … and 15 more
+
+--- codex final report ---
+Implementation is complete and reviewed in the writable workspace. The requested Downloads directory was read-only, so its old draft could not be replaced.
+
+## 1. What changed and why
+
+- Implemented the exact frozen CALON-G specification and apoB/HDL sensitivity.
+- Added grouped repeated CV, nested ridge selection, fold-wise median/mode imputation, common-reference OOF LPs, and strict horizon handling.
+- Implemented PDF-faithful SAFEHEART, FH-RS, and Montreal scoring without invented coefficients.
+- Added paired cluster bootstrap `B=2000`, IPCW calibration, DCA, strict Wales transport gates, external calibration, and TRIPOD+AI/STROBE outputs.
+- Added aggregate-only safeguards, strict JSON, fresh-output protection, SHA/count gates, and formula self-tests.
+
+## 2. Files touched
+
+- [16_CALON_G_CYCLE2.py](/Users/nader85/Documents/CALON/calon_discordance_model_2026_08_09/code/16_CALON_G_CYCLE2.py)
+- [00_findings_lock.py](/Users/nader85/Documents/CALON/calon_discordance_model_2026_08_09/julius-cycle2-pack/00_findings_lock.py)
+- [01_horizon_prove.py](/Users/nader85/Documents/CALON/calon_discordance_model_2026_08_09/julius-cycle2-pack/01_horizon_prove.py)
+- [02_calong_fit.py](/Users/nader85/Documents/CALON/calon_discordance_model_2026_08_09/julius-cycle2-pack/02_calong_fit.py)
+- [03_comparators_pdf_faithful.py](/Users/nader85/Documents/CALON/calon_discordance_model_2026_08_09/julius-cycle2-pack/03_comparators_pdf_faithful.py)
+- [04_headtohead_tripod.py](/Users/nader85/Documents/CALON/calon_discordance_model_2026_08_09/julius-cycle2-pack/04_headtohead_tripod.py)
+- [05_wales_transport.py](/Users/nader85/Documents/CALON/calon_discordance_model_2026_08_09/julius-cycle2-pack/05_wales_transport.py)
+- [06_calibration_dca.py](/Users/nader85/Documents/CALON/calon_discordance_model_2026_08_09/julius-cycle2-pack/06_calibration_dca.py)
+- [README.md](/Users/nader85/Documents/CALON/calon_discordance_model_2026_08_09/julius-cycle2-pack/README.md)
+- [PROVENANCE_TABLE.md](/Users/nader85/Documents/CALON/calon_discordance_model_2026_08_09/julius-cycle2-pack/PROVENANCE_TABLE.md)
+
+`code/15_CALON_FINAL.py` was not modified. Nothing was staged or committed.
+
+## 3. Gate outcomes
+
+- `py_compile`: **PASS** for all eight Python files.
+- Invalid-mask `rg`: **PASS — zero matches** in the workspace pack and local orchestrator.
+- Formula/horizon self-test: **PASS**, including binary-event rejection and all three comparator checks.
+- README 00→06 order and full cohort SHA: **PASS**.
+- Provenance for SAFEHEART, FH-RS, and Montreal, including `NOT-IN-PDF` designations: **PASS**.
+- Pack/local engine parity: **PASS**, differing only in the intended execution tail.
+
+## 4. Left for Julius / investigator
+
+- Replace the old Downloads pack with the reviewed [workspace pack](/Users/nader85/Documents/CALON/calon_discordance_model_2026_08_09/julius-cycle2-pack/), or grant that directory write access so I can mirror it. The Downloads copy remains stale and incomplete.
+- Julius must execute the participant-level fit with `FROZEN`, the actual hash, and completed ledgers.
+- Investigator must set `WALES_LPA_COMPARABLE=True/False` and complete the expanded Welsh filter/endpoint attestations.
+- If the optional MICE sensitivity is run, select and predeclare stacked versus MICEafter pooling.
+--- end report ---
+
+result: /var/folders/lf/jkk4t3g10y12wdx1y_p_7hrm0000gn/T/delegate-relay/calon_discordance_model_2026_08_09-2026-08-15T22-54-03-768Z/result.json
+relay does not commit. Review the diff, re-run the project gates yourself, then commit from the orchestrator.

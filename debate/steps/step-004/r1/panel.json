@@ -1,0 +1,39 @@
+{
+  "outDir": "debate/steps/step-004/r1",
+  "model_pin": {
+    "claude": "opus/max",
+    "codex": "gpt-5.6-sol/ultra",
+    "kimi": "kimi-code/k3",
+    "grok": "grok-4.6/xhigh"
+  },
+  "prompt_chars": 25918,
+  "results": [
+    {
+      "name": "claude",
+      "provider": "Anthropic · Claude · opus/max",
+      "ok": true,
+      "code": 0,
+      "ms": 660586,
+      "error": "",
+      "response_chars": 41006
+    },
+    {
+      "name": "codex",
+      "provider": "OpenAI · Codex · gpt-5.6-sol/ultra",
+      "ok": false,
+      "code": null,
+      "ms": 900077,
+      "error": "2026-08-15T22:59:53.851549Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5",
+      "response_chars": 0
+    },
+    {
+      "name": "grok",
+      "provider": "xAI · Grok · 4.6/xhigh",
+      "ok": true,
+      "code": 0,
+      "ms": 386517,
+      "error": "",
+      "response_chars": 38226
+    }
+  ]
+}

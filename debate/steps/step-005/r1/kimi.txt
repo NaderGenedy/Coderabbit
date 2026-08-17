@@ -1,0 +1,128 @@
+• I'll verify the on-disk Cycle-2 pilot artefacts and data inventory before writing my panel response.
+
+• # Step 005 · Round 1 · Kimi (grey-zone adjunct panel)
+
+  Evidence base used: `debate/evidence/julius-spec-kit/` (verified on disk this round) — `calong_run_meta.json` (OOF C = 0.7047; WIN=10 / TIE=44; B=300; `lpa_policy=exploratory_div215`), `calong_headtohead_full.csv` (primary ALL: TIE vs SAFEHEART-RE Δ=+0.026 [−0.0045, 0.0545] full / +0.0209 5y; TIE vs FH-Risk-Score Δ=+0.0098 full; WIN vs Montreal Δ=+0.0326 [0.0127, 0.0521] full, +0.0478 [0.0068, 0.0894] 5y), `comparator_patient_set_audit.csv` (SAFEHEART 2470/221; FH-RS 1913/146; Montreal 2811/252), `spec_frozen.json` (SHA `8c3a1e05…`, min_events=10), plus `debate/DATA-INVENTORY.md` for assay columns and derivation rules. Nothing below is a fitted Cycle-3 result; no adjunct has been run under the pre-specified design.
+
+  ## 1. Methodology
+
+  **The estimand is valid, but only as a conditional deployment estimand.** The object being estimated is: *among frozen-cohort members whose Stage-A (accessible core) out-of-fold absolute risk falls in a pre-declared middle band, does augmenting the core LP with `log1p(Lp(a)_nmol)` + `log(apoB/untreated_LDL)` improve risk stratification, judged on genuinely out-of-sample predictions?* Conditioning on a Stage-A-only quantity is legitimate; Stage-B is an LP update inside the band. What it is **not**: a whole-cohort superiority claim, a replacement model, or a new comparator family. Any ΔC produced in-band is a *conditional* ΔC under range restriction and must be reported as such.
+
+  **Co-existence with the locked primary — the central tension, answered plainly.** The frozen confirmatory SPEC already contains `log_lpa` (`age, sp50, male, bpmed, dm, smoke_curr, cum_nonhdl, log_tghdl, log_lpa`). So Lp(a) is simultaneously (a) a locked confirmatory base term and (b) the proposed grey-zone enhancer. This is coherent only under one framing:
+
+  | Object | Status | Family | Question answered |
+  |---|---|---|---|
+  | CALON-G primary (9 terms, incl. `log_lpa`) | **Confirmatory** | ALL × 3 comparators × {full, 5y}, B=2000, PDF-faithful, Wales transport | Does the frozen model stratify risk in UKB LDLR-variant carriers, vs published FH scores? |
+  | Stage-A core (8 terms, no Lp(a)/apoB) | Exploratory | Adjunct internal family only | What is deployable from routine data alone? |
+  | Stage-A + Stage-B in grey band | Exploratory | **One primary endpoint: in-band OOF ΔC vs Stage-A at full follow-up** | Do Lp(a)/apoB add decision-relevant information where the core is uncertain? |
+
+  The adjunct is a **deployment architecture for assay-missing environments**, not a competitor to the primary. In fact the confirmatory primary itself already needs a missing-Lp(a) policy at deployment (the Cycle-2 biostat lock specifies fold-wise train-only imputation); the two-stage design is the only frame in which "no assay" is handled *by design* rather than by imputation. That is the honest motivation and the only one that should appear in print. The adjunct may not demote, replace, or re-tally the primary — per the decision lock, a comparator LOSS is a result, and by symmetry an adjunct WIN is exploratory decoration, not a promotion signal.
+
+  **What the Cycle-2 pilot does and does not license.** The R pilot (B=300) shows the frozen gates reproduce (3209; 289/97/194), OOF C ≈ 0.7047, and WIN=10/TIE=44 with no LOSS after the polarity fix; the smoke test showed adding `log(apoB/LDL)+log_lpa` on the full cohort did not collapse discrimination. Neither is evidence the adjunct helps: absence of catastrophic collapse is not a decision-relevant gain, and a full-cohort enhancer fit is exactly the leakage-prone design this cycle forbids for claims.
+
+  ## 2. Implementation
+
+  **Band (fixed now, never retuned).** Primary band = **middle tertile** of Stage-A OOF absolute risk on the frozen 3,209, i.e. OOF-risk quantiles [P33.33, P66.67) → ~1,070 members. Named-now sensitivity, and the only one: **middle quintile = [P40, P60)** → ~642 members. I am pinning the word "middle quintile" to that definition in this reply; it cannot be re-interpreted later.
+
+  **Leakage-proof fold structure.** The entire pipeline — Stage-A fit, band cutoffs, Stage-B fit — lives inside the outer CV loop. Full-cohort OOF band assignment may be used only for *describing* the band (n, events, missingness), never for fitting or evaluating the enhancer.
+
+  ```python
+  # outer 5-fold CV, repeated; cluster by family ID if available
+  for train, test in outer_folds(frozen_3209):
+      fit_A = ridge_cox(train, terms=STAGE_A)                 # penalty by inner CV on train only
+      oof_risk_train = crossval_predict_risk(fit_A, train)    # inner OOF, train only
+      q_lo, q_hi = np.quantile(oof_risk_train, [1/3, 2/3])    # cutoffs from TRAIN ONLY
+      band_tr = (risk(fit_A, train) >= q_lo) & (risk(fit_A, train) < q_hi)
+      band_te = (risk(fit_A, test)  >= q_lo) & (risk(fit_A, test)  < q_hi)
+      fit_B = ridge_cox(train[band_tr & assays_present],
+                        base_lp=offset(fit_A),                # Stage-A LP as offset
+                        add=["log1p_lpa_nmol", "log_apob_untldl"])  # each once; no re-entry
+      store(oof_pred_A=test[band_te], oof_pred_AB=predict(fit_B, test[band_te]))
+  ```
+
+  Horizon handling per the lock, asserted every run:
+
+  ```python
+  t_h = np.minimum(time, H); e_h = (event == 1) & (time <= H)
+  assert e_h.sum() == 97   # H=5; fail-loud otherwise
+  ```
+
+  **Missing-assay policy.** Print joint coverage of `lpa_chem`/`lpa_i0`, `apob`/`apob_chem`, and untreated LDL within the frozen cohort and within the band before any fit. Stage-B primary claim uses the **assay-present in-band subset only — no imputation of enhancer terms**; deployment with missing assays falls back to Stage-A, which is the whole point of the design. Fold-wise train-only median imputation of enhancer terms is a labelled sensitivity, matching the Cycle-2 missing-data lock.
+
+  **Term derivations pinned now.** `log1p(Lp(a))` in **nmol/L native** — `log1p` is scale-dependent, so the unit is part of the spec; ÷2.15 remains exploratory and applies only to comparator scoring. Untreated LDL per DATA-INVENTORY: measured LDL ÷ 0.70 where on treatment. apoB is **not** back-corrected — see §3 for what that implies. Ratio = `log(apoB / untreated_LDL)` computed once, distribution printed, no post-hoc re-specification.
+
+  **Acceptance gates for the adjunct (fail-loud).**
+
+  | Gate | Rule |
+  |---|---|
+  | G0 | SHA = `8c3a1e05…`; 289/97/194 reproduce |
+  | G1 | In-band events ≥ 10 at **each** reported horizon (else stop, design-stage only); if < 30, all in-band ΔC labelled hypothesis-generating regardless of CI |
+  | G2 | Primary adjunct endpoint: in-band outer-OOF ΔC (Stage-A+B − Stage-A), **full follow-up**, B=2,000 paired bootstrap; B=300 = pilot only |
+  | G3 | Calibration slope + intercept in-band at 5y and 10y; DCA net benefit at pre-specified 5% / 7.5% / 10% 10-year thresholds; category-based NRI at the same thresholds optional and labelled secondary |
+  | G4 | Full CSV of every computed cell published; comparator re-scoring in-band, if done at all, is secondary and carries the dependent-cell multiplicity warning verbatim from `calong_run_meta.json` |
+  | G5 | No Wales "universal winner" language; Welsh Lp(a) serial completeness unknown and apoB exists only in DRAGON (424 rows) → enhancer transport blocked or tiny → reduced model explicitly labelled |
+
+  **Named failure modes.** (i) *Self-fulfilling band*: band cutoffs from apparent (non-OOF) Stage-A risk leak outcome information into membership — forbidden above. (ii) *Full-cohort enhancer leakage*: fitting Stage-B once on all band members then "validating" on the same rows — the pilot smoke test did exactly this, which is why it licenses nothing. (iii) *Band-width gaming*: switching tertile↔quintile or shifting cutoffs after seeing events. (iv) *Range restriction*: all in-band C-indices shrink mechanically; ΔC CIs widen. (v) *Treatment-contaminated ratio*: see §3. (vi) *Selective horizon reporting*: full and 5y both reported, always.
+
+  ## 3. Adversarial audit
+
+  Assume the "adjunct improves care" claim is wrong. The most plausible ways it dies:
+
+  - **It was never answering the care question.** A conditional ΔC inside a risk tertile says nothing about whether measuring Lp(a)/apoB changes decisions. The decision-relevant evidence is DCA/net benefit at the locked thresholds, and this cohort's absolute risks are low — the R-pilot SAFEHEART centred mean 5y risk ≈ 0.0101, and the band by construction holds middling risks. A statistically real ΔC can coexist with zero net reclassification across any treatment threshold. If DCA shows no net-benefit gain, the adjunct is a C-index ornament.
+  - **Assay availability is not transportable.** UKB assays are protocolised; real-world Lp(a) is clinician-ordered, so deployment creates a testing pathway confounded by indication that this analysis cannot observe. And externally it is worse: per DATA-INVENTORY, Wales carries apoB only in the 424-row DRAGON subset and Lp(a) serially with unknown completeness. The enhancer therefore likely **cannot be externally validated at all** this cycle. An adjunct that can never leave UKB is a methods curiosity, not a deployment option.
+  - **Multiplicity laundering.** Cycle-2 already produced 10 WINs across 54 dependent cells at B=300. Re-scoring three comparators × subgroups × two horizons inside the band would mint another stack of dependent cells in which some cell is bound to look good. Hence gate G4 and the rule that the adjunct has exactly one primary endpoint and one primary comparator: **Stage-A itself**.
+  - **The ratio term may be a statin marker, not biology.** Untreated LDL is back-calculated (÷0.70) for the treated while apoB is measured on-treatment. The ratio therefore partially encodes treatment status. If `log(apoB/untreated_LDL)` correlates with `on_statin_self`, an in-band "improvement" may be treatment-confounding dressed as lipid biology. Report the correlation; do not drop or swap the term based on the result — the spec is frozen — but a treatment-correlated enhancer guts the clinical narrative.
+  - **Power and optimism.** Expect roughly a quarter to a third of the 289 events in the middle tertile (~70–85 full-horizon, ~25–30 at 5y; actuals must be printed). Two enhancer terms on ~30 5-year events yield wide ΔC intervals; a "WIN" there is more likely optimism than signal, and a null is uninformative. Either way, underpowered cells must not be narrated.
+  - **Outcome-tuning temptations to pre-commit against** (each is the Cycle-1 BMI path): widening the band to capture ≥10 events; migrating to the quintile after seeing tertile results; swapping the ratio for apoB-alone after a LOSS; re-entering Stage-A terms "to stabilise"; re-using ÷2.15 inside the model term because it "looks better". All forbidden by the decision lock; all must be attestable from the run log.
+
+  ## 4. Clinical and publication reality
+
+  **Recommendation: deploy two-stage adjunct as exploratory/labelled** — i.e., proceed to fit it once under the locked design and publish it in a clearly marked exploratory subsection, with promotion to anything stronger **only if** these named gates pass:
+
+  1. G0–G1 (cohort, horizon, in-band event floor) all pass.
+  2. Primary adjunct endpoint positive: in-band outer-OOF ΔC vs Stage-A, B=2,000, 95% CI excludes 0 favourably at full follow-up, same direction at 5y.
+  3. In-band calibration slope within [0.8, 1.25] at 5y/10y and no harmful intercept shift.
+  4. DCA net benefit ≥ Stage-A at all three pre-specified thresholds (5% / 7.5% / 10% 10-year).
+  5. Assay-missingness audit printed; fallback to Stage-A preserves locked-primary behaviour.
+  6. External transport: enhancer carried to Wales, or — given apoB exists only in DRAGON's 424 rows — a reduced model **explicitly labelled** as such, with no universal-winner language (TRIPOD+AI type 3/4 framing; "external geographical validation" stated).
+
+  Gate 6 is, on current inventory, unmeetable for the enhancer this cycle. So the realistic ceiling for Cycle 3 is: **an internally validated, labelled exploratory adjunct**, reported alongside — never above — the confirmatory CALON-G primary, which remains the 9-term frozen model with its own comparator family, B=2,000, PDF-faithful comparators, and Wales transport of frozen coefficients. Chasing a WIN against every comparator in every direction is explicitly **not** a valid confirmatory goal — that is the Cycle-2 objective language and the Cycle-1 record's central lesson; a LOSS is a result, not a tuning signal. The publication should say: core score deployable anywhere, enhancer optional where assays exist, benefit uncertain and quantified honestly.
+
+  ```objection
+  step: 005
+  id: OBJ-005-01
+  severity: precondition (fail-loud before any Stage-B fit)
+  statement: >
+    Stage B cannot be fitted or gated until three facts are printed from the
+    frozen cohort and locked in the run manifest:
+    (1) joint coverage of Lp(a) (native nmol/L), apoB, and untreated LDL within
+        the frozen 3,209 AND within the Stage-A middle-tertile band — n and
+        events at full / 10y / 5y horizons. If the assay-present in-band subset
+        has <10 events at any reported horizon, gate G1 fails by construction
+        and the adjunct stops at design stage (no fit, no claim);
+    (2) the untreated-LDL derivation applied to the ratio (measured LDL ÷ 0.70
+        where on treatment, per DATA-INVENTORY) with explicit confirmation that
+        apoB enters UNCORRECTED, plus the Spearman correlation of
+        log(apoB/untreated_LDL) with on_statin_self, printed as a
+        treatment-contamination diagnostic (report-only; the term is frozen);
+    (3) Lp(a) unit pinned to native nmol/L for the model term log1p(Lp(a));
+        ÷2.15 remains exploratory and is confined to comparator scoring.
+  rationale: >
+    These are specific, checkable preconditions for the single pre-specified
+    design, not generic objections: (1) determines whether the event-floor gate
+    can ever pass; (2) determines whether the enhancer measures biology or
+    treatment status; (3) log1p is scale-dependent, so the unit IS the spec.
+  ```
+
+  ## Artefacts
+
+  Proposed (not yet created; fitting only after OBJ-005-01 clears):
+
+  | Path | Role |
+  |---|---|
+  | `julius-cycle2-pack/07_greyzone_adjunct.py` | Julius cell: assay audit → OBJ-005-01 gates → nested Stage-A/band/Stage-B outer-CV → in-band ΔC (B=2,000), calibration, DCA; asserts SHA + 97 |
+  | `code/r_cycle2/17_CALON_G_CYCLE3_GREYZONE.R` | R counterpart mirroring the Cycle-2 pilot conventions (`16_CALON_G_CYCLE2.R`) |
+  | `outputs/cycle3/greyzone_assay_audit.json` | Aggregate coverage counts for OBJ-005-01 (no row-level data) |
+  | `outputs/cycle3/greyzone_adjunct_metrics.json` | Band n/events per horizon, ΔC + bootstrap CI, calibration slope/intercept, DCA net benefit, missingness, `label: EXPLORATORY` |
+  | `outputs/cycle3/greyzone_inband_cells.csv` | Full cell dump per gate G4, with multiplicity warning column |
+  | `debate/steps/step-005/r1/` | This panel reply, saved by the orchestrator |

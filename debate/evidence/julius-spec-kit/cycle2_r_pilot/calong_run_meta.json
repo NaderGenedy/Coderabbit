@@ -1,0 +1,22 @@
+{
+  "model": "CALON-G",
+  "language": "R",
+  "spec": ["age", "sp50", "male", "bpmed", "dm", "smoke_curr", "cum_nonhdl", "log_tghdl", "log_lpa"],
+  "C_oof": 0.7047,
+  "gates": {
+    "n_full": 289,
+    "n5": 97,
+    "n10": 194,
+    "invalid_old_5y": 289
+  },
+  "lpa_policy": "exploratory_div215",
+  "tally": {
+    "TIE": 44,
+    "WIN": 10
+  },
+  "multiplicity_warning": "Dependent subgroup cells; primary family = ALL x 3 comparators x {full,5y}",
+  "tripod_ai": "Add calibration slope/intercept + DCA before clinical claim",
+  "strobe": "Prediction in observational cohort; no causal language",
+  "cohort_sha256_expected": "8c3a1e0598770c1beefe29db28d42fb7074f233f382c25c19eb0c843b59f49b2",
+  "B": 300
+}

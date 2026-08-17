@@ -1,0 +1,5 @@
+PANEL START 2026-08-15T21:16:54.911Z names=claude,codex,kimi,grok
+OK   grok    xAI · Grok · 4.6/xhigh       295905ms · 1206 chars
+FAIL kimi    Moonshot · Kimi · k3/max     321760ms · error: failed to run prompt: provider.api_error: 403 You've reached your usage limit for this billing cycle. Your quota will be refreshed in the next cycle. To continue now, purchase extra usage or upgrade your plan: https://www.kimi.com/code/#pricing See log: /Users/nader85/.kimi-code/logs/kimi-code.log
+OK   claude  Anthropic · Claude · opus/max 679785ms · 70208 chars
+FAIL codex   OpenAI · Codex · gpt-5.6-sol/ultra 900014ms · 2026-08-15T21:30:35.534482Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5

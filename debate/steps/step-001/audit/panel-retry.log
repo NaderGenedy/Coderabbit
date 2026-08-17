@@ -1,0 +1,6 @@
+  [2026-08-15T21:50:48.525Z] START grok (xAI · Grok · 4.6/xhigh)
+  [2026-08-15T21:52:02.696Z] OK   grok    xAI · Grok · 4.6/xhigh       74170ms · 598 chars
+PANEL (1/1 responded) → debate/steps/step-001/audit
+  OK   grok    xAI · Grok · 4.6/xhigh       74170ms · 598 chars
+
+Human Markdown: debate/steps/step-001/audit/<name>.md   |   raw: debate/steps/step-001/audit/<name>.txt   |   progress: debate/steps/step-001/audit/progress.log

@@ -1,0 +1,171 @@
+{
+  "input": "/Users/nader85/Documents/CALON/calon_discordance_model_2026_08_09/manuscript/CALON_N_ANALYTICAL_METHODS_RESULTS_COMPENDIUM.docx",
+  "fonts_by_char_count": {
+    "Calibri": 13403,
+    "Courier New": 1019
+  },
+  "direct_run_formatting_runs": 673,
+  "direct_paragraph_formatting_paragraphs": 627,
+  "heading_like_paragraphs_not_heading_style": [
+    {
+      "para_index": 6,
+      "text": "ORIGINAL RESEARCH",
+      "style": "Normal"
+    },
+    {
+      "para_index": 7,
+      "text": "CALON-N full analytical methods and results compendium",
+      "style": "Normal"
+    },
+    {
+      "para_index": 75,
+      "text": "Stage",
+      "style": "Normal"
+    },
+    {
+      "para_index": 76,
+      "text": "DRAGON",
+      "style": "Normal"
+    },
+    {
+      "para_index": 77,
+      "text": "UKB strict local LDLR P/LP",
+      "style": "Normal"
+    },
+    {
+      "para_index": 78,
+      "text": "UKB P/LP-or-LoF union",
+      "style": "Normal"
+    },
+    {
+      "para_index": 103,
+      "text": "Component",
+      "style": "Normal"
+    },
+    {
+      "para_index": 104,
+      "text": "Participants positive",
+      "style": "Normal"
+    },
+    {
+      "para_index": 123,
+      "text": "Model term",
+      "style": "Normal"
+    },
+    {
+      "para_index": 124,
+      "text": "Raw source",
+      "style": "Normal"
+    },
+    {
+      "para_index": 125,
+      "text": "Coding/transformation",
+      "style": "Normal"
+    },
+    {
+      "para_index": 126,
+      "text": "DRAGON observed",
+      "style": "Normal"
+    },
+    {
+      "para_index": 127,
+      "text": "UKB strict observed",
+      "style": "Normal"
+    },
+    {
+      "para_index": 128,
+      "text": "UKB union observed",
+      "style": "Normal"
+    },
+    {
+      "para_index": 207,
+      "text": "Candidate key",
+      "style": "Normal"
+    },
+    {
+      "para_index": 208,
+      "text": "Terms",
+      "style": "Normal"
+    },
+    {
+      "para_index": 229,
+      "text": "Candidate",
+      "style": "Normal"
+    },
+    {
+      "para_index": 230,
+      "text": "Selected C: DRAGON fit",
+      "style": "Normal"
+    },
+    {
+      "para_index": 231,
+      "text": "DRAGON\u2192UKB AUC",
+      "style": "Normal"
+    },
+    {
+      "para_index": 232,
+      "text": "Selected C: UKB fit",
+      "style": "Normal"
+    }
+  ],
+  "examples": {
+    "direct_paragraph_formatting": [
+      {
+        "para_index": 1,
+        "text": "",
+        "style": "Normal"
+      },
+      {
+        "para_index": 2,
+        "text": "",
+        "style": "Normal"
+      },
+      {
+        "para_index": 3,
+        "text": "",
+        "style": "Normal"
+      },
+      {
+        "para_index": 4,
+        "text": "",
+        "style": "Normal"
+      },
+      {
+        "para_index": 5,
+        "text": "",
+        "style": "Normal"
+      }
+    ],
+    "direct_run_formatting": [
+      {
+        "para_index": 6,
+        "run_text": "ORIGINAL RESEARCH",
+        "style": "Normal"
+      },
+      {
+        "para_index": 7,
+        "run_text": "CALON-N full analytical methods and results compendium",
+        "style": "Normal"
+      },
+      {
+        "para_index": 8,
+        "run_text": "Complete cohort construction, variables, modelling, performance, sensitivities, ",
+        "style": "Normal"
+      },
+      {
+        "para_index": 9,
+        "run_text": "Target journal: Journal of Clinical Lipidology",
+        "style": "Normal"
+      },
+      {
+        "para_index": 10,
+        "run_text": "Analysis freeze: 9 August 2026",
+        "style": "Normal"
+      }
+    ]
+  },
+  "notes": [
+    "Direct formatting is not always wrong, but it often causes inconsistent output when templates change.",
+    "Heading-like paragraphs not using Heading styles can break TOC and accessibility."
+  ]
+}

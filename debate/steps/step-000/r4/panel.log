@@ -1,0 +1,9 @@
+  [2026-08-15T21:47:30.238Z] START codex (OpenAI · Codex · gpt-5.6-sol/ultra)
+  [2026-08-15T21:47:30.245Z] START grok (xAI · Grok · 4.6/xhigh)
+  [2026-08-15T21:48:35.146Z] OK   grok    xAI · Grok · 4.6/xhigh       64900ms · 590 chars
+  [2026-08-15T21:54:22.786Z] FAIL codex   OpenAI · Codex · gpt-5.6-sol/ultra 412547ms · 117,228
+PANEL (1/2 responded) → debate/steps/step-000/r4
+  FAIL codex   OpenAI · Codex · gpt-5.6-sol/ultra 412547ms · 117,228
+  OK   grok    xAI · Grok · 4.6/xhigh       64900ms · 590 chars
+
+Human Markdown: debate/steps/step-000/r4/<name>.md   |   raw: debate/steps/step-000/r4/<name>.txt   |   progress: debate/steps/step-000/r4/progress.log

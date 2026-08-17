@@ -1,0 +1,170 @@
+---
+agent: codex
+step: "000"
+round: "1"
+protocol: full-matrix-blind
+status: round-1-complete
+source: debate/steps/step-000/r1b/codex.txt
+---
+
+# Step 000 · Round 1 · CODEX
+
+> Blind resource audit. This agent did **not** see other agents' outputs.
+> Four lenses required: Methodology · Implementation · Adversarial · Clinical/publication.
+
+## 1. METHODOLOGY
+
+The evidence package does not yet support adjudicating model superiority. It mixes different cohorts, horizons, metrics, and validation designs, while several required primary artefacts are absent.
+
+### Resource ledger
+
+| Evidence examined | What it establishes | What it does not establish |
+|---|---|---|
+| `debate/DATA-INVENTORY.md`, “Files,” cohort columns, and “Traps” | Aggregate source dimensions, intended outcome sources, genotype flags, date-parsing hazards, and endpoint exclusions | Lipid units, missingness by analysis cohort, actual derivation code, or which file/hash a run selected |
+| `debate/mandates/ROLES.md`, especially “Round structure” and “honest limit” | Independent full-matrix protocol and requirement for PDF-based comparator verification | That `panel.mjs` or `consensus.mjs` implements those rules |
+| `debate/state/open-questions.md`, schema and OBJ-001–003 | Valid objection schema and the three unresolved scientific disputes | Evidence resolving any dispute |
+| `debate/steps/step-002-QC-BRIEF.md`, sections A–E | The claimed agreements, discrepancies, omitted reporting items, and competing analysis designs | Primary execution logs or proof that either analysis produced those numbers correctly |
+| `STATUS.md`, “Current—usable” and “Retracted” | The repository’s declared current and withdrawn findings | A reproducible run manifest; `STATUS.md` is a claim document, not validation evidence |
+| `code/15_CALON_FINAL.py`, `SPEC`, `comparators()`, `usable()`, and subgroup loop | Actual comparator transformations and the visible path used for subgroup evaluation | The omitted cohort builders, `cv()`, `delta_ci()`, censoring implementation, file-hash checks, and output writer |
+| `CALON_JULIUS_SPECKIT/scripts/comparators.py`, module contract, SAFEHEART, and Montreal functions | A second, materially different comparator implementation that rejects missing inputs | Full FH-RS implementation, correspondence with source PDFs, or test coverage |
+| `outputs/calon_final.json`, supplied aggregate excerpt | Events, person-time, C-indices, subgroup deltas, and tally | Cohort sizes, confidence intervals, fold failures, configuration, hashes, or the contents of `participant_level_outputs` |
+
+The supplied packet did not contain the bodies of `debate/mandates/AGENT.md`, `ORCHESTRATOR.md`, `debate/state/transcript.md`, `locked-decisions.md`, `debate/bin/panel.mjs`, `consensus.mjs`, `README.md`, `outputs/calon_final_qc.json`, `CALON_JULIUS_SPECKIT/tests/test_comparators.py`, `research.md`, `checklists/comparator-fidelity.md`, or any comparator PDF. The displayed `DATA-INVENTORY.md`, `15_CALON_FINAL.py`, `STATUS.md`, `comparators.py`, and JSON were also excerpts. I therefore could not verify parser behaviour, QC conditions, source fidelity, or complete execution paths.
+
+### Estimand and design defects
+
+The current materials conflate at least three estimands:
+
+- `STATUS.md` describes full follow-up survival discrimination in 3,333 participants with 289 events.
+- `debate/steps/step-002-QC-BRIEF.md`, section A, describes a 3,209-person risk set after another 124 exclusions, with 97 five-year and 194 ten-year events.
+- The Julius analysis uses ridge logistic regression at strict horizons, whereas `code/15_CALON_FINAL.py` visibly evaluates time-to-event concordance.
+
+A full-follow-up Harrell C-index cannot simply replace a ten-year fixed-horizon AUC or C-statistic. The proposed substitution behind the two disputed WINs is diagnostic, not conclusive, unless comparator values are recomputed on the identical 3,209-person risk set with the identical endpoint, horizon, and metric.
+
+The incident design is methodologically preferable to the retracted prevalent analysis described in `STATUS.md`; exclusion of pre-baseline disease and heart failure from ASCVD addresses real leakage and endpoint contamination. That does not establish external validation. The visible subgroup loop calls `cv(s, cohort_spec, resolve=False)` separately for every subset at `code/15_CALON_FINAL.py:427-435`. If `cv()` fits models—as its name and returned predictions suggest—these are internally validated subgroup-specific fits, not performance of one fixed CALON-F model. Wales likewise cannot be called external validation unless UK-derived coefficients, preprocessing, and baseline hazard are frozen before Welsh application.
+
+The Julius strict-horizon rule—retain every event before the horizon but retain event-free participants only if observed through the horizon—is a complete-case design vulnerable to informative censoring. Rising event prevalence while the sample contracts is exactly the expected warning. A Cox model, IPCW binary analysis, or another censoring-aware fixed-horizon method is required. Ridge logistic regression is not inherently indefensible, but this selection rule does not satisfy the Cox estimand that was specified.
+
+Endpoint inference must also be narrowed. `debate/steps/step-002-QC-BRIEF.md`, section A, reports complete dating for coronary components but only 37.0%–64.3% for several cerebrovascular/peripheral components. The estimand is therefore dated, coronary-weighted ASCVD—not uniformly ascertained pan-ASCVD.
+
+Reporting standards are not met on the supplied record. Section E of the QC brief reports no Table 1, participant flow, standardised differences, Kaplan–Meier plots, PH diagnostics, model equation, calibration plot, PROBAST assessment, or compliant item-level TRIPOD/STROBE mapping.
+
+## 2. IMPLEMENTATION
+
+The strongest implementation defect is not subtle: the two comparator implementations cannot both be source-faithful.
+
+### Discrepancy ledger
+
+| Conflict | Evidence | Consequence |
+|---|---|---|
+| Montreal is called a published equation but depends on the validation sample | `code/15_CALON_FINAL.py`, `comparators():272-274`, standardises age and HDL using `a.mean()`, `a.std()`, and corresponding HDL moments; the Spec Kit’s `montreal_fh_score()` uses fixed integer point bands | The same person can receive a different relative score when evaluated in a subgroup. This is fitted preprocessing, not a fixed published score |
+| SAFEHEART formulae differ structurally | Local `comparators():278-279` uses continuous age, BMI and LDL terms plus an Lp(a) threshold of 105; Spec Kit `safeheart_linear_predictor()` uses categorical age, BMI and LDL bands and an Lp(a) threshold expressed as 50 mg/dL | At least one implementation is not the claimed published equation. Units and mapping cannot be recovered from the supplied evidence |
+| Missingness handling directly contradicts the strict comparator contract | Local code fills HDL with 1.35, hypertension/smoking/Lp(a) with zero, and LDL/BMI with subset-specific medians at `comparators():258-262`; the Spec Kit module says it does not impute | Missingness can systematically depress or reorder comparator scores, particularly the two comparators implicated in the disputed WINs |
+| Comparator scoring changes by subgroup | `comparators(s)` is called after slicing at `code/15_CALON_FINAL.py:428-435` | Subgroup C-indices do not evaluate a single frozen comparator transformation |
+| “No subgroup gets its own model” is not demonstrated by the code shown | Comment at `code/15_CALON_FINAL.py:293-294`; fresh `cv(s, ...)` call at line 434 | A fit-count test is needed; prose does not establish prediction reuse |
+| Constant predictors may enter subgroup fits | `usable()` drops constants when resolving a cohort, but subgroup calls use `resolve=False`; sex, diabetes, hypertension, or smoking are constant in their defining strata | The omitted `cv()` body must show whether constants cause failures, silent dropping, or unstable scaling. `fold_failures` exists but was omitted from the aggregate excerpt |
+| The advertised collinearity guard is narrow | `usable():300-301` tests only fields beginning with `sp` against age | It does not test cumulative lipid exposure or other continuous predictors; it cannot resolve OBJ-003 |
+| Input provenance is machine-dependent in the visible resolver | `corrected_root():112-121` describes environment/path precedence and a historical MD5 assertion, while `DATA-INVENTORY.md` identifies `SHA256SUMS.txt` as authoritative | Without a runtime digest assertion, path precedence can silently select a stale copy |
+| Current-status loss differs internally | `STATUS.md` first reports the diabetic SAFEHEART loss as −0.062, later as −0.064; `outputs/calon_final.json` gives −0.0643716927 | At three decimals, the reproducible value is −0.064. The earlier value is stale |
+| Analysis populations are not reconciled | `STATUS.md`: 3,333 UK participants and 1,159 Wales; QC brief: 3,209 UK strict-horizon and 1,059 Wales in Julius | Every table needs an analysis-specific disposition count rather than one unlabeled “risk set” |
+
+Checks that did hold: the supplied JSON’s 289 UK and 92 Welsh events match `STATUS.md`; C=0.699707 and C=0.748637 round to the status values; and 10 WIN + 58 tie + 1 LOSS + 9 non-estimable equals 78 cells, matching two cohorts × 13 strata × three comparators. The visible estimated strata all have at least ten events. Confidence intervals and omitted strata were not supplied, so the verdict labels themselves could not be recomputed.
+
+No comparator test was available to inspect. Consequently, there is no demonstrated test that would fail when a coefficient, unit conversion, threshold, imputation rule, or target-cohort standardisation is wrong.
+
+## 3. ADVERSARIAL AUDIT
+
+Assuming both WINs are artefacts, the most likely mechanism is comparator degradation: a non-source equation, arbitrary score scaling, target-sample standardisation, and healthy-value imputation lower or reorder comparator predictions. The pattern in `debate/steps/step-002-QC-BRIEF.md`, sections B–C, supports this attack: Montreal—the comparator not needing LDL bands or Lp(a)—nearly reproduces, whereas the two affected comparators are precisely those producing declared WINs.
+
+The local all-cohort point advantages are small: UK deltas are +0.0330, +0.0261, and +0.0058; Welsh deltas are +0.0124, +0.0013, and +0.0231 in `outputs/calon_final.json`. No supplied confidence intervals establish that these differences are non-zero, and no clinical-utility analysis establishes that they matter. The model also loses to SAFEHEART in UK diabetes by −0.0644 with 64 events.
+
+What should have failed if the comparators were wrong?
+
+- A PDF-derived worked-example test.
+- A unit-conversion test.
+- A missing-input rejection test.
+- A batch-invariance test proving that a person’s score is unchanged when placed in a subgroup.
+- A frozen-risk-set test proving both pipelines score the same inputs.
+- A paired C-index/AUC recomputation using the same horizon and censoring rules.
+
+None is present in the supplied evidence.
+
+The single decisive computation is to implement PDF-extracted equations once, score all comparators on one frozen, identically eligible cohort, and report only aggregate eligible counts, event counts, comparator C-statistics, paired deltas, and at least 2,000 cluster-aware bootstrap replicates. No participant-level data are needed in the report.
+
+### Evidence still needed for the seeded objections
+
+- **OBJ-001:** Source-PDF tables or worked examples; a predictor/threshold/unit/endpoint/horizon/derivation-cohort provenance table; explicit missingness policy; identical cohort and performance metric; golden-vector tests; and paired delta recomputation. The Spec Kit’s “source-faithful” docstring is not source evidence.
+
+- **OBJ-002:** The exact definition of calibration slope, predictor scale, link function, horizon, and censoring method. Under the standard Cox/complementary-log-log formulation, changing baseline survival or subtracting a centring constant changes the intercept, not the slope. A slope below one also ordinarily indicates an over-dispersed prognostic index requiring shrinkage, not predictions that are “too compressed.” The more plausible shared error is treating point totals, standardised scores, or probabilities as though they were published unscaled linear predictors. An affine-invariance test is required before the proposed centred/uncentred experiment can diagnose anything.
+
+- **OBJ-003:** Aggregate Pearson correlation is necessary but insufficient. Report correlation, VIF or condition index, term scaling, and age HRs from prespecified models containing age alone, age plus untreated cholesterol, age plus cumulative exposure, and a residualised or centred cumulative term. A changed age coefficient after replacing cholesterol-years changes the conditional estimand; by itself it does not prove collinearity. The `usable()` excerpt cannot answer this because it checks only spline terms.
+
+## 4. CLINICAL AND PUBLICATION REALITY
+
+The defensible claim is narrow: the implemented CALON specification shows internal ranking performance around 0.70 in UK Biobank and 0.75 in Wales under the local pipeline. Relative superiority, external transportability, absolute-risk accuracy, and clinical benefit remain unestablished.
+
+A lipidologist would immediately challenge:
+
+- C=0.559 in UK diabetes, C=0.612 among treated UK participants, C=0.558 in hypertensive Wales, and C=0.600 in older Wales.
+- The grey-zone point estimate of AUC 0.489 with 22 events. Without a confidence interval it is not proof of worse-than-chance performance, but it provides no evidence of useful discrimination where treatment decisions are difficult.
+- A coronary-weighted endpoint presented as general ASCVD.
+- Welsh median follow-up of approximately four years being used to support longer-horizon claims without numbers at risk or censoring-adjusted calibration.
+- No applicable equation, calibration plot, calibration-in-the-large, net-benefit analysis, or frozen external-validation result.
+
+The hostile reviewer opens with comparator provenance and subgroup refitting. Next come cohort-flow discrepancies, outcome-date completeness, missing-value treatment, multiplicity across 69 estimable comparisons, and the absence of reporting artefacts listed in `debate/steps/step-002-QC-BRIEF.md`, section E. The 10/58/1 tally should not be used as a clinical headline: it counts many correlated subgroup comparisons, while the all-cohort advantages are small and unresolved.
+
+Proposed objection blocks:
+
+```objection
+id: OBJ-004
+step: 000
+raised_by: codex
+claim: The step-000 packet omits the contents of multiple mandatory resources, including the governance executables, QC JSON, comparator tests and fidelity materials, and all source PDFs, so parser enforcement, QC validity, and publication provenance cannot be independently audited.
+settled_by: Run shasum -a 256 and wc -l for all 19 named non-PDF resources in debate/steps/step-000-QC-BRIEF.md plus every located comparator PDF, save the result as debate/steps/step-000/resource-manifest.tsv, and verify that the archived panel packet contains content matching every listed hash.
+status: OPEN
+```
+
+```objection
+id: OBJ-005
+step: 000
+raised_by: codex
+claim: code/15_CALON_FINAL.py does not evaluate fixed source-faithful comparators: Montreal uses target-sample standardisation, several missing predictors are imputed as healthy or by subgroup medians, and its SAFEHEART transformation is structurally different from CALON_JULIUS_SPECKIT/scripts/comparators.py. The reported comparator C-indices therefore have unresolved provenance.
+settled_by: Add and run PDF-derived test_pdf_golden_vectors and test_score_invariant_to_batch_and_subgroup cases in CALON_JULIUS_SPECKIT/tests/test_comparators.py, require exact agreement with source worked examples and identical scores for identical inputs across batches, then recompute aggregate comparator C-indices and paired deltas on one frozen cohort and horizon.
+status: OPEN
+```
+
+```objection
+id: OBJ-006
+step: 000
+raised_by: codex
+claim: The claim that no subgroup gets its own model is unsupported and appears contradicted by code/15_CALON_FINAL.py calling cv(s, cohort_spec, resolve=False) afresh inside every subgroup; subgroup performance may therefore describe newly fitted stratum-specific models rather than one frozen CALON-F model.
+settled_by: Run a fit-count instrumentation test over the ALL and subgroup loop that reports only aggregate fit counts and maximum prediction difference; require zero additional model fits after the ALL predictions are created and maximum absolute difference 0 for every reused subgroup prediction, or relabel all subgroup results as separately trained models.
+status: OPEN
+```
+
+```objection
+id: OBJ-007
+step: 000
+raised_by: codex
+claim: The visible corrected_root implementation establishes path precedence but not runtime content identity, so two machines or two available copies can silently run different corrected-outcome files despite a static hash claim in the docstring.
+settled_by: Run a corrected_root unit test with two temporary candidate files of different SHA-256 values and require the resolver to abort, then run the real pre-flight check and publish only the selected file SHA-256, which must exactly match its entry in SHA256SUMS.txt.
+status: OPEN
+```
+
+```objection
+id: OBJ-008
+step: 000
+raised_by: codex
+claim: OBJ-002's proposed centred-versus-uncentred and baseline-survival experiment is not diagnostic under standard survival calibration because additive centring and baseline hazard alter the calibration intercept, not the slope; the current settlement condition could return no change even when the comparator scale is wrong.
+settled_by: Run an affine-invariance unit test at one fixed observed horizon using the declared calibration-slope function: report slopes after adding a constant to the prognostic index, changing only baseline survival, and multiplying the index by 0.5 and 2.0; additive variants must agree within 0.000001 and multiplicative variants must show the expected reciprocal slope change.
+status: OPEN
+```
+
+```objection
+id: OBJ-009
+step: 000
+raised_by: codex
+claim: Public result documents are not synchronised: STATUS.md reports the same diabetic SAFEHEART loss as both -0.062 and -0.064 while outputs/calon_final.json gives -0.0643716927, and the 3333 versus 3209 UK and 1159 versus 1059 Welsh populations are not labelled as distinct estimands.
+settled_by: Run a status-versus-output consistency script that requires every displayed delta to match outputs/calon_final.json at its stated rounding precision and publish an aggregate cohort-disposition table reconciling 3540 to 3333 to 3209 in UK Biobank and 7253 to 1159 or 1059 in Wales by named exclusion and horizon.
+status: OPEN
+```

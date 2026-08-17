@@ -1,0 +1,53 @@
+{
+  "cox_slope_invariant_by_construction": 0.7661,
+  "note": "If this reproduces 0.52-0.57, centring and horizon are BOTH excluded and OBJ-002 must be re-scoped.",
+  "h5_centred": {
+    "citl": 0.2528,
+    "slope": 0.8714,
+    "n": 1887,
+    "events": 49,
+    "p_min": 0.000626,
+    "p_max": 0.076143,
+    "p_mean": 0.012222,
+    "variant": "centred / S0(5)",
+    "label": "EXPLORATORY"
+  },
+  "h5_uncentred": {
+    "citl": -4.1594,
+    "slope": 0.1656,
+    "n": 1887,
+    "events": 49,
+    "p_min": 0.130412,
+    "p_max": 1.0,
+    "p_mean": 0.770363,
+    "variant": "uncentred / S0(5)",
+    "label": "EXPLORATORY"
+  },
+  "h10_centred": {
+    "citl": 0.2077,
+    "slope": 0.8301,
+    "n": 1855,
+    "events": 99,
+    "p_min": 0.001339,
+    "p_max": 0.155921,
+    "p_mean": 0.025763,
+    "variant": "centred / S0(10)",
+    "label": "EXPLORATORY"
+  },
+  "h10_uncentred": {
+    "citl": -3.6663,
+    "slope": 0.1107,
+    "n": 1855,
+    "events": 99,
+    "p_min": 0.258499,
+    "p_max": 1.0,
+    "p_mean": 0.901721,
+    "variant": "uncentred / S0(10)",
+    "label": "EXPLORATORY"
+  },
+  "observed_uncentred_over_centred_5y": 0.19,
+  "observed_centred_10y_over_centred_5y": 0.9526,
+  "matches_prediction_centring_arm": false,
+  "matches_prediction_horizon_arm": false,
+  "FIRST_THING_TO_READ": "mean predicted risk. ~0.5 in a primary-prevention carrier cohort means the LP was never centred."
+}

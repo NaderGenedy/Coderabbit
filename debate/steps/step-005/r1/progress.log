@@ -1,0 +1,5 @@
+PANEL START 2026-08-16T08:35:08.252Z names=claude,codex,kimi,grok
+OK   kimi    Moonshot · Kimi · k3/max     282467ms · 15248 chars
+OK   claude  Anthropic · Claude · opus/max 296521ms · 21505 chars
+OK   grok    xAI · Grok · 4.6/xhigh       302013ms · 26663 chars
+OK   codex   OpenAI · Codex · gpt-5.6-sol/ultra 735106ms · 17060 chars

@@ -1,0 +1,4 @@
+PANEL START 2026-08-15T22:46:16.135Z names=claude,codex,grok
+OK   grok    xAI · Grok · 4.6/xhigh       386517ms · 38226 chars
+OK   claude  Anthropic · Claude · opus/max 660586ms · 41006 chars
+FAIL codex   OpenAI · Codex · gpt-5.6-sol/ultra 900077ms · 2026-08-15T22:59:53.851549Z ERROR codex_models_manager::manager: failed to renew cache TTL: missing field `base_instructions` at line 95 column 5

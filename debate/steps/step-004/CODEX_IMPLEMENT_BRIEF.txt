@@ -1,0 +1,72 @@
+<task>
+Implement the agreed CALON-G Cycle-2 plan as Julius-ready Python and a local entry script.
+
+Locked protocol (MUST follow exactly):
+  /Users/nader85/Downloads/CALON_DATA_PACKAGE_2026-08-13/debate-teach/CALON_G_BIOSTAT_PROTOCOL.md
+
+Existing draft cells (complete / harden / replace stubs — do not invent a different SPEC):
+  /Users/nader85/Downloads/CALON_DATA_PACKAGE_2026-08-13/debate-teach/julius-cycle2-pack/
+
+Julius evidence (read; do not contradict locked counts/SHA):
+  /Users/nader85/Documents/CALON/calon_discordance_model_2026_08_09/debate/evidence/julius-spec-kit/
+
+Comparator PDFs / greppable text (extract real coefficients — never invent):
+  /Users/nader85/Downloads/CALON-DeepResearch/papers/
+  /Users/nader85/Downloads/CALON_FH_PROGRAMME_2026-08-09/04_papers/extracted_text/
+
+Primary SPEC (frozen):
+  age, sp50, male, bpmed, dm, smoke_curr, cum_nonhdl, log_tghdl, log_lpa
+Sensitivity only: replace cum_nonhdl with log_apob_hdl.
+
+Deliverables — write ALL of these:
+
+1) Complete Julius paste pack under
+   /Users/nader85/Downloads/CALON_DATA_PACKAGE_2026-08-13/debate-teach/julius-cycle2-pack/
+   Files:
+   - 00_findings_lock.py
+   - 01_horizon_prove.py
+   - 02_calong_fit.py
+   - 03_comparators_pdf_faithful.py   (rename/replace centred stub; all THREE scores from PDF/text)
+   - 04_headtohead_tripod.py
+   - 05_wales_transport.py            (frozen UKB coefs; fail-loud if ledger incomplete)
+   - 06_calibration_dca.py            (slope/intercept + simple DCA thresholds 5/7.5/10%)
+   - README.md                        (paste order + gates)
+   - PROVENANCE_TABLE.md              (predictor, PDF page/table, coefficient, units — NOT-IN-PDF if missing)
+
+2) Local orchestrator script (Julius can also paste this as one cell if preferred):
+   /Users/nader85/Documents/CALON/calon_discordance_model_2026_08_09/code/16_CALON_G_CYCLE2.py
+   Docstring must state: aggregates only; no eid prints; primary ASCVD endpoint (I50 out);
+   MACE is NOT primary; missing data is train-fold impute NOT MCAR; B=2000; corrected horizon.
+
+Hard rules:
+- Horizon: t_h=min(time,H); e_h=event&(time<=H). NEVER (time<=H)|(event==1).
+- SAFEHEART must use centring constant verified from PDF/text (5.4078 if confirmed).
+- If a coefficient cannot be found in PDF/text, mark CANDIDATE / NOT-IN-PDF — do not invent.
+- Lp(a) nmol→mg/dL ÷2.15 only as labelled EXPLORATORY sensitivity.
+- Do not retune SPEC after imagining WIN/LOSS results.
+- Do NOT git add or git commit.
+- Do not touch participant-level data files; scripts must assume DataFrames already loaded on Julius.
+</task>
+
+<verification_loop>
+Before finishing:
+  1. python3 -m py_compile every new/changed .py file you wrote
+  2. rg -n "time <= .*)\s*\|\s*\(.*(event" julius-cycle2-pack/ code/16_CALON_G_CYCLE2.py  — must find ZERO invalid masks in Cycle-2 files
+  3. Confirm PROVENANCE_TABLE.md cites at least SAFEHEART and FH-RS from the text extracts (Montreal too if present)
+  4. Confirm README lists paste order 00→06 and the SHA gate
+Leave the working tree uncommitted.
+</verification_loop>
+
+<action_safety>
+Scope only Cycle-2 pack + code/16_CALON_G_CYCLE2.py + PROVENANCE_TABLE.md/README in that pack.
+Do not modify code/15_CALON_FINAL.py behaviour except if you must import helpers (prefer self-contained).
+No git commit.
+</action_safety>
+
+<structured_output_contract>
+End with:
+  1. What changed and why
+  2. Files touched
+  3. Gate outcomes (py_compile + mask rg)
+  4. Anything left for Julius / investigator decision
+</structured_output_contract>
